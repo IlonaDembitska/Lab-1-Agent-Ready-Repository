@@ -1,47 +1,48 @@
-<!-- AGENTS.md — карта проєкту для агента. Цей файл пише ЛЮДИНА, не агент. -->
-<!-- Правила курсу:                                                          -->
-<!--  * тиждень 1 — до 60 рядків; до кінця курсу — до 200;                   -->
-<!--  * кожен рядок відповідає на питання «що агент зробить неправильно,     -->
-<!--    якщо цього рядка не буде?». Не відповідає — рядок видалити;          -->
-<!--  * тест на якість: видали 40% рядків — робота агента не ламається;      -->
-<!--  * не переказувати README: README — для людей, AGENTS.md — для агента.  -->
-<!--  * це карта, а не енциклопедія: посилайся на файл, не копіюй його вміст.-->
-
 # AGENTS.md
 
-<!-- TODO: один рядок — що це за проєкт і для кого. Без маркетингу. -->
+## Project
 
-## Стек
+This is a Next.js project for the Agentic Engineering course.
+The project uses TypeScript and npm.
 
-- TypeScript (`strict`), Next.js (App Router), Vitest.
+## Main Commands
 
-<!-- TODO: те, що агент НЕ вгадає з package.json: версія Node, менеджер пакетів,
-     БД/ORM, спосіб стилізації, шлюз до моделей. -->
+- `npm test` — run all tests.
+- `npm run build` — build the project.
+- `npm run doctor` — check the development environment.
+- `npm run dev` — start the development server.
 
-## Команди
+## Rules
 
-- `npm test` — тести (Vitest), без мережі.
-- `npm run typecheck` — перевірка типів, без емісії.
-- `npm run lint` — лінтер.
+- Do not modify `.env.local`.
+- Never commit API keys, passwords, or other secrets.
+- Make only changes that are necessary for the current task.
+- Do not delete existing files unless the task requires it.
+- Keep the existing project structure whenever possible.
+- Check existing code before creating new files or functions.
 
-<!-- TODO: дев-сервер, збірка, міграції — якщо їх не видно з package.json. -->
-<!-- TODO: познач, що саме агент зобов'язаний запустити ПЕРЕД тим,
-     як звітувати «готово». -->
+## Code Style
 
-## Межі
+- Use TypeScript.
+- Keep code simple and readable.
+- Use clear names for variables and functions.
+- Avoid unnecessary dependencies.
+- Follow the style of the existing project.
 
-- `.env` і `.env.local` агент не читає і не редагує: секрети веде людина.
-- Тести не ходять у мережу і не викликають платні API.
+## Testing
 
-<!-- TODO: теки й файли, які агент не чіпає (згенерований код, міграції, лок-файли). -->
-<!-- TODO: дії, що потребують підтвердження людини (git push, зміна залежностей,
-     видалення даних, витрати понад ліміт). -->
+After making changes:
 
-## Домовленості
+1. Run `npm test`.
+2. Run `npm run build`.
+3. Fix errors before finishing the task.
 
-- Модель обирається роллю з `src/models.ts` (`MODELS.cheap`), а не рядком-ідентифікатором.
-- Ціни й дати зняття моделей звіряються зі сторінкою вендора, а не з пам'яті.
+## Definition of Done
 
-<!-- TODO: правила стилю, яких не ловить лінтер (іменування, межі модулів). -->
-<!-- TODO: формат повідомлень комітів. -->
-<!-- TODO: визначення «готово»: які перевірки мають бути зеленими. -->
+A task is complete when:
+
+- the requested functionality works;
+- all tests pass;
+- the project builds successfully;
+- no secrets are added to Git;
+- unnecessary files or changes are not included.
