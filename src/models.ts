@@ -191,15 +191,13 @@ export const CATALOG = {
     outputPerMTok: 2.5,
     pricingUrl: GOOGLE_PRICING,
   },
-  'gemini-3.8-flash': {
-    id: 'gemini-3.8-flash',
-    provider: 'google',
-    // Базові (післяакційні) ціни. До 2026-12-31 включно діє promo нижче.
-    inputPerMTok: 1.5,
-    outputPerMTok: 7.5,
-    promo: { until: '2026-12-31', inputPerMTok: 0.75, outputPerMTok: 3.75 },
-    pricingUrl: GOOGLE_PRICING,
-  },
+  'gemini-3.1-flash-lite': {
+  id: 'gemini-3.1-flash-lite',
+  provider: 'google',
+  inputPerMTok: 0.25,
+  outputPerMTok: 1.5,
+  pricingUrl: GOOGLE_PRICING,
+},
   'ollama-chat': {
     id: LOCAL_CHAT_ID,
     provider: 'ollama',

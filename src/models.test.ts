@@ -37,8 +37,7 @@ describe('estimateCost', () => {
 });
 
 describe('effectivePrice', () => {
-  const gemini: ModelSpec = CATALOG['gemini-3.8-flash'];
-
+ const gemini: ModelSpec = CATALOG['gemini-3.1-flash-lite'];
   it('поки акція триває, віддає акційну ціну', () => {
     expect(effectivePrice(gemini, '2026-10-01')).toEqual({
       inputPerMTok: 0.75,
