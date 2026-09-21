@@ -1,3 +1,4 @@
+
 import { google } from '@ai-sdk/google';
 import {
   ToolLoopAgent,
@@ -6,9 +7,11 @@ import {
 } from 'ai';
 import { z } from 'zod';
 
+import { after } from 'next/server';
+
 import {
   langfuseSpanProcessor,
-} from '../../../src/otel/langfuse';
+} from '../../../instrumentation';
 
 const agent = new ToolLoopAgent({
   model: google('gemini-3.1-flash-lite'),
@@ -56,7 +59,9 @@ export async function POST(
       text: result.text,
       usage: result.usage,
     });
-  } finally {
+ } finally {
+  after(async () => {
     await langfuseSpanProcessor.forceFlush();
-  }
+  });
+}
 }
