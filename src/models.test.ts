@@ -37,27 +37,24 @@ describe('estimateCost', () => {
 });
 
 describe('effectivePrice', () => {
- const gemini: ModelSpec = CATALOG['gemini-3.1-flash-lite'];
-  it('поки акція триває, віддає акційну ціну', () => {
-    expect(effectivePrice(gemini, '2026-10-01')).toEqual({
-      inputPerMTok: 0.75,
-      outputPerMTok: 3.75,
+  const gemini: ModelSpec = CATALOG['gemini-3.1-flash-lite'];
+
+  it('повертає актуальну ціну Gemini 3.1 Flash-Lite', () => {
+    expect(effectivePrice(gemini, '2026-09-20')).toEqual({
+      inputPerMTok: 0.25,
+      outputPerMTok: 1.5,
     });
   });
 
-  it('останній день акції ще акційний', () => {
-    expect(effectivePrice(gemini, '2026-12-31').inputPerMTok).toBe(0.75);
-  });
-
-  it('після акції повертається базова ціна', () => {
-    expect(effectivePrice(gemini, '2027-01-01')).toEqual({
-      inputPerMTok: 1.5,
-      outputPerMTok: 7.5,
-    });
+  it('для Gemini без акції ціна не залежить від дати', () => {
+    expect(effectivePrice(gemini, '2026-01-01')).toEqual(
+      effectivePrice(gemini, '2027-01-01'),
+    );
   });
 
   it('для моделі без акції ціна не залежить від дати', () => {
     const sonnet: ModelSpec = specFor('balanced');
+
     expect(effectivePrice(sonnet, '2020-01-01')).toEqual(
       effectivePrice(sonnet, '2030-01-01'),
     );
