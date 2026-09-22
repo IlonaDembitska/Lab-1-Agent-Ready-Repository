@@ -30,3 +30,22 @@ OpenCode identified the repository verification commands, including:
 - `npm run doctor`
 
 Both agents successfully read the repository instructions without modifying files.
+## Codex — Session 2
+
+Version: `codex-cli 0.154.0`
+
+Task:
+Review the repository structure and identify the main files related to agent safety, testing, and observability. Do not modify any files.
+
+Result:
+Codex identified the main safety files, including `AGENTS.md`, `src/agent/tools.ts`, `scripts/guard-env.mjs`, testing configuration and the Langfuse/OpenTelemetry instrumentation files. It also confirmed that no project files were intentionally modified.
+
+## OpenCode — Session 2
+
+Version: `1.18.31`
+
+Task:
+Review the repository and summarize how it protects secrets and verifies agent changes before completion. Do not modify any files.
+
+Result:
+OpenCode confirmed layered secret protection through `.gitignore`, agent permissions, guard hooks, `.env` blocking, redaction and approval for destructive tools. It also identified the required verification steps before completion, including typecheck, lint, tests, build and CI checks.
