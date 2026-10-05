@@ -20,3 +20,5 @@ Unanswerable — питання про процедури сервісного �
 Вердикти correct / partial / wrong / refused — за правилом розділу 6 `spec.md`.
 Точність (G1) = correct / усі запити, крім unanswerable.
 Валідатор: `npx tsx scripts/validate-golden.ts` — «еталонний набір валідний».
+
+SHA заморозки: bad4ca7 ([queries.jsonl](golden/queries.jsonl)).
