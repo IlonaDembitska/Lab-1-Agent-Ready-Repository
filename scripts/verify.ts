@@ -1,12 +1,10 @@
 /**
  * Верифікатор (крок 03, Лабораторна 2): локальна модель Ollama судить одну зміну
  * за критеріями приймання A1–A5 зі spec.md. Один критерій — один запит.
+ * Звертається до Ollama /api/chat напряму: think=false, format = JSON-схема вердикту.
  * Запуск: npm run verify  (або npx tsx scripts/verify.ts <файл.diff>)
  */
 import { readFileSync } from 'node:fs';
-
-import { generateText } from 'ai';
-import { createOllama } from 'ollama-ai-provider-v2';
 
 import { MODELS } from '../src/models';
 import { criterionVerdict, isBlocked, verifyReport, type CriterionVerdict } from '../src/verify/schema';
@@ -75,13 +73,44 @@ export function buildPrompt(c: Criterion, diff: string): string {
   ].join('\n');
 }
 
+/** JSON-схема для параметра format в Ollama: модель не може повернути іншу форму. */
+export const VERDICT_JSON_SCHEMA = {
+  type: 'object',
+  properties: {
+    id: { type: 'string' },
+    verdict: { type: 'string', enum: ['pass', 'fail', 'unknown'] },
+    reason: { type: 'string' },
+    evidence: { type: 'string' },
+  },
+  required: ['id', 'verdict', 'reason', 'evidence'],
+} as const;
+
 const MAX_DIFF_CHARS = 12_000;
 
+interface OllamaChatResponse {
+  readonly message?: { readonly content?: string };
+}
+
 async function judge(c: Criterion, diff: string, modelId: string): Promise<CriterionVerdict> {
-  const model = createOllama({ baseURL: `${MODELS.local.baseUrl}/api` })(modelId);
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const { text } = await generateText({ model, prompt: buildPrompt(c, diff), temperature: 0 });
-    const parsed = criterionVerdict.safeParse({ ...(extractJson(text) as object), id: c.id });
+    const res = await fetch(`${MODELS.local.baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model: modelId,
+        stream: false,
+        think: false,
+        format: VERDICT_JSON_SCHEMA,
+        options: { temperature: 0, num_ctx: 8192 },
+        messages: [{ role: 'user', content: buildPrompt(c, diff) }],
+      }),
+    });
+    if (!res.ok) throw new Error(`Ollama ${res.status}: ${await res.text()}`);
+    const data = (await res.json()) as OllamaChatResponse;
+    const parsed = criterionVerdict.safeParse({
+      ...(extractJson(data.message?.content ?? '') as object),
+      id: c.id,
+    });
     if (parsed.success) return parsed.data;
     console.error(`  ${c.id}: невалідна відповідь моделі (спроба ${attempt})`);
   }
@@ -101,9 +130,11 @@ async function main(): Promise<void> {
   console.log(`верифікатор: ${modelId} · критеріїв: ${criteria.length} · diff: ${diffFile}`);
   const results: CriterionVerdict[] = [];
   for (const c of criteria) {
+    const started = performance.now();
     const v = await judge(c, diff, modelId);
+    const secs = ((performance.now() - started) / 1000).toFixed(1);
     results.push(v);
-    console.log(`${v.id} | ${v.verdict} | ${v.reason}${v.evidence ? ` | ${v.evidence}` : ''}`);
+    console.log(`${v.id} | ${v.verdict} | ${v.reason}${v.evidence ? ` | ${v.evidence}` : ''} (${secs} с)`);
   }
   const report = verifyReport.parse({ results });
   if (isBlocked(report)) {

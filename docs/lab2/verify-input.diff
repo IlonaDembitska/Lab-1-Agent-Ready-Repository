@@ -1,0 +1,45 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 093cabf..cd5bcf6 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -32,6 +32,9 @@ jobs:
+       - name: Юніт-тести
+         run: npm test
+ 
++      - name: Валідатор еталонного набору
++        run: npx tsx scripts/validate-golden.ts docs/lab2/golden/queries.jsonl
++
+       - name: Збірка
+         run: npm run build
+ 
+diff --git a/docs/lab2/baseline.md b/docs/lab2/baseline.md
+index 956ccb4..c35ce68 100644
+--- a/docs/lab2/baseline.md
++++ b/docs/lab2/baseline.md
+@@ -43,3 +43,16 @@
+ 
+ ## Висновок
+ Без документів модель знає загальні правила, але вигадує відповіді там, де їх немає в ПДР (0 з 3 відмов), плутає конкретні числа (q-06, q-13, q-17, q-18) і не може послатися на джерело. Це те, що має виправити пошук із цитуванням (кроки 04–05).
++
++## Доповнення від 2026-10-05 (рядки каркаса курсу)
++- Промпт дослівно (system): «Ти асистент із Правил дорожнього руху України. Відповідай коротко, українською. Якщо не знаєш відповіді точно, прямо скажи, що не знаєш.» User-повідомлення — лише текст запиту.
++- Документів у контексті: 0.
++- Повторів кожного запиту: 1.
++- Токени (вхід / вихід, сумарно): 1360 / 1884.
++- Виклик моделі: google(CATALOG["gemini-3.1-flash-lite"].id) — так само, як у src/agent/agent-aisdk.ts з Лаб. 1; вартість — priceUsd із src/cost.ts.
++
++## Запити, на які модель відповіла правильно без документів
++q-01, q-02, q-03, q-04, q-05, q-08, q-11, q-12, q-14, q-15, q-20 — на них пошук приросту за точністю не дасть; враховувати це, читаючи числа кроку 06.
++
++## Що це число означає
++Пошук корисний, якщо перебʼє точність 64,7% (зокрема виправить q-06, q-13, q-17, q-18) і дасть відмови на unanswerable замість вигадок (зараз 0 з 3) та цитування id документа (зараз 0%).
+diff --git a/docs/lab2/eval-set.md b/docs/lab2/eval-set.md
+index df2091f..1e516be 100644
+--- a/docs/lab2/eval-set.md
++++ b/docs/lab2/eval-set.md
+@@ -20,3 +20,5 @@ Unanswerable — питання про процедури сервісного 
+ Вердикти correct / partial / wrong / refused — за правилом розділу 6 `spec.md`.
+ Точність (G1) = correct / усі запити, крім unanswerable.
+ Валідатор: `npx tsx scripts/validate-golden.ts` — «еталонний набір валідний».
++
++SHA заморозки: bad4ca7 ([queries.jsonl](golden/queries.jsonl)).
