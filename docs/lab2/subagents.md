@@ -1,7 +1,7 @@
 # Субагенти — розподіл роботи за специфікацією
 
-Інструмент: OpenCode 1.18.34 · Дати запусків: 2026-10-05, 2026-10-08
-Головний агент: Build · Big Pickle (OpenCode Zen). Субагенти: google/gemini-3.1-flash-lite (ключ Google з .env.local).
+Інструмент: OpenCode 1.18.34 · Дати запусків: 2026-10-05 (невдалі), 2026-10-08 (успішні)
+Головний агент: Build · Big Pickle (OpenCode Zen). Субагенти: google/gemini-3.1-flash-lite (ключ Google з .env.local, поле `model` у фронтматері).
 
 ## Розподіл
 | Субагент | Пункти специфікації | Дозволи | Модель | Файл конфігурації |
@@ -22,27 +22,32 @@
 - Висновок: історії батьківської розмови в контексті субагента немає. Субагент виконав 4 виклики читання (Glob, Read package.json, Read .github/workflows/ci.yml, Glob docs) — 55,3 с, 13,0 тис. токенів, $0.01.
 - Скріншот: [traces/02-explorer-isolation.png](traces/02-explorer-isolation.png)
 
-## Звіт spec-auditor по diff 63d27c9..045b378
+## Звіт spec-auditor по diff 63d27c9..045b378 · 2026-10-08
 Вхід: [audit-input.diff](audit-input.diff) — справжня зміна: крок валідатора в CI + доповнення до baseline.md і eval-set.md.
+Запуск: «✓ Spec-Auditor Task — Audit diff vs spec A1–A5», 2 виклики інструментів, 18,6 с, gemini-3.1-flash-lite.
 
-| Критерій | Вердикт | Причина (за звітом субагента) |
-|---|---|---|
-| A1 | unknown | у diff додано крок validate-golden у ci.yml, але немає результатів CI — сам крок не доводить, що тести зелені |
-| A2 | unknown | queries.jsonl у diff не змінювався; немає ні вмісту, ні виводу валідатора |
-| A3 | unknown | у diff немає змін індексації й indexing.md |
-| A4 | unknown | eval-report.md у diff не торкнутий |
-| A5 | unknown | доданий крок CI не є доказом прогону без мережі й ключів; логів CI немає |
+| Критерій | Вердикт |
+|---|---|
+| A1 | unknown |
+| A2 | unknown |
+| A3 | unknown |
+| A4 | unknown |
+| A5 | unknown |
 
-Підсумок субагента: unknown 5/5 — зміна підготовча, доказів виконання критеріїв у ній немає. Це очікувано й чесно: аудитор не вгадує pass без даних.
+Причина (за звітом субагента, переказ головного агента): у diff бракує даних — результатів `npm test`, кількості запитів і виводу валідатора `golden/queries.jsonl`, команди індексації, тестів на injection, підтвердження, що CI працює без мережі й ключів. Жодного `fail` не виявлено.
+Висновок: зміна підготовча; аудитор не вгадує `pass` без доказів — так і задумано полем `unknown` у промпті.
 Скріншот: [traces/02-spec-auditor-report.png](traces/02-spec-auditor-report.png)
 
 ## Делегування в журналі
-- [.agent-log/opencode.jsonl, рядок 81](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/blob/151ea71159449378aef0e23f6c9d7a32d6515588/.agent-log/opencode.jsonl#L81) — `"tool":"task"`, 2026-10-08T13:20:36Z, сесія ses_ee4558376ffedlcUsM2zwuXHSw.
-- Плагін журналу записує `"input":{}` без імені субагента; імʼя підтверджує скріншот сесії.
+- explorer: [.agent-log/opencode.jsonl, рядок 81](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/blob/151ea71159449378aef0e23f6c9d7a32d6515588/.agent-log/opencode.jsonl#L81) — `"tool":"task"`, 2026-10-08T13:20:36Z, сесія ses_ee4558376ffedlcUsM2zwuXHSw.
+- spec-auditor: [.agent-log/opencode.jsonl, рядок 84](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/blob/e011563d9d86635999ba8ecffac0c19038f6e04b/.agent-log/opencode.jsonl#L84) — `"tool":"task"`, 2026-10-08T20:43:23Z, сесія ses_ee2beb204ffeZRTSKvghbZLeOg.
+- Плагін журналу записує `"input":{}` без імені субагента; імʼя підтверджують скріншоти.
 
 ## Спостереження
-- 2026-10-05: на безкоштовній моделі Big Pickle субагенти двічі впали з помилкою провайдера («free tier can only be used from within OpenCode»). Після цього модель субагентів закріплено полем `model` у фронтматері.
-- Коли субагент падав, головний агент виконував задачу сам: читав diff через `cat` (запит доступу до теки я відхилила) і відповідав на питання про кодове слово з власного контексту — бо бачить усю розмову. Делегування довелося просити явно.
+- 2026-10-05, сесія ses_ef442fad1ffeiOyAwYHIoSc6rB: на безкоштовній моделі Big Pickle з чотирьох запусків субагентів спрацював лише перший (explorer); три інші впали з помилкою провайдера «OpenCode's free tier can only be used from within OpenCode».
+- Того ж дня таблицю A1–A5 з `unknown` написав НЕ субагент, а головний агент: коли spec-auditor упав, він сам прочитав diff через `cat` (запит доступу до теки UNIVERSITY я відхилила) і виконав аудит у власному контексті. Я спершу прийняла це за звіт субагента; помилку виявила 2026-10-08, переглянувши сесії субагентів, і перезапустила spec-auditor на Gemini. Звіт вище — саме з цього перезапуску.
+- Без явного прохання «виклич субагента через task» головний агент відповідав сам — він бачить усю розмову і знав кодове слово. Делегування довелося просити явно.
+- Після передачі ключа Google OpenCode сам перемкнув головного агента на модель Google для зображень (Nano Banana Pro, ліміт безкоштовного рівня 0) — тому головну модель задано явно: `opencode -m opencode/big-pickle`.
 - Звіт explorer містить помилки: `data/pdr` названо «Project Design Records» (насправді ПДР — Правила дорожнього руху) і «28 файлів» замість 26. Субагент без контексту робить припущення, тож його звіт перевіряється, а не приймається на віру.
 
 ## Як зводяться результати
