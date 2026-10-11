@@ -1,0 +1,14 @@
+верифікатор: qwen3.5:4b · критеріїв: 5 · diff: docs/lab2/calibration/01-38d1957.diff
+A1 | pass | У зміні присутні нові тести, які перевіряють функціонал валідатора, включаючи валідацію еталонного набору. | import { describe, expect, it } from 'vitest';...it('приймає коректний рядок', () => { expect(validateGolden(line(ok), LOOSE)).toEqual([]); }); (66.8 с)
+A2 | unknown | Зміни містять лише код валідатора та його тести, але не містять самого файлу з даними запитам (docs/lab2/golden/queries.jsonl), тому неможливо перевірити кількість запитів. (32.1 с)
+A3 | unknown | У зміні відсутні дані про індексацію документів та їх кількість. (30.1 с)
+A4 | unknown | Зміни містять лише код валідації та тестів, але не містять жодного прикладу використання асистента з запитом tag=injection. (31.9 с)
+A5 | pass | У зміні є тестовий файл, який перевіряє функціонал валідації без використання мережі чи API-ключів. | import { readFileSync } from 'node:fs';
+
+import { z } from 'zod'; (31.2 с)
+брама пройдена: fail немає
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

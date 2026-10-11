@@ -1,0 +1,7 @@
+верифікатор: qwen3.5:4b · критеріїв: 5 · diff: docs/lab2/calibration/08-bddef04.diff
+A1 | unknown | У зміні не виконано прогін тестів npm test, оскільки додається лише скрипт верифікатора та конфігурація моделі. (40.3 с)
+A2 | pass | У зміні створено скрипт verify.ts, який читає spec.md для отримання списку критеріїв і запускає модель для кожного. | `const criteria = parseCriteria(readFileSync('docs/lab2/spec.md', 'utf8'));` (40.5 с)
+A3 | unknown | У зміні відсутні дані про індексацію документів data/pdr/ та кількість виведених файлів. (37.6 с)
+A4 | pass | Зміна додає скрипт верифікатора, який викликає локальну модель Ollama для оцінки критеріїв. | VERIFIER_MODEL=qwen3.5:4b (39.1 с)
+A5 | pass | У зміні є новий скрипт verify.ts, який завантажує модель Ollama локально і виконує перевірку без використання API-ключів чи мережі. | import { createOllama } from 'ollama-ai-provider-v2'; ... const model = createOllama({ baseURL: \`\${MODELS.local.baseUrl}/api\`} }(modelId); (55.3 с)
+брама пройдена: fail немає
