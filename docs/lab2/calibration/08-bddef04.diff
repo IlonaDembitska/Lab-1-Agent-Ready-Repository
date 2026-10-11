@@ -1,0 +1,254 @@
+diff --git a/.env.example b/.env.example
+index 151d3da..504e056 100644
+--- a/.env.example
++++ b/.env.example
+@@ -43,3 +43,6 @@ OLLAMA_MODEL=
+ 
+ # Ідентифікатор локальної моделі ембедингів (роль `embed` у src/models.ts).
+ OLLAMA_EMBED_MODEL=
++
++# Модель верифікатора (крок 03, Лаб. 2): локальна Ollama, інша родина, ніж модель, що писала код
++VERIFIER_MODEL=qwen3.5:4b
+diff --git a/package.json b/package.json
+index 4f01266..10c2da0 100644
+--- a/package.json
++++ b/package.json
+@@ -17,7 +17,8 @@
+     "e2e": "playwright test",
+     "doctor": "tsx scripts/doctor.ts",
+     "sync-skills": "tsx scripts/sync-skills.ts",
+-    "log:import": "tsx scripts/transcript-to-jsonl.ts"
++    "log:import": "tsx scripts/transcript-to-jsonl.ts",
++    "verify": "tsx scripts/verify.ts docs/lab2/verify-input.diff"
+   },
+   "dependencies": {
+     "@ai-sdk/google": "^4.0.76",
+diff --git a/scripts/verify.ts b/scripts/verify.ts
+new file mode 100644
+index 0000000..6bd2eda
+--- /dev/null
++++ b/scripts/verify.ts
+@@ -0,0 +1,121 @@
++/**
++ * Верифікатор (крок 03, Лабораторна 2): локальна модель Ollama судить одну зміну
++ * за критеріями приймання A1–A5 зі spec.md. Один критерій — один запит.
++ * Запуск: npm run verify  (або npx tsx scripts/verify.ts <файл.diff>)
++ */
++import { readFileSync } from 'node:fs';
++
++import { generateText } from 'ai';
++import { createOllama } from 'ollama-ai-provider-v2';
++
++import { MODELS } from '../src/models';
++import { criterionVerdict, isBlocked, verifyReport, type CriterionVerdict } from '../src/verify/schema';
++
++export interface Criterion {
++  readonly id: string;
++  readonly text: string;
++  readonly check: string;
++}
++
++/** Критерії з таблиці розділу «## 6.» специфікації. */
++export function parseCriteria(spec: string): Criterion[] {
++  const start = spec.indexOf('## 6.');
++  if (start === -1) return [];
++  const rest = spec.slice(start);
++  const end = rest.indexOf('\n### ');
++  const section = end === -1 ? rest : rest.slice(0, end);
++  const out: Criterion[] = [];
++  for (const line of section.split(/\r?\n/)) {
++    const m = /^\|\s*(A\d+)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/.exec(line);
++    if (m) out.push({ id: m[1] ?? '', text: m[2] ?? '', check: m[3] ?? '' });
++  }
++  return out;
++}
++
++const SECRET_LINE = /(api[_-]?key|secret|token|password)\s*[:=]/i;
++const ENV_FILE = /^(\+\+\+|---) [ab]\/(?:.*\/)?\.env(?!\.example)/m;
++
++/** Прибирає з diff рядки, схожі на секрети; повідомляє, чи зачеплено .env. */
++export function redactDiff(diff: string): { text: string; touchesEnv: boolean } {
++  const text = diff
++    .split(/\r?\n/)
++    .map((line) => (SECRET_LINE.test(line) ? '[вилучено: можливий секрет]' : line))
++    .join('\n');
++  return { text, touchesEnv: ENV_FILE.test(diff) };
++}
++
++/** Дістає перший JSON-обʼєкт із відповіді моделі (без блоків міркувань <think>). */
++export function extractJson(raw: string): unknown {
++  const text = raw.replace(/<think>[\s\S]*?<\/think>/g, '');
++  const from = text.indexOf('{');
++  const to = text.lastIndexOf('}');
++  if (from === -1 || to <= from) return null;
++  try {
++    return JSON.parse(text.slice(from, to + 1));
++  } catch {
++    return null;
++  }
++}
++
++export function buildPrompt(c: Criterion, diff: string): string {
++  return [
++    'Ти — суворий суддя змін коду. Оціни ЛИШЕ ОДИН критерій приймання за наданою зміною.',
++    `Критерій ${c.id}: ${c.text}`,
++    `Чим він перевіряється: ${c.check}`,
++    'Правила:',
++    '- pass — у зміні є прямий доказ, що критерій виконано;',
++    '- fail — у зміні є доказ, що критерій порушено;',
++    '- unknown — даних у зміні недостатньо, щоб судити. Не вгадуй.',
++    '- evidence — файл і рядок або коротка цитата зі зміни; для unknown може бути порожнім рядком.',
++    'Поверни ЛИШЕ JSON без жодного іншого тексту:',
++    `{"id":"${c.id}","verdict":"pass|fail|unknown","reason":"одне-два речення","evidence":"…"}`,
++    '',
++    'Зміна (diff):',
++    diff,
++  ].join('\n');
++}
++
++const MAX_DIFF_CHARS = 12_000;
++
++async function judge(c: Criterion, diff: string, modelId: string): Promise<CriterionVerdict> {
++  const model = createOllama({ baseURL: `${MODELS.local.baseUrl}/api` })(modelId);
++  for (let attempt = 1; attempt <= 2; attempt++) {
++    const { text } = await generateText({ model, prompt: buildPrompt(c, diff), temperature: 0 });
++    const parsed = criterionVerdict.safeParse({ ...(extractJson(text) as object), id: c.id });
++    if (parsed.success) return parsed.data;
++    console.error(`  ${c.id}: невалідна відповідь моделі (спроба ${attempt})`);
++  }
++  throw new Error(`${c.id}: модель двічі повернула невалідну відповідь`);
++}
++
++async function main(): Promise<void> {
++  const diffFile = process.argv[2] ?? 'docs/lab2/verify-input.diff';
++  const modelId = process.env.VERIFIER_MODEL ?? MODELS.local.id;
++  const criteria = parseCriteria(readFileSync('docs/lab2/spec.md', 'utf8'));
++  if (criteria.length === 0) throw new Error('у docs/lab2/spec.md не знайдено критеріїв розділу 6');
++
++  const { text, touchesEnv } = redactDiff(readFileSync(diffFile, 'utf8'));
++  if (touchesEnv) throw new Error('diff зачіпає файл .env — верифікатор його не надсилає');
++  const diff = text.length > MAX_DIFF_CHARS ? `${text.slice(0, MAX_DIFF_CHARS)}\n[diff обрізано]` : text;
++
++  console.log(`верифікатор: ${modelId} · критеріїв: ${criteria.length} · diff: ${diffFile}`);
++  const results: CriterionVerdict[] = [];
++  for (const c of criteria) {
++    const v = await judge(c, diff, modelId);
++    results.push(v);
++    console.log(`${v.id} | ${v.verdict} | ${v.reason}${v.evidence ? ` | ${v.evidence}` : ''}`);
++  }
++  const report = verifyReport.parse({ results });
++  if (isBlocked(report)) {
++    console.error('БРАМА: є fail — зміну не зливати');
++    process.exit(1);
++  }
++  console.log('брама пройдена: fail немає');
++}
++
++if (process.argv[1]?.endsWith('verify.ts')) {
++  main().catch((err: unknown) => {
++    console.error(err instanceof Error ? err.message : err);
++    process.exit(2);
++  });
++}
+diff --git a/src/verify/schema.ts b/src/verify/schema.ts
+new file mode 100644
+index 0000000..256031c
+--- /dev/null
++++ b/src/verify/schema.ts
+@@ -0,0 +1,26 @@
++import { z } from 'zod';
++
++/** Один критерій приймання зі spec.md — один запис вердикту. */
++export const criterionVerdict = z
++  .object({
++    /** Номер критерію з docs/lab2/spec.md, дослівно (A1…A5). */
++    id: z.string().min(1),
++    /** unknown — аварійний вихід: даних у наданій зміні недостатньо для судження. */
++    verdict: z.enum(['pass', 'fail', 'unknown']),
++    /** Чому саме так. Одне-два речення, без загальних порад. */
++    reason: z.string().min(1),
++    /** Файл і рядок або цитата зі зміни; порожньо лише для unknown. */
++    evidence: z.string(),
++  })
++  .strict();
++
++export type CriterionVerdict = z.infer<typeof criterionVerdict>;
++
++export const verifyReport = z.object({ results: z.array(criterionVerdict).min(1) }).strict();
++
++export type VerifyReport = z.infer<typeof verifyReport>;
++
++/** Брама: червоно, щойно є хоч один fail. unknown браму не валить, але потрапляє у звіт. */
++export function isBlocked(report: VerifyReport): boolean {
++  return report.results.some((r) => r.verdict === 'fail');
++}
+diff --git a/tests/verify.test.ts b/tests/verify.test.ts
+new file mode 100644
+index 0000000..f1cb30c
+--- /dev/null
++++ b/tests/verify.test.ts
+@@ -0,0 +1,64 @@
++import { describe, expect, it } from 'vitest';
++
++import { buildPrompt, extractJson, parseCriteria, redactDiff } from '../scripts/verify';
++import { criterionVerdict, isBlocked } from '../src/verify/schema';
++
++const SPEC = [
++  '## 6. Критерії приймання',
++  '| # | Критерій | Чим перевіряється |',
++  '|---|---|---|',
++  '| A1 | npm test зелений | прогін CI |',
++  '| A2 | ≥ 20 запитів | валідатор |',
++  '',
++  '### Правило оцінювання відповіді',
++  '| A9 | не критерій | — |',
++  '## 7. Обмеження',
++].join('\n');
++
++describe('parseCriteria', () => {
++  it('бере рядки A* лише з розділу 6 до підрозділу', () => {
++    expect(parseCriteria(SPEC).map((c) => c.id)).toEqual(['A1', 'A2']);
++  });
++  it('порожньо, якщо розділу 6 немає', () => {
++    expect(parseCriteria('# інше')).toEqual([]);
++  });
++});
++
++describe('extractJson', () => {
++  it('ігнорує блок <think> і зайвий текст', () => {
++    const raw = '<think>міркую</think> ось: {"id":"A1","verdict":"pass","reason":"ок","evidence":"x"} кінець';
++    expect(extractJson(raw)).toMatchObject({ verdict: 'pass' });
++  });
++  it('повертає null для не-JSON', () => {
++    expect(extractJson('немає json')).toBeNull();
++  });
++});
++
++describe('redactDiff', () => {
++  it('вирізає рядки з ключами', () => {
++    const { text } = redactDiff('+GEMINI_API_KEY=abc123\n+нормальний рядок');
++    expect(text).not.toContain('abc123');
++    expect(text).toContain('нормальний рядок');
++  });
++  it('помічає зміни .env, але не .env.example', () => {
++    expect(redactDiff('+++ b/.env.local').touchesEnv).toBe(true);
++    expect(redactDiff('+++ b/.env.example').touchesEnv).toBe(false);
++  });
++});
++
++describe('схема й брама', () => {
++  it('строга схема не приймає зайвих полів і чужих вердиктів', () => {
++    expect(criterionVerdict.safeParse({ id: 'A1', verdict: 'maybe', reason: 'r', evidence: '' }).success).toBe(false);
++    expect(criterionVerdict.safeParse({ id: 'A1', verdict: 'pass', reason: 'r', evidence: '', x: 1 }).success).toBe(false);
++  });
++  it('брама червона лише за наявності fail', () => {
++    const r = (v: 'pass' | 'fail' | 'unknown') => ({ id: 'A1', verdict: v, reason: 'r', evidence: '' });
++    expect(isBlocked({ results: [r('pass'), r('unknown')] })).toBe(false);
++    expect(isBlocked({ results: [r('pass'), r('fail')] })).toBe(true);
++  });
++  it('промпт містить рівно один критерій і варіант unknown', () => {
++    const p = buildPrompt({ id: 'A3', text: 'індексація', check: 'команда' }, 'diff');
++    expect(p).toContain('Критерій A3');
++    expect(p).toContain('unknown');
++  });
++});
