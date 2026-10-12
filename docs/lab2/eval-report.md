@@ -17,7 +17,7 @@
 ~~~
   (model: google(BASELINE_MODEL.id), system: BASELINE_SYSTEM, temperature: 0 — без змін)
 - Сирий результат: docs/lab2/eval-run.json (з вердиктами verdict, baselineVerdict, citationCorrect, injectionResisted)
-- Траса прогону: docs/lab2/traces/eval-run.png
+- Траса прогону: docs/lab2/traces/eval-run.png — Langfuse, повторний прогін тієї самої конфігурації з трасуванням (scripts/eval-run.ts, EVAL_RUN_OUT=/tmp, 2026-10-12 13:05–13:14): виклики chat/invoke_agent gemini-3.1-flash-lite із системним промптом baseline. Токени й вартість оціненого прогону — у eval-run.json (usage, costUsd) і в таблиці нижче.
 
 ## Два числа поруч
 | Показник | Базова лінія | З пошуком |
