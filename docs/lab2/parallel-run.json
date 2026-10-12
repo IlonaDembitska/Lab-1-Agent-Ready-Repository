@@ -1,0 +1,977 @@
+{
+  "runs": [
+    {
+      "runAt": "2026-10-12T13:38:10.833Z",
+      "width": 1,
+      "budget": {
+        "maxBranches": 1,
+        "maxTokens": 100000,
+        "maxWallMs": 600000
+      },
+      "wallMs": 1047550,
+      "sumBranchMs": 1047550,
+      "inputTokens": 38505,
+      "outputTokens": 1021,
+      "costUsd": 0.01115775,
+      "done": 12,
+      "failed": [],
+      "stoppedEarly": true,
+      "medianEmbedMs": 76,
+      "medianGenMs": 25822,
+      "ollamaTotalMsSum": 2189,
+      "ollamaLoadMsSum": 1490,
+      "ollamaPromptEvalCountSum": 335,
+      "branches": [
+        {
+          "id": "q-01",
+          "inputTokens": 3186,
+          "outputTokens": 40,
+          "ms": 13609,
+          "embedMs": 1521,
+          "genMs": 12088,
+          "ollama": {
+            "totalMs": 1439.054917,
+            "loadMs": 1346.802084,
+            "promptEvalCount": 21
+          }
+        },
+        {
+          "id": "q-02",
+          "inputTokens": 3239,
+          "outputTokens": 39,
+          "ms": 8577,
+          "embedMs": 67,
+          "genMs": 8510,
+          "ollama": {
+            "totalMs": 63.203125,
+            "loadMs": 10.939542,
+            "promptEvalCount": 23
+          }
+        },
+        {
+          "id": "q-03",
+          "inputTokens": 3180,
+          "outputTokens": 71,
+          "ms": 16579,
+          "embedMs": 79,
+          "genMs": 16499,
+          "ollama": {
+            "totalMs": 73.186333,
+            "loadMs": 12.25775,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-04",
+          "inputTokens": 3524,
+          "outputTokens": 46,
+          "ms": 16268,
+          "embedMs": 70,
+          "genMs": 16199,
+          "ollama": {
+            "totalMs": 61.678208,
+            "loadMs": 11.706,
+            "promptEvalCount": 26
+          }
+        },
+        {
+          "id": "q-05",
+          "inputTokens": 3053,
+          "outputTokens": 242,
+          "ms": 18929,
+          "embedMs": 69,
+          "genMs": 18861,
+          "ollama": {
+            "totalMs": 60.356333,
+            "loadMs": 12.030333,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-06",
+          "inputTokens": 3361,
+          "outputTokens": 77,
+          "ms": 21801,
+          "embedMs": 72,
+          "genMs": 21729,
+          "ollama": {
+            "totalMs": 64.511583,
+            "loadMs": 12.291917,
+            "promptEvalCount": 31
+          }
+        },
+        {
+          "id": "q-07",
+          "inputTokens": 3039,
+          "outputTokens": 29,
+          "ms": 80621,
+          "embedMs": 72,
+          "genMs": 80548,
+          "ollama": {
+            "totalMs": 65.350875,
+            "loadMs": 13.38625,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-08",
+          "inputTokens": 3209,
+          "outputTokens": 75,
+          "ms": 30001,
+          "embedMs": 86,
+          "genMs": 29915,
+          "ollama": {
+            "totalMs": 79.53175,
+            "loadMs": 11.647833,
+            "promptEvalCount": 38
+          }
+        },
+        {
+          "id": "q-09",
+          "inputTokens": 2942,
+          "outputTokens": 128,
+          "ms": 38567,
+          "embedMs": 77,
+          "genMs": 38490,
+          "ollama": {
+            "totalMs": 70.005,
+            "loadMs": 16.983333,
+            "promptEvalCount": 20
+          }
+        },
+        {
+          "id": "q-10",
+          "inputTokens": 3270,
+          "outputTokens": 134,
+          "ms": 32242,
+          "embedMs": 79,
+          "genMs": 32162,
+          "ollama": {
+            "totalMs": 72.61575,
+            "loadMs": 13.250375,
+            "promptEvalCount": 34
+          }
+        },
+        {
+          "id": "q-11",
+          "inputTokens": 3079,
+          "outputTokens": 76,
+          "ms": 294932,
+          "embedMs": 75,
+          "genMs": 294857,
+          "ollama": {
+            "totalMs": 68.319583,
+            "loadMs": 13.166083,
+            "promptEvalCount": 25
+          }
+        },
+        {
+          "id": "q-12",
+          "inputTokens": 3423,
+          "outputTokens": 64,
+          "ms": 475424,
+          "embedMs": 78,
+          "genMs": 475346,
+          "ollama": {
+            "totalMs": 71.605792,
+            "loadMs": 15.07525,
+            "promptEvalCount": 27
+          }
+        }
+      ]
+    },
+    {
+      "runAt": "2026-10-12T13:48:27.425Z",
+      "width": 2,
+      "budget": {
+        "maxBranches": 2,
+        "maxTokens": 100000,
+        "maxWallMs": 600000
+      },
+      "wallMs": 585098,
+      "sumBranchMs": 1126161,
+      "inputTokens": 64198,
+      "outputTokens": 1708,
+      "costUsd": 0.018611500000000003,
+      "done": 20,
+      "failed": [],
+      "stoppedEarly": false,
+      "medianEmbedMs": 71,
+      "medianGenMs": 20141,
+      "ollamaTotalMsSum": 1290,
+      "ollamaLoadMsSum": 247,
+      "ollamaPromptEvalCountSum": 580,
+      "branches": [
+        {
+          "id": "q-01",
+          "inputTokens": 3186,
+          "outputTokens": 40,
+          "ms": 338047,
+          "embedMs": 142,
+          "genMs": 337904,
+          "ollama": {
+            "totalMs": 91.561958,
+            "loadMs": 11.918416,
+            "promptEvalCount": 21
+          }
+        },
+        {
+          "id": "q-02",
+          "inputTokens": 3239,
+          "outputTokens": 39,
+          "ms": 359112,
+          "embedMs": 106,
+          "genMs": 359005,
+          "ollama": {
+            "totalMs": 65.6595,
+            "loadMs": 11.787875,
+            "promptEvalCount": 23
+          }
+        },
+        {
+          "id": "q-03",
+          "inputTokens": 3180,
+          "outputTokens": 71,
+          "ms": 8060,
+          "embedMs": 82,
+          "genMs": 7978,
+          "ollama": {
+            "totalMs": 74.448334,
+            "loadMs": 14.231417,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-04",
+          "inputTokens": 3524,
+          "outputTokens": 46,
+          "ms": 53073,
+          "embedMs": 67,
+          "genMs": 53005,
+          "ollama": {
+            "totalMs": 60.789375,
+            "loadMs": 12.440042,
+            "promptEvalCount": 26
+          }
+        },
+        {
+          "id": "q-05",
+          "inputTokens": 3053,
+          "outputTokens": 242,
+          "ms": 13010,
+          "embedMs": 76,
+          "genMs": 12934,
+          "ollama": {
+            "totalMs": 68.800125,
+            "loadMs": 14.129916,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-06",
+          "inputTokens": 3361,
+          "outputTokens": 77,
+          "ms": 20160,
+          "embedMs": 65,
+          "genMs": 20095,
+          "ollama": {
+            "totalMs": 59.525042,
+            "loadMs": 12.245417,
+            "promptEvalCount": 31
+          }
+        },
+        {
+          "id": "q-07",
+          "inputTokens": 3039,
+          "outputTokens": 29,
+          "ms": 6760,
+          "embedMs": 74,
+          "genMs": 6686,
+          "ollama": {
+            "totalMs": 67.014667,
+            "loadMs": 13.134209,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-08",
+          "inputTokens": 3209,
+          "outputTokens": 75,
+          "ms": 32937,
+          "embedMs": 70,
+          "genMs": 32867,
+          "ollama": {
+            "totalMs": 62.980041,
+            "loadMs": 11.674541,
+            "promptEvalCount": 38
+          }
+        },
+        {
+          "id": "q-09",
+          "inputTokens": 2942,
+          "outputTokens": 128,
+          "ms": 66688,
+          "embedMs": 43,
+          "genMs": 66645,
+          "ollama": {
+            "totalMs": 38.368583,
+            "loadMs": 12.282041,
+            "promptEvalCount": 20
+          }
+        },
+        {
+          "id": "q-10",
+          "inputTokens": 3270,
+          "outputTokens": 134,
+          "ms": 35893,
+          "embedMs": 78,
+          "genMs": 35814,
+          "ollama": {
+            "totalMs": 72.273,
+            "loadMs": 11.823292,
+            "promptEvalCount": 34
+          }
+        },
+        {
+          "id": "q-11",
+          "inputTokens": 3079,
+          "outputTokens": 76,
+          "ms": 20259,
+          "embedMs": 72,
+          "genMs": 20187,
+          "ollama": {
+            "totalMs": 64.938333,
+            "loadMs": 12.766041,
+            "promptEvalCount": 25
+          }
+        },
+        {
+          "id": "q-12",
+          "inputTokens": 3423,
+          "outputTokens": 64,
+          "ms": 14360,
+          "embedMs": 64,
+          "genMs": 14297,
+          "ollama": {
+            "totalMs": 60.461292,
+            "loadMs": 12.308375,
+            "promptEvalCount": 27
+          }
+        },
+        {
+          "id": "q-13",
+          "inputTokens": 3313,
+          "outputTokens": 42,
+          "ms": 16090,
+          "embedMs": 75,
+          "genMs": 16015,
+          "ollama": {
+            "totalMs": 67.529458,
+            "loadMs": 11.912625,
+            "promptEvalCount": 26
+          }
+        },
+        {
+          "id": "q-14",
+          "inputTokens": 2794,
+          "outputTokens": 45,
+          "ms": 16990,
+          "embedMs": 66,
+          "genMs": 16924,
+          "ollama": {
+            "totalMs": 60.266042,
+            "loadMs": 11.846417,
+            "promptEvalCount": 27
+          }
+        },
+        {
+          "id": "q-15",
+          "inputTokens": 3063,
+          "outputTokens": 114,
+          "ms": 8160,
+          "embedMs": 78,
+          "genMs": 8082,
+          "ollama": {
+            "totalMs": 70.057875,
+            "loadMs": 11.061375,
+            "promptEvalCount": 32
+          }
+        },
+        {
+          "id": "q-16",
+          "inputTokens": 3212,
+          "outputTokens": 68,
+          "ms": 6550,
+          "embedMs": 60,
+          "genMs": 6490,
+          "ollama": {
+            "totalMs": 54.250708,
+            "loadMs": 11.528833,
+            "promptEvalCount": 32
+          }
+        },
+        {
+          "id": "q-17",
+          "inputTokens": 3243,
+          "outputTokens": 123,
+          "ms": 22720,
+          "embedMs": 64,
+          "genMs": 22656,
+          "ollama": {
+            "totalMs": 60.158833,
+            "loadMs": 12.4485,
+            "promptEvalCount": 34
+          }
+        },
+        {
+          "id": "q-18",
+          "inputTokens": 3401,
+          "outputTokens": 109,
+          "ms": 31401,
+          "embedMs": 67,
+          "genMs": 31334,
+          "ollama": {
+            "totalMs": 61.99375,
+            "loadMs": 12.0075,
+            "promptEvalCount": 38
+          }
+        },
+        {
+          "id": "q-19",
+          "inputTokens": 3388,
+          "outputTokens": 134,
+          "ms": 8430,
+          "embedMs": 65,
+          "genMs": 8365,
+          "ollama": {
+            "totalMs": 59.552292,
+            "loadMs": 14.144375,
+            "promptEvalCount": 21
+          }
+        },
+        {
+          "id": "q-20",
+          "inputTokens": 3279,
+          "outputTokens": 52,
+          "ms": 47461,
+          "embedMs": 76,
+          "genMs": 47384,
+          "ollama": {
+            "totalMs": 69.41375,
+            "loadMs": 11.303166,
+            "promptEvalCount": 35
+          }
+        }
+      ]
+    },
+    {
+      "runAt": "2026-10-12T13:50:36.240Z",
+      "width": 4,
+      "budget": {
+        "maxBranches": 4,
+        "maxTokens": 100000,
+        "maxWallMs": 600000
+      },
+      "wallMs": 97238,
+      "sumBranchMs": 345091,
+      "inputTokens": 64198,
+      "outputTokens": 1708,
+      "costUsd": 0.018611500000000003,
+      "done": 20,
+      "failed": [],
+      "stoppedEarly": false,
+      "medianEmbedMs": 66,
+      "medianGenMs": 16310,
+      "ollamaTotalMsSum": 1464,
+      "ollamaLoadMsSum": 464,
+      "ollamaPromptEvalCountSum": 580,
+      "branches": [
+        {
+          "id": "q-01",
+          "inputTokens": 3186,
+          "outputTokens": 40,
+          "ms": 14071,
+          "embedMs": 204,
+          "genMs": 13867,
+          "ollama": {
+            "totalMs": 175.165333,
+            "loadMs": 110.411292,
+            "promptEvalCount": 21
+          }
+        },
+        {
+          "id": "q-02",
+          "inputTokens": 3239,
+          "outputTokens": 39,
+          "ms": 16292,
+          "embedMs": 141,
+          "genMs": 16151,
+          "ollama": {
+            "totalMs": 102.41175,
+            "loadMs": 66.895333,
+            "promptEvalCount": 23
+          }
+        },
+        {
+          "id": "q-03",
+          "inputTokens": 3180,
+          "outputTokens": 71,
+          "ms": 13154,
+          "embedMs": 110,
+          "genMs": 13044,
+          "ollama": {
+            "totalMs": 67.814834,
+            "loadMs": 12.478375,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-04",
+          "inputTokens": 3524,
+          "outputTokens": 46,
+          "ms": 11068,
+          "embedMs": 161,
+          "genMs": 10907,
+          "ollama": {
+            "totalMs": 137.73675,
+            "loadMs": 75.773875,
+            "promptEvalCount": 26
+          }
+        },
+        {
+          "id": "q-05",
+          "inputTokens": 3053,
+          "outputTokens": 242,
+          "ms": 31844,
+          "embedMs": 61,
+          "genMs": 31782,
+          "ollama": {
+            "totalMs": 57.857167,
+            "loadMs": 12.875833,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-06",
+          "inputTokens": 3361,
+          "outputTokens": 77,
+          "ms": 3658,
+          "embedMs": 62,
+          "genMs": 3596,
+          "ollama": {
+            "totalMs": 58.601292,
+            "loadMs": 13.074917,
+            "promptEvalCount": 31
+          }
+        },
+        {
+          "id": "q-07",
+          "inputTokens": 3039,
+          "outputTokens": 29,
+          "ms": 11039,
+          "embedMs": 65,
+          "genMs": 10974,
+          "ollama": {
+            "totalMs": 59.789709,
+            "loadMs": 13.495459,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-08",
+          "inputTokens": 3209,
+          "outputTokens": 75,
+          "ms": 24772,
+          "embedMs": 65,
+          "genMs": 24706,
+          "ollama": {
+            "totalMs": 60.707458,
+            "loadMs": 10.927792,
+            "promptEvalCount": 38
+          }
+        },
+        {
+          "id": "q-09",
+          "inputTokens": 2942,
+          "outputTokens": 128,
+          "ms": 31092,
+          "embedMs": 65,
+          "genMs": 31027,
+          "ollama": {
+            "totalMs": 59.622833,
+            "loadMs": 12.54425,
+            "promptEvalCount": 20
+          }
+        },
+        {
+          "id": "q-10",
+          "inputTokens": 3270,
+          "outputTokens": 134,
+          "ms": 16548,
+          "embedMs": 80,
+          "genMs": 16469,
+          "ollama": {
+            "totalMs": 73.703625,
+            "loadMs": 11.249166,
+            "promptEvalCount": 34
+          }
+        },
+        {
+          "id": "q-11",
+          "inputTokens": 3079,
+          "outputTokens": 76,
+          "ms": 5721,
+          "embedMs": 67,
+          "genMs": 5654,
+          "ollama": {
+            "totalMs": 60.503458,
+            "loadMs": 12.565375,
+            "promptEvalCount": 25
+          }
+        },
+        {
+          "id": "q-12",
+          "inputTokens": 3423,
+          "outputTokens": 64,
+          "ms": 28679,
+          "embedMs": 62,
+          "genMs": 28618,
+          "ollama": {
+            "totalMs": 57.17225,
+            "loadMs": 13.814208,
+            "promptEvalCount": 27
+          }
+        },
+        {
+          "id": "q-13",
+          "inputTokens": 3313,
+          "outputTokens": 42,
+          "ms": 16669,
+          "embedMs": 68,
+          "genMs": 16601,
+          "ollama": {
+            "totalMs": 62.054292,
+            "loadMs": 13.23475,
+            "promptEvalCount": 26
+          }
+        },
+        {
+          "id": "q-14",
+          "inputTokens": 2794,
+          "outputTokens": 45,
+          "ms": 8916,
+          "embedMs": 62,
+          "genMs": 8854,
+          "ollama": {
+            "totalMs": 57.863166,
+            "loadMs": 11.224708,
+            "promptEvalCount": 27
+          }
+        },
+        {
+          "id": "q-15",
+          "inputTokens": 3063,
+          "outputTokens": 114,
+          "ms": 16528,
+          "embedMs": 59,
+          "genMs": 16469,
+          "ollama": {
+            "totalMs": 54.986,
+            "loadMs": 12.609208,
+            "promptEvalCount": 32
+          }
+        },
+        {
+          "id": "q-16",
+          "inputTokens": 3212,
+          "outputTokens": 68,
+          "ms": 31030,
+          "embedMs": 73,
+          "genMs": 30957,
+          "ollama": {
+            "totalMs": 67.053625,
+            "loadMs": 13.301584,
+            "promptEvalCount": 32
+          }
+        },
+        {
+          "id": "q-17",
+          "inputTokens": 3243,
+          "outputTokens": 123,
+          "ms": 18830,
+          "embedMs": 72,
+          "genMs": 18757,
+          "ollama": {
+            "totalMs": 67.363125,
+            "loadMs": 12.378458,
+            "promptEvalCount": 34
+          }
+        },
+        {
+          "id": "q-18",
+          "inputTokens": 3401,
+          "outputTokens": 109,
+          "ms": 11430,
+          "embedMs": 72,
+          "genMs": 11358,
+          "ollama": {
+            "totalMs": 66.695708,
+            "loadMs": 11.888417,
+            "promptEvalCount": 38
+          }
+        },
+        {
+          "id": "q-19",
+          "inputTokens": 3388,
+          "outputTokens": 134,
+          "ms": 26900,
+          "embedMs": 65,
+          "genMs": 26835,
+          "ollama": {
+            "totalMs": 59.502625,
+            "loadMs": 10.668,
+            "promptEvalCount": 21
+          }
+        },
+        {
+          "id": "q-20",
+          "inputTokens": 3279,
+          "outputTokens": 52,
+          "ms": 6850,
+          "embedMs": 65,
+          "genMs": 6785,
+          "ollama": {
+            "totalMs": 57.08625,
+            "loadMs": 12.163125,
+            "promptEvalCount": 35
+          }
+        }
+      ]
+    },
+    {
+      "runAt": "2026-10-12T13:52:01.092Z",
+      "width": 8,
+      "budget": {
+        "maxBranches": 8,
+        "maxTokens": 100000,
+        "maxWallMs": 600000
+      },
+      "wallMs": 53413,
+      "sumBranchMs": 242993,
+      "inputTokens": 47675,
+      "outputTokens": 1222,
+      "costUsd": 0.01375175,
+      "done": 15,
+      "failed": [
+        "Failed after 3 attempts. Last error: AI_APICallError: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 24.0966096s.",
+        "Failed after 3 attempts. Last error: AI_APICallError: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 21.915327142s.",
+        "Failed after 3 attempts. Last error: AI_APICallError: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 21.087904748s.",
+        "Failed after 3 attempts. Last error: AI_APICallError: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 18.852903694s.",
+        "Failed after 3 attempts. Last error: AI_APICallError: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\nPlease retry in 17.239892755s."
+      ],
+      "stoppedEarly": false,
+      "medianEmbedMs": 104,
+      "medianGenMs": 13033,
+      "ollamaTotalMsSum": 1705,
+      "ollamaLoadMsSum": 864,
+      "ollamaPromptEvalCountSum": 420,
+      "branches": [
+        {
+          "id": "q-01",
+          "inputTokens": 3186,
+          "outputTokens": 40,
+          "ms": 8453,
+          "embedMs": 144,
+          "genMs": 8309,
+          "ollama": {
+            "totalMs": 90.150083,
+            "loadMs": 70.723916,
+            "promptEvalCount": 21
+          }
+        },
+        {
+          "id": "q-02",
+          "inputTokens": 3239,
+          "outputTokens": 39,
+          "ms": 13017,
+          "embedMs": 278,
+          "genMs": 12739,
+          "ollama": {
+            "totalMs": 253.482459,
+            "loadMs": 153.975292,
+            "promptEvalCount": 23
+          }
+        },
+        {
+          "id": "q-03",
+          "inputTokens": 3180,
+          "outputTokens": 71,
+          "ms": 13097,
+          "embedMs": 170,
+          "genMs": 12927,
+          "ollama": {
+            "totalMs": 145.600166,
+            "loadMs": 70.481041,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-04",
+          "inputTokens": 3524,
+          "outputTokens": 46,
+          "ms": 5770,
+          "embedMs": 142,
+          "genMs": 5628,
+          "ollama": {
+            "totalMs": 115.93475,
+            "loadMs": 70.325875,
+            "promptEvalCount": 26
+          }
+        },
+        {
+          "id": "q-05",
+          "inputTokens": 3053,
+          "outputTokens": 242,
+          "ms": 10017,
+          "embedMs": 242,
+          "genMs": 9775,
+          "ollama": {
+            "totalMs": 216.96275,
+            "loadMs": 122.279458,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-06",
+          "inputTokens": 3361,
+          "outputTokens": 77,
+          "ms": 26766,
+          "embedMs": 326,
+          "genMs": 26440,
+          "ollama": {
+            "totalMs": 300.442833,
+            "loadMs": 191.318833,
+            "promptEvalCount": 31
+          }
+        },
+        {
+          "id": "q-07",
+          "inputTokens": 3039,
+          "outputTokens": 29,
+          "ms": 13137,
+          "embedMs": 104,
+          "genMs": 13033,
+          "ollama": {
+            "totalMs": 61.085584,
+            "loadMs": 17.080459,
+            "promptEvalCount": 30
+          }
+        },
+        {
+          "id": "q-08",
+          "inputTokens": 3209,
+          "outputTokens": 75,
+          "ms": 12598,
+          "embedMs": 208,
+          "genMs": 12390,
+          "ollama": {
+            "totalMs": 182.9095,
+            "loadMs": 93.349833,
+            "promptEvalCount": 38
+          }
+        },
+        {
+          "id": "q-09",
+          "inputTokens": 2942,
+          "outputTokens": 128,
+          "ms": 24627,
+          "embedMs": 54,
+          "genMs": 24573,
+          "ollama": {
+            "totalMs": 50.3045,
+            "loadMs": 12.110834,
+            "promptEvalCount": 20
+          }
+        },
+        {
+          "id": "q-10",
+          "inputTokens": 3270,
+          "outputTokens": 134,
+          "ms": 13132,
+          "embedMs": 67,
+          "genMs": 13064,
+          "ollama": {
+            "totalMs": 62.495625,
+            "loadMs": 12.344625,
+            "promptEvalCount": 34
+          }
+        },
+        {
+          "id": "q-11",
+          "inputTokens": 3079,
+          "outputTokens": 76,
+          "ms": 13710,
+          "embedMs": 58,
+          "genMs": 13652,
+          "ollama": {
+            "totalMs": 53.409083,
+            "loadMs": 12.138083,
+            "promptEvalCount": 25
+          }
+        },
+        {
+          "id": "q-12",
+          "inputTokens": 3423,
+          "outputTokens": 64,
+          "ms": 11948,
+          "embedMs": 60,
+          "genMs": 11888,
+          "ollama": {
+            "totalMs": 55.198791,
+            "loadMs": 12.548708,
+            "promptEvalCount": 27
+          }
+        },
+        {
+          "id": "q-13",
+          "inputTokens": 3313,
+          "outputTokens": 42,
+          "ms": 17472,
+          "embedMs": 57,
+          "genMs": 17415,
+          "ollama": {
+            "totalMs": 52.65275,
+            "loadMs": 12.975792,
+            "promptEvalCount": 26
+          }
+        },
+        {
+          "id": "q-14",
+          "inputTokens": 2794,
+          "outputTokens": 45,
+          "ms": 40310,
+          "embedMs": 35,
+          "genMs": 40274,
+          "ollama": {
+            "totalMs": 31.094,
+            "loadMs": 8.13575,
+            "promptEvalCount": 27
+          }
+        },
+        {
+          "id": "q-15",
+          "inputTokens": 3063,
+          "outputTokens": 114,
+          "ms": 18939,
+          "embedMs": 37,
+          "genMs": 18902,
+          "ollama": {
+            "totalMs": 32.998583,
+            "loadMs": 4.1285,
+            "promptEvalCount": 32
+          }
+        }
+      ]
+    }
+  ]
+}
