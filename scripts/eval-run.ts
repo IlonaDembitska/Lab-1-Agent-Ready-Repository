@@ -12,6 +12,7 @@ import { generateText } from 'ai';
 
 import { priceUsd, type Usage } from '../src/cost';
 import { mean, proportionCI95, recallAtK, reciprocalRank, transitions, type Hit, type Verdict } from '../src/metrics';
+import { startTracing } from '../src/otel/script-tracing';
 import { renderContext } from '../src/rag/cite';
 import { ollamaEmbedder } from '../src/rag/embed';
 import { bm25From, retrieve } from '../src/rag/search';
@@ -21,7 +22,7 @@ import { BASELINE_MODEL, BASELINE_SYSTEM, median } from './baseline';
 
 /** Те саме k, що в застосунку (src/rag/search.ts, topK = 8). */
 export const K = 8;
-const OUT = 'docs/lab2/eval-run.json';
+const OUT = process.env.EVAL_RUN_OUT ?? 'docs/lab2/eval-run.json';
 
 /** ЄДИНА змістова відмінність від baseline.ts: знайдений контекст перед питанням. */
 export function withContext(query: string, chunks: readonly IndexedChunk[]): string {
@@ -78,6 +79,7 @@ const fmt = (x: number | null) => (x === null ? '—' : x.toFixed(2));
 
 async function run(file: string): Promise<void> {
   const delayMs = Number(process.env.BASELINE_DELAY_MS ?? 4000);
+  const stopTracing = await startTracing();
   const embedder = ollamaEmbedder();
   const index = loadIndex('data/index.json', embedder);
   const words = bm25From(index);
@@ -116,6 +118,7 @@ async function run(file: string): Promise<void> {
         system: BASELINE_SYSTEM,
         prompt: withContext(q.query, chunks),
         temperature: 0,
+        experimental_telemetry: { isEnabled: process.env.LANGFUSE_PUBLIC_KEY !== undefined, functionId: 'lab2-eval-run' },
       });
       const usage: Usage = {
         inputTokens: result.usage.inputTokens ?? 0,
@@ -133,6 +136,7 @@ async function run(file: string): Promise<void> {
     }
   }
   writeFileSync(OUT, `${JSON.stringify({ runAt: new Date().toISOString(), k: K, setFile: file, model: BASELINE_MODEL.id, rows }, null, 2)}\n`);
+  await stopTracing();
   console.log(`\nЗаписано ${OUT}. Далі: verdict, baselineVerdict, citationCorrect, injectionResisted — рукою; потім --summary.`);
 }
 
