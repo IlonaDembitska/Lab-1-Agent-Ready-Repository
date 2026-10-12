@@ -1,45 +1,446 @@
-diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
-index 093cabf..cd5bcf6 100644
---- a/.github/workflows/ci.yml
-+++ b/.github/workflows/ci.yml
-@@ -32,6 +32,9 @@ jobs:
-       - name: Юніт-тести
-         run: npm test
+diff --git a/docs/lab2/indexing.md b/docs/lab2/indexing.md
+index cf617cb..cdab4d3 100644
+--- a/docs/lab2/indexing.md
++++ b/docs/lab2/indexing.md
+@@ -9,9 +9,24 @@
+ - Межі: за порожніми рядками між пунктами ПДР (у кожному файлі один заголовок Markdown — назва розділу); задовгий шматок — за кінцем речення.
+ - Числа: максимум 1200 симв., мінімум 200 симв., перекриття 120 симв.
+ - Чому: у колекції 1029 абзаців, медіана 112 симв., 90% коротші за 304, 99% — за 529, найдовший 1113 — тобто жоден пункт не довший за максимум і не ріжеться всередині. 468 абзаців коротші за 100 симв.: це підпункти «а)», «б)» і примітки «{…}», які без свого вступу втрачають зміст — наприклад, п. 12.6 «Поза населеними пунктами… дозволяється рух із швидкістю:» і далі «б) … водії із стажем до 2 років — не більше 70 км/год». Великий фрагмент (≈ 5–10 пунктів) тримає вступ і список разом; перекриття 120 ≈ один типовий пункт — страховка, коли межа фрагмента все-таки розділяє вступ і список. Орієнтири вендорів (OpenAI 800/400 токенів, приклад Google 200/20, Anthropic «кілька сотень токенів») узято лише як орієнтир.
+-- Що вийшло: заповнюється після побудови індексу.
++- Що вийшло: фрагментів 164, довжина — медіана 1110, мін 207, макс 1246 симв. (макс > 1200, бо короткий хвіст < 200 симв. приклеюється до попереднього, якщо разом ≤ максимум + перекриття = 1320).
+ - Нормалізація тексту: BOM прибрано, CRLF→LF, пробіли в кінці рядків прибрано.
  
-+      - name: Валідатор еталонного набору
-+        run: npx tsx scripts/validate-golden.ts docs/lab2/golden/queries.jsonl
+ ## 3. Ембедінги
+ - Шлях: А — локальна Ollama · чому: $0, документи не залишають компʼютер, Ollama вже є для верифікатора (spec.md, розділ 7).
+ - Модель із тегом: embeddinggemma-2:270m · розмірність: 768.
 +
-       - name: Збірка
-         run: npm run build
- 
-diff --git a/docs/lab2/baseline.md b/docs/lab2/baseline.md
-index 956ccb4..c35ce68 100644
---- a/docs/lab2/baseline.md
-+++ b/docs/lab2/baseline.md
-@@ -43,3 +43,16 @@
- 
- ## Висновок
- Без документів модель знає загальні правила, але вигадує відповіді там, де їх немає в ПДР (0 з 3 відмов), плутає конкретні числа (q-06, q-13, q-17, q-18) і не може послатися на джерело. Це те, що має виправити пошук із цитуванням (кроки 04–05).
++## 4. Індекс
++- Де: `data/index.json` · розмір: 1,4 МБ · у git: так (щоб тести й задеплоєна функція мали індекс без моєї машини)
++- Чим шукається: косинусна схожість, повний перебір (крок 05)
++- Чому не база: 164 фрагменти × 768 вимірів — повний перебір займає мікросекунди; база додала б залежність без виграшу
++- Час побудови: 35,4 с на MacBook Air 16 ГБ · Ollama 0.40.3 · embeddinggemma-2:270m
 +
-+## Доповнення від 2026-10-05 (рядки каркаса курсу)
-+- Промпт дослівно (system): «Ти асистент із Правил дорожнього руху України. Відповідай коротко, українською. Якщо не знаєш відповіді точно, прямо скажи, що не знаєш.» User-повідомлення — лише текст запиту.
-+- Документів у контексті: 0.
-+- Повторів кожного запиту: 1.
-+- Токени (вхід / вихід, сумарно): 1360 / 1884.
-+- Виклик моделі: google(CATALOG["gemini-3.1-flash-lite"].id) — так само, як у src/agent/agent-aisdk.ts з Лаб. 1; вартість — priceUsd із src/cost.ts.
++## 5. Відтворюваність
++- Команда перебудови: `npm run index` (scripts/build-index.ts)
++- Повторний запуск (2026-10-12): ті самі 164 фрагменти, ті самі `id` і межі; максимальна різниця у векторах — 0 (побайтово однаковий індекс)
++- Що могло б бути не побайтово однаковим: останні знаки векторів при іншій версії Ollama чи моделі — тому ембедер записано в заголовок індексу, а `loadIndex` падає, якщо шукати іншим
++- Перевірки в CI: `tests/chunk.test.ts`, `tests/index.test.ts` — без мережі
 +
-+## Запити, на які модель відповіла правильно без документів
-+q-01, q-02, q-03, q-04, q-05, q-08, q-11, q-12, q-14, q-15, q-20 — на них пошук приросту за точністю не дасть; враховувати це, читаючи числа кроку 06.
++## 6. Що зберігається для цитування (вхід кроку 05)
++`id` фрагмента (`pdr-12#0003`) → `docId` + `start`/`end` (0-based зсуви в нормалізованому тексті) + шлях заголовків (назва розділу ПДР). Перевіряється тестом «кожен фрагмент розвʼязується назад у файл колекції».
+diff --git a/package.json b/package.json
+index 10c2da0..38e16bc 100644
+--- a/package.json
++++ b/package.json
+@@ -18,7 +18,8 @@
+     "doctor": "tsx scripts/doctor.ts",
+     "sync-skills": "tsx scripts/sync-skills.ts",
+     "log:import": "tsx scripts/transcript-to-jsonl.ts",
+-    "verify": "tsx scripts/verify.ts docs/lab2/verify-input.diff"
++    "verify": "tsx scripts/verify.ts docs/lab2/verify-input.diff",
++    "index": "tsx scripts/build-index.ts"
+   },
+   "dependencies": {
+     "@ai-sdk/google": "^4.0.76",
+diff --git a/scripts/build-index.ts b/scripts/build-index.ts
+new file mode 100644
+index 0000000..d79c9d5
+--- /dev/null
++++ b/scripts/build-index.ts
+@@ -0,0 +1,66 @@
++/**
++ * Побудова індексу (крок 04). Мережа (локальна Ollama) тут потрібна, тому це scripts/, а не src/.
++ *   npm run index
++ */
++import { readdirSync, readFileSync, statSync } from 'node:fs';
++import { join } from 'node:path';
++import { performance } from 'node:perf_hooks';
 +
-+## Що це число означає
-+Пошук корисний, якщо перебʼє точність 64,7% (зокрема виправить q-06, q-13, q-17, q-18) і дасть відмови на unanswerable замість вигадок (зараз 0 з 3) та цитування id документа (зараз 0%).
-diff --git a/docs/lab2/eval-set.md b/docs/lab2/eval-set.md
-index df2091f..1e516be 100644
---- a/docs/lab2/eval-set.md
-+++ b/docs/lab2/eval-set.md
-@@ -20,3 +20,5 @@ Unanswerable — питання про процедури сервісного 
- Вердикти correct / partial / wrong / refused — за правилом розділу 6 `spec.md`.
- Точність (G1) = correct / усі запити, крім unanswerable.
- Валідатор: `npx tsx scripts/validate-golden.ts` — «еталонний набір валідний».
++import { chunkDocument, normalize, RULE } from '../src/rag/chunk';
++import { ollamaEmbedder } from '../src/rag/embed';
++import { round6, saveIndex, sha256, type IndexedChunk, type IndexFile } from '../src/rag/store';
 +
-+SHA заморозки: bad4ca7 ([queries.jsonl](golden/queries.jsonl)).
++const CORPUS = 'data/pdr';
++const OUT = 'data/index.json';
++const NORMALIZATION = 'BOM прибрано, CRLF→LF, пробіли в кінці рядків прибрано';
++
++async function main(): Promise<void> {
++  const embedder = ollamaEmbedder();
++  const started = performance.now();
++  const documents: IndexFile['documents'] = [];
++  const chunks: IndexedChunk[] = [];
++
++  const files = readdirSync(CORPUS).filter((f) => /\.(md|txt)$/i.test(f)).sort();
++  if (files.length < 10) throw new Error(`у ${CORPUS}/ лише ${files.length} файлів, специфікація вимагає 10–40`);
++
++  for (const file of files) {
++    const docId = file.replace(/\.(md|txt)$/i, ''); // імʼя файлу = id зі spec.md
++    const text = normalize(readFileSync(join(CORPUS, file), 'utf8'));
++    const parts = chunkDocument(docId, text, RULE);
++    const vectors = await embedder.embedDocuments(parts.map((p) => p.text));
++    parts.forEach((part, i) => {
++      const v = vectors[i];
++      if (!v) throw new Error(`${part.id}: немає вектора`);
++      chunks.push({ ...part, vector: v.map(round6) });
++    });
++    documents.push({ id: docId, path: join(CORPUS, file), chars: text.length, sha256: sha256(text) });
++    console.log(`  ${docId}: ${text.length} симв. → ${parts.length} фрагм.`);
++  }
++
++  saveIndex(OUT, {
++    version: 1,
++    builtAt: new Date().toISOString(),
++    embedder: embedder.id,
++    dimensions: embedder.dimensions,
++    rule: RULE,
++    normalization: NORMALIZATION,
++    documents,
++    chunks,
++  });
++
++  const seconds = (performance.now() - started) / 1000;
++  const lengths = chunks.map((c) => c.text.length).sort((a, b) => a - b);
++  console.log(`
++документів:    ${documents.length}
++фрагментів:    ${chunks.length}
++довжина:       медіана ${lengths[Math.floor(lengths.length / 2)] ?? 0}, мін ${lengths[0] ?? 0}, макс ${lengths[lengths.length - 1] ?? 0} симв.
++ембедер:       ${embedder.id}, ${embedder.dimensions} вимірів
++${OUT}:        ${(statSync(OUT).size / 1024 / 1024).toFixed(1)} МБ
++час побудови:  ${seconds.toFixed(1)} с
++`);
++}
++
++main().catch((err: unknown) => {
++  console.error(err instanceof Error ? err.message : err);
++  process.exit(1);
++});
+diff --git a/src/rag/chunk.ts b/src/rag/chunk.ts
+new file mode 100644
+index 0000000..b4b7f67
+--- /dev/null
++++ b/src/rag/chunk.ts
+@@ -0,0 +1,120 @@
++/**
++ * ФРАГМЕНТАЦІЯ (крок 04). Чиста функція: без мережі, без файлової системи.
++ * Правило — docs/lab2/indexing.md, розділ 2: межі за порожніми рядками між пунктами ПДР,
++ * задовгий шматок — за кінцем речення; короткі огризки приклеюємо до попереднього.
++ * Інваріант, від якого залежить цитування на кроці 05:
++ *   chunk.text === normalize(raw).slice(chunk.start, chunk.end)
++ */
++export interface ChunkRule {
++  /** Цільовий максимум фрагмента в символах. */
++  readonly maxChars: number;
++  /** Коротший фрагмент приклеюємо до попереднього. */
++  readonly minChars: number;
++  /** Перекриття сусідніх фрагментів у символах. */
++  readonly overlapChars: number;
++}
++
++/** Обґрунтування — docs/lab2/indexing.md, розділ 2. */
++export const RULE: ChunkRule = { maxChars: 1200, minChars: 200, overlapChars: 120 };
++
++export interface Chunk {
++  /** pdr-12#0007 — стабільний: залежить лише від id документа і порядку. */
++  readonly id: string;
++  readonly docId: string;
++  /** Шлях заголовків: «12. ШВИДКІСТЬ РУХУ». Порожній, якщо заголовків немає. */
++  readonly heading: string;
++  /** 0-based зсув у НОРМАЛІЗОВАНОМУ тексті документа. */
++  readonly start: number;
++  /** Виключно: text === normalized.slice(start, end). */
++  readonly end: number;
++  readonly text: string;
++}
++
++/** Нормалізація — частина індексу. Змінили її — перебудуйте індекс. */
++export function normalize(raw: string): string {
++  return raw.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '');
++}
++
++interface Span {
++  start: number;
++  end: number;
++}
++
++/** Розділи між рядками-заголовками. Заголовок лишається ВСЕРЕДИНІ розділу. */
++function sections(text: string): { heading: string; span: Span }[] {
++  const out: { heading: string; span: Span }[] = [];
++  const path: string[] = [];
++  let current = { heading: '', start: 0 };
++  let offset = 0;
++  for (const line of text.split('\n')) {
++    const m = /^(#{1,6})\s+(.+)$/.exec(line);
++    if (m) {
++      if (offset > current.start) out.push({ heading: current.heading, span: { start: current.start, end: offset } });
++      const level = (m[1] ?? '#').length;
++      path.length = level - 1;
++      path[level - 1] = (m[2] ?? '').trim();
++      current = { heading: path.filter(Boolean).join(' › '), start: offset };
++    }
++    offset += line.length + 1; // +1 — це '\n'
++  }
++  out.push({ heading: current.heading, span: { start: current.start, end: text.length } });
++  return out.filter((s) => text.slice(s.span.start, s.span.end).trim() !== '');
++}
++
++/** Остання межа у вікні — але лише в його другій половині. */
++function lastBoundary(window: string, re: RegExp): number | null {
++  let found: number | null = null;
++  for (const m of window.matchAll(re)) found = (m.index ?? 0) + (m[0] ?? '').length;
++  return found !== null && found > window.length / 2 ? found : null;
++}
++
++function split(text: string, span: Span, rule: ChunkRule): Span[] {
++  const pieces: Span[] = [];
++  let start = span.start;
++  while (span.end - start > rule.maxChars) {
++    const window = text.slice(start, start + rule.maxChars);
++    const cut =
++      lastBoundary(window, /\n{2,}/g) ?? // 1. порожній рядок (межа пункту ПДР)
++      lastBoundary(window, /[.!?…»]\s/g) ?? // 2. кінець речення
++      lastBoundary(window, /\s/g) ?? // 3. хоч пробіл
++      rule.maxChars; // 4. різати всередині слова
++    const end = start + cut;
++    pieces.push({ start, end });
++    // перекриття: відступаємо назад і виходимо на межу слова
++    const back = Math.max(end - rule.overlapChars, start + 1);
++    const ws = text.slice(back, end).search(/\s/);
++    start = ws > 0 ? back + ws + 1 : back;
++  }
++  pieces.push({ start, end: span.end });
++  return pieces;
++}
++
++export function chunkDocument(docId: string, raw: string, rule: ChunkRule = RULE): Chunk[] {
++  const text = normalize(raw);
++  const parts: { heading: string; span: Span }[] = [];
++  for (const section of sections(text)) {
++    for (const span of split(text, section.span, rule)) parts.push({ heading: section.heading, span });
++  }
++
++  // огризки коротші за minChars приклеюємо до попереднього фрагмента того ж розділу
++  const merged: { heading: string; span: Span }[] = [];
++  for (const part of parts) {
++    const prev = merged[merged.length - 1];
++    const short = part.span.end - part.span.start < rule.minChars;
++    const fits = prev !== undefined && part.span.end - prev.span.start <= rule.maxChars + rule.overlapChars;
++    if (prev !== undefined && short && fits && prev.heading === part.heading) {
++      merged[merged.length - 1] = { heading: prev.heading, span: { start: prev.span.start, end: part.span.end } };
++    } else {
++      merged.push(part);
++    }
++  }
++
++  return merged.map((part, i) => ({
++    id: `${docId}#${String(i).padStart(4, '0')}`,
++    docId,
++    heading: part.heading,
++    start: part.span.start,
++    end: part.span.end,
++    text: text.slice(part.span.start, part.span.end),
++  }));
++}
+diff --git a/src/rag/embed.ts b/src/rag/embed.ts
+new file mode 100644
+index 0000000..09f68de
+--- /dev/null
++++ b/src/rag/embed.ts
+@@ -0,0 +1,73 @@
++/**
++ * ЕМБЕДІНГИ (крок 04): локальна Ollama (шлях А) і підробка для тестів.
++ * Індексатор не знає, хто рахує вектори, — він знає лише цей інтерфейс.
++ */
++export interface Embedder {
++  /** Те, що піде в заголовок індексу: 'ollama:embeddinggemma-2:270m'. */
++  readonly id: string;
++  readonly dimensions: number;
++  embedDocuments(texts: readonly string[]): Promise<number[][]>;
++  embedQuery(text: string): Promise<number[]>;
++}
++
++export function ollamaEmbedder(model = 'embeddinggemma-2:270m', dimensions = 768): Embedder {
++  const base = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434';
++
++  const call = async (input: readonly string[]): Promise<number[][]> => {
++    const res = await fetch(`${base}/api/embed`, {
++      method: 'POST',
++      headers: { 'content-type': 'application/json' },
++      // truncate типово true — задовгий вхід обрізався б МОВЧКИ. Нам потрібне падіння.
++      body: JSON.stringify({ model, input, dimensions, truncate: false }),
++    });
++    if (!res.ok) throw new Error(`/api/embed ${res.status}: ${await res.text()}`);
++    const data: unknown = await res.json();
++    const vectors = (data as { embeddings?: unknown }).embeddings;
++    if (!Array.isArray(vectors) || vectors.length !== input.length) {
++      throw new Error(`/api/embed: очікував ${input.length} векторів, прийшло інше`);
++    }
++    for (const v of vectors as number[][]) {
++      if (v.length !== dimensions) throw new Error(`/api/embed: розмірність ${v.length}, очікував ${dimensions}`);
++    }
++    return vectors as number[][];
++  };
++
++  return {
++    id: `ollama:${model}`,
++    dimensions,
++    embedDocuments: call,
++    embedQuery: async (text) => {
++      const [v] = await call([text]);
++      if (!v) throw new Error('/api/embed: порожня відповідь');
++      return v;
++    },
++  };
++}
++
++/**
++ * Підробка для тестів: детерміновано, без мережі. Схожість — збіг слів, а не сенсу.
++ * Це НЕ модель: це спосіб перевірити механіку індексу й пошуку в CI.
++ */
++export function fakeEmbedder(dimensions = 64): Embedder {
++  const vector = (text: string): number[] => {
++    const v = new Array<number>(dimensions).fill(0);
++    for (const word of text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []) {
++      let h = 2166136261; // FNV-1a
++      for (let i = 0; i < word.length; i += 1) {
++        h ^= word.charCodeAt(i);
++        h = Math.imul(h, 16777619);
++      }
++      const idx = Math.abs(h) % dimensions;
++      v[idx] = (v[idx] ?? 0) + 1;
++    }
++    const norm = Math.hypot(...v) || 1;
++    return v.map((x) => x / norm);
++  };
++
++  return {
++    id: `fake:fnv@${dimensions}`,
++    dimensions,
++    embedDocuments: async (texts) => texts.map(vector),
++    embedQuery: async (text) => vector(text),
++  };
++}
+diff --git a/src/rag/store.ts b/src/rag/store.ts
+new file mode 100644
+index 0000000..c14b8b9
+--- /dev/null
++++ b/src/rag/store.ts
+@@ -0,0 +1,41 @@
++import { createHash } from 'node:crypto';
++import { readFileSync, writeFileSync } from 'node:fs';
++
++import type { Chunk, ChunkRule } from './chunk';
++import type { Embedder } from './embed';
++
++export interface IndexedChunk extends Chunk {
++  readonly vector: number[];
++}
++
++export interface IndexFile {
++  readonly version: 1;
++  readonly builtAt: string;
++  readonly embedder: string;
++  readonly dimensions: number;
++  readonly rule: ChunkRule;
++  /** Словами: що саме робить normalize(). Змінилося — індекс недійсний. */
++  readonly normalization: string;
++  readonly documents: { readonly id: string; readonly path: string; readonly chars: number; readonly sha256: string }[];
++  readonly chunks: IndexedChunk[];
++}
++
++export const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex').slice(0, 16);
++
++/** 6 знаків після коми: точності для косинуса вистачає, а файл менший у рази. */
++export const round6 = (x: number): number => Math.round(x * 1e6) / 1e6;
++
++export function saveIndex(path: string, index: IndexFile): void {
++  writeFileSync(path, `${JSON.stringify(index)}\n`, 'utf8');
++}
++
++export function loadIndex(path: string, embedder: Embedder): IndexFile {
++  const index = JSON.parse(readFileSync(path, 'utf8')) as IndexFile;
++  if (index.embedder !== embedder.id) {
++    throw new Error(`індекс зібрано ембедером ${index.embedder}, а шукаєте ви ${embedder.id} — перебудуйте: npm run index`);
++  }
++  if (index.dimensions !== embedder.dimensions) {
++    throw new Error(`розмірність індексу ${index.dimensions}, ембедера ${embedder.dimensions}`);
++  }
++  return index;
++}
+diff --git a/tests/chunk.test.ts b/tests/chunk.test.ts
+new file mode 100644
+index 0000000..12f6328
+--- /dev/null
++++ b/tests/chunk.test.ts
+@@ -0,0 +1,32 @@
++import { describe, expect, it } from 'vitest';
++
++import { chunkDocument, normalize, RULE } from '../src/rag/chunk';
++
++const doc = `# Інструкція\n\n## Розділ 1\n${'А'.repeat(900)}\n\n${'Б'.repeat(900)}\n\n## Розділ 2\nКоротко.\n`;
++
++describe('chunkDocument', () => {
++  it('тримає інваріант зсувів', () => {
++    const text = normalize(doc);
++    for (const c of chunkDocument('doc-01', doc)) {
++      expect(c.text).toBe(text.slice(c.start, c.end));
++    }
++  });
++
++  it('не перевищує максимум', () => {
++    for (const c of chunkDocument('doc-01', doc)) {
++      expect(c.end - c.start).toBeLessThanOrEqual(RULE.maxChars);
++    }
++  });
++
++  it('веде шлях заголовків', () => {
++    const headings = chunkDocument('doc-01', doc).map((c) => c.heading);
++    expect(headings).toContain('Інструкція › Розділ 1');
++    expect(headings).toContain('Інструкція › Розділ 2');
++  });
++
++  it('детермінований: ті самі id на тому самому вході', () => {
++    const a = chunkDocument('doc-01', doc).map((c) => c.id);
++    const b = chunkDocument('doc-01', doc).map((c) => c.id);
++    expect(a).toEqual(b);
++  });
++});
+diff --git a/tests/index.test.ts b/tests/index.test.ts
+new file mode 100644
+index 0000000..7b4497a
+--- /dev/null
++++ b/tests/index.test.ts
+@@ -0,0 +1,34 @@
++import { readFileSync } from 'node:fs';
++
++import { describe, expect, it } from 'vitest';
++
++import { normalize } from '../src/rag/chunk';
++import { sha256, type IndexFile } from '../src/rag/store';
++
++const index = JSON.parse(readFileSync('data/index.json', 'utf8')) as IndexFile;
++
++describe('data/index.json', () => {
++  it('має 10–40 документів', () => {
++    expect(index.documents.length).toBeGreaterThanOrEqual(10);
++    expect(index.documents.length).toBeLessThanOrEqual(40);
++  });
++
++  it('усі вектори однакової розмірності', () => {
++    for (const c of index.chunks) expect(c.vector.length).toBe(index.dimensions);
++  });
++
++  it('кожен фрагмент розвʼязується назад у файл колекції', () => {
++    const texts = new Map(index.documents.map((d) => [d.id, normalize(readFileSync(d.path, 'utf8'))]));
++    for (const c of index.chunks) {
++      const text = texts.get(c.docId);
++      expect(text, `немає документа ${c.docId}`).toBeDefined();
++      expect((text ?? '').slice(c.start, c.end)).toBe(c.text);
++    }
++  });
++
++  it('документи не змінювалися після побудови індексу', () => {
++    for (const d of index.documents) {
++      expect(sha256(normalize(readFileSync(d.path, 'utf8'))), `${d.id} змінився — npm run index`).toBe(d.sha256);
++    }
++  });
++});
