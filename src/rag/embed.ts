@@ -11,7 +11,9 @@ export interface Embedder {
 }
 
 export function ollamaEmbedder(model = 'embeddinggemma-2:270m', dimensions = 768): Embedder {
-  const base = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434';
+  const envBase = process.env.OLLAMA_BASE_URL;
+  // у .env.local змінна може бути порожньою — тоді беремо адресу за замовчуванням
+  const base = envBase !== undefined && envBase !== '' ? envBase : 'http://localhost:11434';
 
   const call = async (input: readonly string[]): Promise<number[][]> => {
     const res = await fetch(`${base}/api/embed`, {
