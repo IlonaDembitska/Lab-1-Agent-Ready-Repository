@@ -48,7 +48,7 @@
 | 08 підготовка | [9fb3550](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/9fb3550) |
 
 ## 4. CI
-- Прогони на main: [Actions](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions?query=branch%3Amain) — посилання на конкретний зелений прогін перед поданням: ДОДАТИ
+- Зелений прогін CI на main: [CI #67, коміт faa05a4](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/38312098563); усі прогони — [Actions](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions?query=branch%3Amain)
 - Тести без мережі й ключів:  тестів, зокрема validate-golden, verify (схема), chunk, index, rag, answer, metrics, eval-run, parallel-eval
 
 ## 5. Інструменти й моделі
@@ -74,3 +74,6 @@
 7. Паралельність: npx tsx --env-file=.env.local scripts/parallel-eval.ts 4.
 8. Брама: git diff main...HEAD > docs/lab2/verify-input.diff; npm run verify.
 9. MCP-сервер: після заняття 08.
+
+## 7. Відтворюваність із чистого клону (перевірено 2026-10-13)
+git clone репозиторію в /tmp/clean-clone (коміт faa05a4): .env.local у клоні немає; npm test — 143 тести в 18 файлах зелені без ключів і без Ollama; typecheck, lint, валідатор набору — OK. Повне встановлення з нуля щоразу виконує CI (посилання вище).
