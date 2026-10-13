@@ -26,6 +26,7 @@
     "@ai-sdk/openai-compatible": "^3.0.53",
     "@langfuse/otel": "^5.11.1",
     "@langfuse/vercel-ai-sdk": "^5.11.1",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@opentelemetry/sdk-node": "^0.222.0",
     "ai": "^7.0.107",
     "next": "^16.3.4",
