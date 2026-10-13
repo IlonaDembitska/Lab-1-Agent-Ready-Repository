@@ -30,3 +30,15 @@ describe('chunkDocument', () => {
     expect(a).toEqual(b);
   });
 });
+
+describe('правило v2: межа перед новим пунктом ПДР', () => {
+  const doc = `${'А'.repeat(500)}\n\n12.1. ${'Б'.repeat(300)}:\n\nа) ${'В'.repeat(300)}\n\nб) ${'Г'.repeat(300)}\n\n12.2. ${'Д'.repeat(200)}\n`;
+  it('пункт разом із підпунктами потрапляє в один фрагмент', () => {
+    const chunks = chunkDocument('doc-01', doc);
+    expect(chunks.some((c) => c.text.includes('12.1.') && c.text.includes('б)'))).toBe(true);
+  });
+  it('інваріант зсувів тримається', () => {
+    const text = normalize(doc);
+    for (const c of chunkDocument('doc-01', doc)) expect(c.text).toBe(text.slice(c.start, c.end));
+  });
+});

@@ -68,12 +68,23 @@ function lastBoundary(window: string, re: RegExp): number | null {
   return found !== null && found > window.length / 2 ? found : null;
 }
 
+/** Правило v2: остання межа ПЕРЕД НОВИМ ПУНКТОМ ПДР («NN.NN.»), якщо до неї щонайменше minChars символів. */
+function lastPointBoundary(window: string, minChars: number): number | null {
+  let found: number | null = null;
+  for (const m of window.matchAll(/\n{2,}(?=\d+\.\d+\.)/g)) {
+    const at = (m.index ?? 0) + (m[0] ?? '').length;
+    if (at >= minChars) found = at;
+  }
+  return found;
+}
+
 function split(text: string, span: Span, rule: ChunkRule): Span[] {
   const pieces: Span[] = [];
   let start = span.start;
   while (span.end - start > rule.maxChars) {
     const window = text.slice(start, start + rule.maxChars);
     const cut =
+      lastPointBoundary(window, rule.minChars) ?? // 0. перед новим пунктом ПДР (правило v2)
       lastBoundary(window, /\n{2,}/g) ?? // 1. порожній рядок (межа пункту ПДР)
       lastBoundary(window, /[.!?…»]\s/g) ?? // 2. кінець речення
       lastBoundary(window, /\s/g) ?? // 3. хоч пробіл
