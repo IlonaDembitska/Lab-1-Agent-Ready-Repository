@@ -17,6 +17,15 @@
     "context7": {
       "type": "remote",
       "url": "https://mcp.context7.com/mcp"
+    },
+    "pdr-search": {
+      "type": "local",
+      "command": [
+        "npx",
+        "tsx",
+        "scripts/mcp-server.ts"
+      ],
+      "enabled": true
     }
   }
 }

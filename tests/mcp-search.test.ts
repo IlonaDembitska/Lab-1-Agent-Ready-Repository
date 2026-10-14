@@ -95,3 +95,18 @@ describe('MCP-протокол (клієнт ↔ сервер у памʼяті)
     expect(r.isError).toBe(true);
   });
 });
+
+describe('виклик без k (так викликає застосунок, крок 09)', () => {
+  it('сервер підставляє типове k = 5 і повертає не більше 5 фрагментів', async () => {
+    const server = createPdrServer(await deps());
+    const [clientT, serverT] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'test', version: '1.0.0' });
+    await Promise.all([server.connect(serverT), client.connect(clientT)]);
+    const r = await client.callTool({ name: 'search_pdr', arguments: { query: 'дальнє світло' } });
+    expect(r.isError).toBeFalsy();
+    const text = (r.content as { text: string }[])[0]?.text ?? '[]';
+    const fragments = JSON.parse(text) as unknown[];
+    expect(fragments.length).toBeGreaterThan(0);
+    expect(fragments.length).toBeLessThanOrEqual(5);
+  });
+});
