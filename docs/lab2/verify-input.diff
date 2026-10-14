@@ -1,183 +1,37 @@
-diff --git a/package.json b/package.json
-index 38e16bc..a122321 100644
---- a/package.json
-+++ b/package.json
-@@ -26,6 +26,7 @@
-     "@ai-sdk/openai-compatible": "^3.0.53",
-     "@langfuse/otel": "^5.11.1",
-     "@langfuse/vercel-ai-sdk": "^5.11.1",
-+    "@modelcontextprotocol/sdk": "^1.32.1",
-     "@opentelemetry/sdk-node": "^0.222.0",
-     "ai": "^7.0.107",
-     "next": "^16.3.4",
-diff --git a/scripts/mcp-server.ts b/scripts/mcp-server.ts
+diff --git a/docs/lab2/mcp-integration.md b/docs/lab2/mcp-integration.md
 new file mode 100644
-index 0000000..f2d9526
+index 0000000..31046ba
 --- /dev/null
-+++ b/scripts/mcp-server.ts
-@@ -0,0 +1,26 @@
-+/**
-+ * Запуск MCP-сервера через stdio (крок 08). Запускає клієнт (OpenCode, чат), а не людина:
-+ *   npx tsx scripts/mcp-server.ts
-+ * У stdout іде протокол — тому діагностика лише в stderr (console.error).
-+ */
-+import { fileURLToPath } from 'node:url';
++++ b/docs/lab2/mcp-integration.md
+@@ -0,0 +1,31 @@
++# Підключення MCP-сервера pdr-search (крок 09)
 +
-+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
++Сервер і його межі — mcp-spec.md. Обидва підключення локальні (stdio; потрібна Ollama). Ключів у конфігураціях немає: ключ Gemini лише в .env.local (поза git).
 +
-+import { createPdrServer } from '../src/mcp/server';
-+import { ollamaEmbedder } from '../src/rag/embed';
-+import { bm25From } from '../src/rag/search';
-+import { loadIndex } from '../src/rag/store';
++## 1. Агент кодування — OpenCode 1.18.34
++- Конфігурація: opencode.json, блок mcp → "pdr-search": { type: "local", command: ["npx", "tsx", "scripts/mcp-server.ts"], enabled: true }.
++- Перевірка: opencode mcp list → «✓ pdr-search connected» (поруч ✓ context7).
++- Виклик (2026-10-14, сесія ses_ec69024b2ffeLbph0e4Frv0hAF, модель Big Pickle): інструмент pdr-search_search_pdr, вхід { query: "максимальна швидкість поза населеним пунктом водій зі стажем до 2 років", k: 5 }, статус completed; відповідь агента «70 км/год (pdr-12#0001, п. 12.6 б)», 15,4 с.
++- Доказ: traces/mcp-opencode-session.json (експорт сесії: інструмент, вхід, статус, вихід).
++- Перша спроба (сесія ses_ec69d45…): два паралельні виклики завершились «Tool execution aborted» (interrupted) — OpenCode закрили через ~11 с, поки виконувався перший виклик (холодний старт: запуск сервера через npx tsx + завантаження індексу й моделі Ollama).
 +
-+async function main(): Promise<void> {
-+  const embedder = ollamaEmbedder();
-+  const index = loadIndex(fileURLToPath(new URL('../data/index.json', import.meta.url)), embedder);
-+  const server = createPdrServer({ index, words: bm25From(index), embedder });
-+  await server.connect(new StdioServerTransport());
-+  console.error(`pdr-search MCP: ${index.chunks.length} фрагментів, транспорт stdio`);
-+}
++## 2. Застосунок — чат Next.js, маршрут app/api/pdr
++- Клієнт: @ai-sdk/mcp 2.0.74 — createMCPClient + Experimental_StdioMCPTransport (npx tsx scripts/mcp-server.ts); інструменти сервера передаються в ToolLoopAgent (gemini-3.1-flash-lite, stopWhen isStepCount(5)); телеметрія Langfuse — functionId lab2-pdr-chat. Клієнт створюється на кожен запит і закривається після відповіді.
++- Виклик (2026-10-14): POST /api/pdr «Яка максимальна швидкість поза населеним пунктом для водія зі стажем до 2 років?» → toolCalls [{ tool: "search_pdr", input: { query: "максимальна швидкість водій стаж до 2 років поза населеним пунктом" } }]; відповідь «Для водіїв зі стажем до 2 років максимальна швидкість руху поза населеними пунктами становить не більше 70 км/год [pdr-12#0001]»; токени 2797 / 80.
++- Доказ: traces/mcp-app-call.json (відповідь API разом зі списком викликів інструментів); траса — Langfuse, functionId lab2-pdr-chat.
++- На Vercel маршрут повертає 503 «лише локально»: задеплоєна функція не може запустити процес сервера й не має Ollama.
 +
-+main().catch((err: unknown) => {
-+  console.error(err instanceof Error ? err.message : err);
-+  process.exit(1);
-+});
-diff --git a/scripts/mcp-smoke.ts b/scripts/mcp-smoke.ts
-new file mode 100644
-index 0000000..45c38c2
---- /dev/null
-+++ b/scripts/mcp-smoke.ts
-@@ -0,0 +1,32 @@
-+/**
-+ * Перевірка MCP-сервера наживо (крок 08): клієнт запускає scripts/mcp-server.ts як процес через stdio,
-+ * отримує список інструментів і викликає search_pdr. Потрібна локальна Ollama.
-+ *   npx tsx scripts/mcp-smoke.ts
-+ */
-+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
++## 3. Що відрізнялося між підключеннями
++| | OpenCode | Застосунок (чат Next.js) |
++|---|---|---|
++| Назва інструмента для моделі | pdr-search_search_pdr (OpenCode додає назву сервера) | search_pdr |
++| Хто й коли запускає сервер | OpenCode — під час старту сесії | маршрут — на кожен запит, потім закриває |
++| Аргументи від моделі | query і k = 5 (у першій спробі — лише query) | лише query — спрацювало типове k = 5 |
++| Модель | Big Pickle (OpenCode Zen) | gemini-3.1-flash-lite |
++| Де ключі | у конфігурації немає | GOOGLE_GENERATIVE_AI_API_KEY з .env.local (Next.js читає сам) |
 +
-+async function main(): Promise<void> {
-+  const transport = new StdioClientTransport({ command: 'npx', args: ['tsx', 'scripts/mcp-server.ts'] });
-+  const client = new Client({ name: 'smoke', version: '1.0.0' });
-+  await client.connect(transport);
-+  const { tools } = await client.listTools();
-+  console.log('інструменти сервера:', tools.map((t) => t.name).join(', '));
-+  const ok = await client.callTool({
-+    name: 'search_pdr',
-+    arguments: { query: 'Яка максимальна швидкість поза населеним пунктом для водія-новачка?', k: 2 },
-+  });
-+  console.log('\nsearch_pdr(q-01, k=2) → isError:', ok.isError ?? false);
-+  console.log(JSON.stringify(ok.content).slice(0, 500));
-+  const bad = await client
-+    .callTool({ name: 'search_pdr', arguments: { query: 'світло', k: 10000 } })
-+    .catch((e: unknown) => ({ isError: true, content: [{ type: 'text', text: String(e) }] }));
-+  console.log('\nsearch_pdr(k=10000) → isError:', bad.isError ?? false);
-+  console.log(JSON.stringify(bad.content).slice(0, 300));
-+  await client.close();
-+}
-+
-+main().catch((err: unknown) => {
-+  console.error(err instanceof Error ? err.message : err);
-+  process.exit(1);
-+});
-diff --git a/src/mcp/search-pdr.ts b/src/mcp/search-pdr.ts
-new file mode 100644
-index 0000000..b306d32
---- /dev/null
-+++ b/src/mcp/search-pdr.ts
-@@ -0,0 +1,67 @@
-+/**
-+ * Інструмент search_pdr (крок 08) — чиста логіка без мережі й без SDK.
-+ * Контракт і межі — docs/lab2/mcp-spec.md. Змінюється поведінка — спершу змінюється mcp-spec.md.
-+ */
-+import { z } from 'zod';
-+
-+import type { Bm25Index } from '../rag/bm25';
-+import type { Embedder } from '../rag/embed';
-+import { retrieve } from '../rag/search';
-+import type { IndexFile } from '../rag/store';
-+
-+export const LIMITS = { maxK: 5, maxQueryChars: 300 } as const;
-+
-+const kMessage = `k має бути від 1 до ${LIMITS.maxK}`;
-+
-+/** Поля входу: ту саму форму отримує і MCP SDK (inputSchema), і строга схема нижче. */
-+export const searchPdrShape = {
-+  query: z
-+    .string()
-+    .trim()
-+    .min(1, 'query не може бути порожнім')
-+    .max(LIMITS.maxQueryChars, `query має бути не довшим за ${LIMITS.maxQueryChars} символів`),
-+  k: z.number().int(kMessage).min(1, kMessage).max(LIMITS.maxK, kMessage).default(LIMITS.maxK),
-+};
-+
-+/** Строга схема: будь-яке зайве поле (наприклад path) — відмова. */
-+export const searchPdrInput = z.object(searchPdrShape).strict();
-+
-+export interface Fragment {
-+  readonly chunkId: string;
-+  readonly docId: string;
-+  readonly heading: string;
-+  readonly start: number;
-+  readonly end: number;
-+  readonly text: string;
-+}
-+
-+export type SearchResult = { ok: true; fragments: Fragment[] } | { ok: false; error: string };
-+
-+export interface SearchDeps {
-+  readonly index: IndexFile;
-+  readonly words: Bm25Index;
-+  readonly embedder: Embedder;
-+}
-+
-+export async function searchPdr(raw: unknown, deps: SearchDeps): Promise<SearchResult> {
-+  const parsed = searchPdrInput.safeParse(raw);
-+  if (!parsed.success) {
-+    return { ok: false, error: parsed.error.issues.map((i) => i.message).join('; ') };
-+  }
-+  try {
-+    const { hits } = await retrieve(deps.index, deps.words, deps.embedder, parsed.data.query, parsed.data.k);
-+    return {
-+      ok: true,
-+      fragments: hits.slice(0, parsed.data.k).map(({ chunk }) => ({
-+        chunkId: chunk.id,
-+        docId: chunk.docId,
-+        heading: chunk.heading,
-+        start: chunk.start,
-+        end: chunk.end,
-+        text: chunk.text,
-+      })),
-+    };
-+  } catch (err) {
-+    return { ok: false, error: `пошук недоступний: ${err instanceof Error ? err.message : String(err)}` };
-+  }
-+}
-diff --git a/src/mcp/server.ts b/src/mcp/server.ts
-new file mode 100644
-index 0000000..23dcb31
---- /dev/null
-+++ b/src/mcp/server.ts
-@@ -0,0 +1,22 @@
-+/** MCP-сервер (крок 08): реєструє search_pdr у SDK. Без вводу-виводу — транспорт підключає викликач. */
-+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-+
-+import { LIMITS, searchPdr, searchPdrShape, type SearchDeps } from './search-pdr';
-+
-+export function createPdrServer(deps: SearchDeps): McpServer {
-+  const server = new McpServer({ name: 'pdr-search', version: '1.0.0' });
-+  server.registerTool(
-+    'search_pdr',
-+    {
-+      title: 'Пошук по ПДР України',
-+      description: `Гібридний пошук по Правилах дорожнього руху України (редакція 09.04.2026). Повертає до ${LIMITS.maxK} фрагментів із chunkId для цитування у форматі [pdr-12#0001]. Лише читання, без мовної моделі.`,
-+      inputSchema: searchPdrShape,
-+    },
-+    async (args) => {
-+      const result = await searchPdr(args, deps);
-+      if (!result.ok) return { isError: true, content: [{ type: 'text' as const, text: result.error }] };
-+      return { content: [{ type: 'text' as const, text: JSON.stringify(result.fragments, null, 2) }] };
-+    },
-+  );
-+  return server;
-+}
++## 4. Що довелося змінити в сервері й навколо
++- scripts/mcp-server.ts: шлях до data/index.json — через import.meta.url, а не відносно поточної теки: сервер запускають різні клієнти з різних тек, а в режимі ESM змінної __dirname немає (сервер падав з «__dirname is not defined» при першому запуску окремим процесом).
++- tests/mcp-search.test.ts: додано тест на виклик без k — так викликає застосунок, а попередні тести завжди передавали k.
++- app/api/pdr/route.ts: явне приведення інструментів @ai-sdk/mcp до ToolSet — пакети по-різному описують тип схеми в режимі exactOptionalPropertyTypes (формат інструментів той самий).
++- Холодний старт першого виклику ~10+ с — клієнтові треба дочекатися відповіді (у першій спробі OpenCode закрили раніше).
