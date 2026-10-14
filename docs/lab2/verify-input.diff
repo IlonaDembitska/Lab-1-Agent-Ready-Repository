@@ -1,29 +1,183 @@
-diff --git a/docs/lab2/autonomy-log.md b/docs/lab2/autonomy-log.md
-index 79a51a6..804111b 100644
---- a/docs/lab2/autonomy-log.md
-+++ b/docs/lab2/autonomy-log.md
-@@ -199,7 +199,7 @@
- | Режим дозволів | агент без доступу до репозиторію — лише чат; команди запускала я |
- | Рівень довіри (L0–L5) | L1 — агент пропонує зміни, я ухвалюю, запускаю й ставлю вердикти |
- | Задача | спроба виправлення помилки №1 (indexing, п. 12.6) з eval-report.md і вимір на всьому наборі |
--| Що агент запропонував | правило нарізки v2 — розріз спершу перед новим пунктом ПДР (записано в indexing.md до коду), lastPointBoundary у chunk.ts, 2 тести; повторний прогін тією самою методикою в окремий файл eval-run-v2.json |
-+| Що агент запропонував | правило нарізки v2 — розріз спершу перед новим пунктом ПДР (мало бути записане в indexing.md до коду, але команда з ним не виконалась через незакриту лапку; розділ 7 дописано після коду з поміткою про порушення порядку), lastPointBoundary у chunk.ts, 2 тести; повторний прогін тією самою методикою в окремий файл eval-run-v2.json |
- | Що агент виконав | нічого в репозиторії — лише відповіді в чаті |
- | Де і чому ви втрутилися | обрала саме цей напрям (а не MCP наперед); затвердила вердикти v2, зокрема q-06 = wrong (90 км/год замість 80 для групи дітей); команди двічі зупинялись на quote>/dquote> — переписали через файли-скрипти; через це коміти 77e9454 і eac06c7 зроблено на main локально — брама пройдена до push |
- | Які докази прийняли | п. 12.6 цілий у pdr-12#0001; q-01: RRF 11 → 2, refused → correct; q-08: RRF 10 — друга причина (injection у BM25) лишилась; точність 11/17 і в v1, і в v2 (q-01 ↑, q-16 ↓, q-06 → wrong); recall@8 0,94 → 0,97, MRR 0,82 → 0,78; 145 тестів; брама — 2 частини, коди 0; A4 pass на eac06c7 — хибний |
-diff --git a/docs/lab2/indexing.md b/docs/lab2/indexing.md
-index cdab4d3..7f30224 100644
---- a/docs/lab2/indexing.md
-+++ b/docs/lab2/indexing.md
-@@ -30,3 +30,11 @@
- 
- ## 6. Що зберігається для цитування (вхід кроку 05)
- `id` фрагмента (`pdr-12#0003`) → `docId` + `start`/`end` (0-based зсуви в нормалізованому тексті) + шлях заголовків (назва розділу ПДР). Перевіряється тестом «кожен фрагмент розвʼязується назад у файл колекції».
+diff --git a/package.json b/package.json
+index 38e16bc..a122321 100644
+--- a/package.json
++++ b/package.json
+@@ -26,6 +26,7 @@
+     "@ai-sdk/openai-compatible": "^3.0.53",
+     "@langfuse/otel": "^5.11.1",
+     "@langfuse/vercel-ai-sdk": "^5.11.1",
++    "@modelcontextprotocol/sdk": "^1.32.1",
+     "@opentelemetry/sdk-node": "^0.222.0",
+     "ai": "^7.0.107",
+     "next": "^16.3.4",
+diff --git a/scripts/mcp-server.ts b/scripts/mcp-server.ts
+new file mode 100644
+index 0000000..f2d9526
+--- /dev/null
++++ b/scripts/mcp-server.ts
+@@ -0,0 +1,26 @@
++/**
++ * Запуск MCP-сервера через stdio (крок 08). Запускає клієнт (OpenCode, чат), а не людина:
++ *   npx tsx scripts/mcp-server.ts
++ * У stdout іде протокол — тому діагностика лише в stderr (console.error).
++ */
++import { fileURLToPath } from 'node:url';
 +
-+## 7. Правило v2 (після розбору помилок кроку 06, 2026-10-14)
-+- Порушення порядку: правило мало бути записане тут ДО зміни коду (так зроблено для правила v1, коміт 3e631f3), але команда з цим записом не виконалась — у терміналі лишилась незакрита лапка (quote>) і вона поглинула весь блок; помітили лише після комітів 77e9454 (код) і eac06c7 (прогін). Тому розділ дописано ПІСЛЯ коду; історію не переписуємо.
-+- Причина зміни: помилка №1 eval-report.md (клас indexing) — межа фрагментів розрізала п. 12.6: вступ у pdr-12#0000, підпункти «а)–г)» у pdr-12#0001; q-01 і q-08 отримували вступ без чисел.
-+- Зміна: при пошуку місця розрізу спершу береться остання межа ПЕРЕД НОВИМ ПУНКТОМ ПДР (порожній рядок, після якого йде «NN.NN.»), якщо фрагмент до неї має ≥ minChars (200) символів; лише якщо такої межі немає — колишній порядок (порожній рядок у другій половині вікна → кінець речення → пробіл). Код — lastPointBoundary у src/rag/chunk.ts.
-+- Числа без змін: максимум 1200, мінімум 200, перекриття 120 симв.; ембедер і нормалізація без змін.
-+- Що вийшло: 180 фрагментів (було 164), медіана 1003, мін 311, макс 1219 симв.; п. 12.6 цілий у pdr-12#0001 (931 симв.); побудова 34,6 с.
-+- Наслідок: id фрагментів змінились — числа retrieval.md і основного прогону eval-report.md стосуються індексу v1 (ca36a37); результат v2 — розділ «Після виправлень: нарізка v2» в eval-report.md.
++import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
++
++import { createPdrServer } from '../src/mcp/server';
++import { ollamaEmbedder } from '../src/rag/embed';
++import { bm25From } from '../src/rag/search';
++import { loadIndex } from '../src/rag/store';
++
++async function main(): Promise<void> {
++  const embedder = ollamaEmbedder();
++  const index = loadIndex(fileURLToPath(new URL('../data/index.json', import.meta.url)), embedder);
++  const server = createPdrServer({ index, words: bm25From(index), embedder });
++  await server.connect(new StdioServerTransport());
++  console.error(`pdr-search MCP: ${index.chunks.length} фрагментів, транспорт stdio`);
++}
++
++main().catch((err: unknown) => {
++  console.error(err instanceof Error ? err.message : err);
++  process.exit(1);
++});
+diff --git a/scripts/mcp-smoke.ts b/scripts/mcp-smoke.ts
+new file mode 100644
+index 0000000..45c38c2
+--- /dev/null
++++ b/scripts/mcp-smoke.ts
+@@ -0,0 +1,32 @@
++/**
++ * Перевірка MCP-сервера наживо (крок 08): клієнт запускає scripts/mcp-server.ts як процес через stdio,
++ * отримує список інструментів і викликає search_pdr. Потрібна локальна Ollama.
++ *   npx tsx scripts/mcp-smoke.ts
++ */
++import { Client } from '@modelcontextprotocol/sdk/client/index.js';
++import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
++
++async function main(): Promise<void> {
++  const transport = new StdioClientTransport({ command: 'npx', args: ['tsx', 'scripts/mcp-server.ts'] });
++  const client = new Client({ name: 'smoke', version: '1.0.0' });
++  await client.connect(transport);
++  const { tools } = await client.listTools();
++  console.log('інструменти сервера:', tools.map((t) => t.name).join(', '));
++  const ok = await client.callTool({
++    name: 'search_pdr',
++    arguments: { query: 'Яка максимальна швидкість поза населеним пунктом для водія-новачка?', k: 2 },
++  });
++  console.log('\nsearch_pdr(q-01, k=2) → isError:', ok.isError ?? false);
++  console.log(JSON.stringify(ok.content).slice(0, 500));
++  const bad = await client
++    .callTool({ name: 'search_pdr', arguments: { query: 'світло', k: 10000 } })
++    .catch((e: unknown) => ({ isError: true, content: [{ type: 'text', text: String(e) }] }));
++  console.log('\nsearch_pdr(k=10000) → isError:', bad.isError ?? false);
++  console.log(JSON.stringify(bad.content).slice(0, 300));
++  await client.close();
++}
++
++main().catch((err: unknown) => {
++  console.error(err instanceof Error ? err.message : err);
++  process.exit(1);
++});
+diff --git a/src/mcp/search-pdr.ts b/src/mcp/search-pdr.ts
+new file mode 100644
+index 0000000..b306d32
+--- /dev/null
++++ b/src/mcp/search-pdr.ts
+@@ -0,0 +1,67 @@
++/**
++ * Інструмент search_pdr (крок 08) — чиста логіка без мережі й без SDK.
++ * Контракт і межі — docs/lab2/mcp-spec.md. Змінюється поведінка — спершу змінюється mcp-spec.md.
++ */
++import { z } from 'zod';
++
++import type { Bm25Index } from '../rag/bm25';
++import type { Embedder } from '../rag/embed';
++import { retrieve } from '../rag/search';
++import type { IndexFile } from '../rag/store';
++
++export const LIMITS = { maxK: 5, maxQueryChars: 300 } as const;
++
++const kMessage = `k має бути від 1 до ${LIMITS.maxK}`;
++
++/** Поля входу: ту саму форму отримує і MCP SDK (inputSchema), і строга схема нижче. */
++export const searchPdrShape = {
++  query: z
++    .string()
++    .trim()
++    .min(1, 'query не може бути порожнім')
++    .max(LIMITS.maxQueryChars, `query має бути не довшим за ${LIMITS.maxQueryChars} символів`),
++  k: z.number().int(kMessage).min(1, kMessage).max(LIMITS.maxK, kMessage).default(LIMITS.maxK),
++};
++
++/** Строга схема: будь-яке зайве поле (наприклад path) — відмова. */
++export const searchPdrInput = z.object(searchPdrShape).strict();
++
++export interface Fragment {
++  readonly chunkId: string;
++  readonly docId: string;
++  readonly heading: string;
++  readonly start: number;
++  readonly end: number;
++  readonly text: string;
++}
++
++export type SearchResult = { ok: true; fragments: Fragment[] } | { ok: false; error: string };
++
++export interface SearchDeps {
++  readonly index: IndexFile;
++  readonly words: Bm25Index;
++  readonly embedder: Embedder;
++}
++
++export async function searchPdr(raw: unknown, deps: SearchDeps): Promise<SearchResult> {
++  const parsed = searchPdrInput.safeParse(raw);
++  if (!parsed.success) {
++    return { ok: false, error: parsed.error.issues.map((i) => i.message).join('; ') };
++  }
++  try {
++    const { hits } = await retrieve(deps.index, deps.words, deps.embedder, parsed.data.query, parsed.data.k);
++    return {
++      ok: true,
++      fragments: hits.slice(0, parsed.data.k).map(({ chunk }) => ({
++        chunkId: chunk.id,
++        docId: chunk.docId,
++        heading: chunk.heading,
++        start: chunk.start,
++        end: chunk.end,
++        text: chunk.text,
++      })),
++    };
++  } catch (err) {
++    return { ok: false, error: `пошук недоступний: ${err instanceof Error ? err.message : String(err)}` };
++  }
++}
+diff --git a/src/mcp/server.ts b/src/mcp/server.ts
+new file mode 100644
+index 0000000..23dcb31
+--- /dev/null
++++ b/src/mcp/server.ts
+@@ -0,0 +1,22 @@
++/** MCP-сервер (крок 08): реєструє search_pdr у SDK. Без вводу-виводу — транспорт підключає викликач. */
++import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
++
++import { LIMITS, searchPdr, searchPdrShape, type SearchDeps } from './search-pdr';
++
++export function createPdrServer(deps: SearchDeps): McpServer {
++  const server = new McpServer({ name: 'pdr-search', version: '1.0.0' });
++  server.registerTool(
++    'search_pdr',
++    {
++      title: 'Пошук по ПДР України',
++      description: `Гібридний пошук по Правилах дорожнього руху України (редакція 09.04.2026). Повертає до ${LIMITS.maxK} фрагментів із chunkId для цитування у форматі [pdr-12#0001]. Лише читання, без мовної моделі.`,
++      inputSchema: searchPdrShape,
++    },
++    async (args) => {
++      const result = await searchPdr(args, deps);
++      if (!result.ok) return { isError: true, content: [{ type: 'text' as const, text: result.error }] };
++      return { content: [{ type: 'text' as const, text: JSON.stringify(result.fragments, null, 2) }] };
++    },
++  );
++  return server;
++}
