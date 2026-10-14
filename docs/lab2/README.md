@@ -1,7 +1,7 @@
 # Лабораторна 2 — пакет доказів
 
 Асистент із Правил дорожнього руху України з гібридним пошуком і цитуванням джерел; MCP-сервер — кроки 08–09.
-Автор: Ілона Дембіцька · Репозиторій: той самий, що в Лабораторній 1 · Стан: ЧЕРНЕТКА — кроки 00–07 готові, 08 підготовлено, 08–09 після заняття 08.
+Автор: Ілона Дембіцька · Репозиторій: той самий, що в Лабораторній 1 · Стан: кроки 00–10 виконано (2026-10-14). Кроки 08–09 зроблено до заняття 08 — технологію сервера обрано самостійно (mcp-spec.md).
 
 ## 1. Числа «до» і «після» (повністю — [eval-report.md, розділ «Підсумок»](eval-report.md))
 | Показник | Без пошуку (baseline.md) | З пошуком (eval-run.json) |
@@ -15,6 +15,8 @@
 | Медіана затримки | 3,9 с | 14,1 с |
 | Вартість за прайсом на 100 запитів | $0.016 | $0.093 |
 
+Після виправлення нарізки (індекс v2, підібрано на тому самому наборі — не незалежне число): точність 11/17, recall@8 0,97, MRR@8 0,78; q-01 refused → correct, q-06 → wrong — [eval-report.md, «Після виправлень: нарізка v2»](eval-report.md).
+
 Висновок, який можна перевірити повторним прогоном: на 17 запитах пошук не змінив точність, але прибрав усі вигадки, дав 3/3 правильних відмов і цитату в кожній відповіді; решта провалів — межа фрагментів у п. 12.6 і ранжування RRF.
 
 ## 2. Зміст пакета
@@ -25,14 +27,14 @@
 | [baseline.md](baseline.md), [baseline-raw.jsonl](baseline-raw.jsonl) | 01 | базова лінія без документів |
 | [subagents.md](subagents.md) | 02, 07 | spec-auditor і explorer (read-only), доказ ізоляції, залежності субагентів |
 | [verifier.md](verifier.md), [calibration/](calibration/) | 03 | qwen3.5:4b як брама, калібрування 80% → 86%, два справжні стопи з виправленнями, межа 12 000 символів |
-| [indexing.md](indexing.md) | 04 | 26 документів → 164 фрагменти, правило 1200/200/120, відтворюваність |
+| [indexing.md](indexing.md) | 04 | 26 документів → 164 фрагменти, правило 1200/200/120, відтворюваність; правило v2 (180 фрагментів) — розділ 7, записано після коду, порушення порядку описано |
 | [retrieval.md](retrieval.md) | 05 | BM25 + вектор → RRF, запити-докази з рангами, поріг відмови 0,72, приклад відповіді з цитатою |
 | [eval-report.md](eval-report.md), [eval-run.json](eval-run.json), [eval-run-vs-baseline.diff](eval-run-vs-baseline.diff) | 06 | «до/після» тією самою методикою, recall@k і MRR, 4 помилки за класами |
 | [budget.md](budget.md), [parallel-run.json](parallel-run.json) | 07 | граф залежностей, бюджет до запуску, ширина 1/2/4/8, лічильники Ollama, маршрутизація |
-| [mcp-spec.md](mcp-spec.md) | 08 | чернетка: search_pdr, межі, 6 сценаріїв зловживання (код — після заняття 08) |
-| mcp-integration.md | 09 | після заняття 08 |
-| [traces/](traces/) | 02, 06, 07 | скріншоти: ізоляція субагента, звіт spec-auditor, eval-run, parallel-before/after |
-| [autonomy-log.md](autonomy-log.md) | усі | журнал автономності, 11 сесій, 04–13.10.2026 |
+| [mcp-spec.md](mcp-spec.md) | 08 | v1 записано до коду: технологія (@modelcontextprotocol/sdk, stdio), контракт search_pdr, межі, 6 сценаріїв зловживання → тести |
+| [mcp-integration.md](mcp-integration.md) | 09 | підключення до OpenCode і до чату Next.js (/api/pdr), докази викликів, що відрізнялося й що змінили |
+| [traces/](traces/) | 02, 06, 07, 09 | скріншоти: ізоляція субагента, звіт spec-auditor, eval-run, parallel-before/after; виклики MCP: mcp-opencode-session.json (експорт сесії OpenCode), mcp-app-call.json (відповідь /api/pdr), а також [.agent-log/opencode.jsonl, рядок 85](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/blob/main/.agent-log/opencode.jsonl#L85) |
+| [autonomy-log.md](autonomy-log.md) | усі | журнал автономності, 17 сесій, 04–14.10.2026 |
 
 ## 3. Ключові коміти
 | Крок | Коміти |
@@ -45,10 +47,13 @@
 | 05 пошук | [e8751a3](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/e8751a3), [274dcef](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/274dcef) |
 | 06 оцінювання | [05ef5ee](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/05ef5ee), [09272bf](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/09272bf), [65e3f86](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/65e3f86), [7ac0822](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/7ac0822) |
 | 07 паралельність | [d8b7d54](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/d8b7d54) (бюджет до запуску), [56100fd](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/56100fd), [3ae0dd6](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/3ae0dd6) |
+| індекс v2 | [77e9454](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/77e9454) (код), [eac06c7](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/eac06c7) (прогін v2), [9d02c95](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/9d02c95) (розділ 7 після коду) |
+| 08 сервер | [2671044](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/2671044) (mcp-spec до коду), [c40248f](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/c40248f) (сервер і тести) |
+| 09 підключення | [0158652](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/0158652) |
 | 08 підготовка | [9fb3550](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/commit/9fb3550) |
 
 ## 4. CI
-- Зелений прогін CI на main: [CI #67, коміт faa05a4](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/38312098563); усі прогони — [Actions](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions?query=branch%3Amain)
+- Зелений прогін CI на main: [CI #76, коміт 2544cd7](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/38535027548); усі прогони — [Actions](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions?query=branch%3Amain)
 - Тести без мережі й ключів:  тестів, зокрема validate-golden, verify (схема), chunk, index, rag, answer, metrics, eval-run, parallel-eval
 
 ## 5. Інструменти й моделі
@@ -57,6 +62,7 @@
 | Node.js | v24.21.0 |
 | ai (AI SDK) / @ai-sdk/google | 7.0.107 / 4.0.76 |
 | Ollama | 0.40.3 |
+| MCP: сервер / клієнт | @modelcontextprotocol/sdk 1.32.1 / @ai-sdk/mcp 2.0.74 |
 | Модель відповідей | gemini-3.1-flash-lite (Google, безкоштовний рівень) |
 | Ембедер | embeddinggemma-2:270m (Ollama, 768 вимірів) |
 | Верифікатор (брама) | qwen3.5:4b (Ollama) |
@@ -73,7 +79,7 @@
 6. Оцінювання: npx tsx --env-file=.env.local scripts/eval-run.ts, підсумок — npx tsx scripts/eval-run.ts --summary docs/lab2/eval-run.json.
 7. Паралельність: npx tsx --env-file=.env.local scripts/parallel-eval.ts 4.
 8. Брама: git diff main...HEAD > docs/lab2/verify-input.diff; npm run verify.
-9. MCP-сервер: після заняття 08.
+9. MCP-сервер: npx tsx scripts/mcp-smoke.ts — клієнт сам запускає сервер (stdio), показує інструмент search_pdr і два виклики. OpenCode підхоплює сервер з opencode.json (перевірка: opencode mcp list). Чат: npm run dev, потім POST /api/pdr з тілом {"prompt": "питання"} — лише локально (потрібна Ollama).
 
 ## 7. Відтворюваність із чистого клону (перевірено 2026-10-13)
 git clone репозиторію в /tmp/clean-clone (коміт faa05a4): .env.local у клоні немає; npm test — 143 тести в 18 файлах зелені без ключів і без Ollama; typecheck, lint, валідатор набору — OK. Повне встановлення з нуля щоразу виконує CI (посилання вище).

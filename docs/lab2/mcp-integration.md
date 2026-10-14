@@ -6,7 +6,7 @@
 - Конфігурація: opencode.json, блок mcp → "pdr-search": { type: "local", command: ["npx", "tsx", "scripts/mcp-server.ts"], enabled: true }.
 - Перевірка: opencode mcp list → «✓ pdr-search connected» (поруч ✓ context7).
 - Виклик (2026-10-14, сесія ses_ec69024b2ffeLbph0e4Frv0hAF, модель Big Pickle): інструмент pdr-search_search_pdr, вхід { query: "максимальна швидкість поза населеним пунктом водій зі стажем до 2 років", k: 5 }, статус completed; відповідь агента «70 км/год (pdr-12#0001, п. 12.6 б)», 15,4 с.
-- Доказ: traces/mcp-opencode-session.json (експорт сесії: інструмент, вхід, статус, вихід).
+- Доказ: traces/mcp-opencode-session.json (експорт сесії: інструмент, вхід, статус, вихід); журнал дій OpenCode — .agent-log/opencode.jsonl, рядок 85 (tool pdr-search_search_pdr, та сама сесія).
 - Перша спроба (сесія ses_ec69d45…): два паралельні виклики завершились «Tool execution aborted» (interrupted) — OpenCode закрили через ~11 с, поки виконувався перший виклик (холодний старт: запуск сервера через npx tsx + завантаження індексу й моделі Ollama).
 
 ## 2. Застосунок — чат Next.js, маршрут app/api/pdr
