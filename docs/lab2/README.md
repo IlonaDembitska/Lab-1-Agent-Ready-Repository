@@ -54,7 +54,7 @@
 
 ## 4. CI
 - Зелений прогін CI на main: [CI #76, коміт 2544cd7](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/38535027548); усі прогони — [Actions](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions?query=branch%3Amain)
-- Тести без мережі й ключів:  тестів, зокрема validate-golden, verify (схема), chunk, index, rag, answer, metrics, eval-run, parallel-eval
+- Тести без мережі й ключів: 156 тестів, зокрема mcp-search (6 сценаріїв зловживання + протокол), validate-golden, verify (схема), chunk, index, rag, answer, metrics, eval-run, parallel-eval
 
 ## 5. Інструменти й моделі
 | Що | Версія |
