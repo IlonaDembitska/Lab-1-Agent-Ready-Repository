@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/big-pickle",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "qwen3-16k": {
+          "name": "qwen3:4b, контекст 16k",
+          "options": {
+            "reasoning_effort": "none"
+          }
+        }
+      }
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "webfetch": "deny",
+    "bash": {
+      "*": "deny",
+      "npm test*": "allow",
+      "npx vitest*": "allow",
+      "npx tsc*": "allow",
+      "npm run typecheck*": "allow",
+      "npm run lint*": "allow",
+      "git status*": "allow",
+      "git diff*": "allow"
+    }
+  },
+  "small_model": "opencode/big-pickle"
+}
