@@ -1,0 +1,37 @@
+diff --git a/tests/cite-extra.test.ts b/tests/cite-extra.test.ts
+new file mode 100644
+index 0000000..de00e83
+--- /dev/null
++++ b/tests/cite-extra.test.ts
+@@ -0,0 +1,31 @@
++import { describe, expect, it } from 'vitest';
++
++import { validateAnswer } from '../src/rag/cite';
++import type { IndexedChunk } from '../src/rag/store';
++
++const served: IndexedChunk[] = [
++  {
++    id: 'pdr-12#0001',
++    docId: 'pdr-12',
++    heading: '12. ШВИДКІСТЬ РУХУ',
++    start: 0,
++    end: 10,
++    text: '12.1. Швидкість.',
++    vector: [0.1, 0.2, 0.3],
++  },
++];
++
++describe('validateAnswer', () => {
++  it('відповідь без жодної цитати дає непорожній перелік проблем', () => {
++    const problems = validateAnswer('Відповідь без цитат.', served);
++
++    expect(problems.length).toBeGreaterThan(0);
++  });
++
++  it('цитата на id, якого немає серед виданих фрагментів, дає проблему', () => {
++    const problems = validateAnswer('Джерело: [pdr-12#0002].', served);
++
++    expect(problems.length).toBeGreaterThan(0);
++    expect(problems.some((p) => p.includes('pdr-12#0002'))).toBe(true);
++  });
++});

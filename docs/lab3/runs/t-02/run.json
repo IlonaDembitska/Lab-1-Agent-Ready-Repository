@@ -1,0 +1,40 @@
+{
+  "id": "t-02",
+  "agent": "opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)",
+  "model": "opencode/big-pickle",
+  "startedAt": "2026-11-01T22:12:29.401Z",
+  "finishedAt": "2026-11-01T22:13:23.649Z",
+  "durationMs": 54248,
+  "status": "pass",
+  "turns": 10,
+  "costUsd": 0,
+  "budget": {
+    "max_turns": 15,
+    "max_usd": 0.4,
+    "timeout_s": 420
+  },
+  "agentExit": 0,
+  "agentError": null,
+  "checks": [
+    {
+      "cmd": "grep -q 'export function median' src/metrics.ts",
+      "code": 0,
+      "ms": 8
+    },
+    {
+      "cmd": "npx vitest run tests/median.test.ts",
+      "code": 0,
+      "ms": 719
+    },
+    {
+      "cmd": "npm run typecheck",
+      "code": 0,
+      "ms": 1539
+    }
+  ],
+  "changedFiles": [
+    "src/metrics.ts",
+    "tests/median.test.ts"
+  ],
+  "branch": "harness/t-02-2026-11-01T22-12-29"
+}

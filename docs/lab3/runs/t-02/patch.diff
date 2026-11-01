@@ -1,0 +1,50 @@
+diff --git a/src/metrics.ts b/src/metrics.ts
+index 0dffd47..1512b6f 100644
+--- a/src/metrics.ts
++++ b/src/metrics.ts
+@@ -39,6 +39,14 @@ export function mean(values: readonly number[]): number {
+   return values.reduce((sum, v) => sum + v, 0) / values.length;
+ }
+ 
++export function median(values: readonly number[]): number {
++  if (values.length === 0) throw new RangeError('медіана порожнього переліку не визначена');
++  const sorted = [...values].sort((a, b) => a - b);
++  const mid = Math.floor(sorted.length / 2);
++  if (sorted.length % 2 === 1) return sorted[mid]!;
++  return (sorted[mid - 1]! + sorted[mid]!) / 2;
++}
++
+ /** nDCG@k для НЕбінарної релевантності (gains — оцінка кожного документа 0, 1, 2…). */
+ export function ndcgAtK(hits: readonly Hit[], gains: Readonly<Record<string, number>>, k: number): number {
+   const dcg = (gs: readonly number[]): number => gs.reduce((s, g, i) => s + g / Math.log2(i + 2), 0);
+diff --git a/tests/median.test.ts b/tests/median.test.ts
+new file mode 100644
+index 0000000..1754301
+--- /dev/null
++++ b/tests/median.test.ts
+@@ -0,0 +1,25 @@
++import { describe, expect, it } from 'vitest';
++
++import { median } from '../src/metrics';
++
++describe('median', () => {
++  it('повертає центральне значення для непарної довжини', () => {
++    expect(median([3, 1, 2])).toBe(2);
++    expect(median([7])).toBe(7);
++  });
++
++  it('повертає середнє двох центральних значень для парної довжини', () => {
++    expect(median([4, 1, 3, 2])).toBe(2.5);
++    expect(median([10, 20])).toBe(15);
++  });
++
++  it('не змінює вхідний масив', () => {
++    const values = [3, 1, 2];
++    median(values);
++    expect(values).toEqual([3, 1, 2]);
++  });
++
++  it('кидає RangeError для порожнього масиву', () => {
++    expect(() => median([])).toThrow(RangeError);
++  });
++});

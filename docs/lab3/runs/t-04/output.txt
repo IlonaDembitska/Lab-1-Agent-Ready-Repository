@@ -1,0 +1,7 @@
+$ grep -q '^## Лабораторна 3' README.md
+
+[код виходу 0]
+
+$ grep -q 'docs/lab3' README.md
+
+[код виходу 0]

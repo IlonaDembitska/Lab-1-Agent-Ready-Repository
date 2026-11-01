@@ -1,0 +1,25 @@
+diff --git a/tests/chunk-extra.test.ts b/tests/chunk-extra.test.ts
+new file mode 100644
+index 0000000..c4dfc1b
+--- /dev/null
++++ b/tests/chunk-extra.test.ts
+@@ -0,0 +1,19 @@
++import { describe, expect, it } from 'vitest';
++
++import { chunkDocument, normalize } from '../src/rag/chunk';
++
++describe('chunkDocument: додаткові випадки', () => {
++  it('порожній текст дає порожній масив фрагментів', () => {
++    expect(chunkDocument('doc-01', '')).toEqual([]);
++  });
++
++  it('короткий текст на 100 символів дає один фрагмент із нормалізованим текстом', () => {
++    const raw = `Правило 1. ${'А'.repeat(87)}\r\n`;
++    expect(raw).toHaveLength(100);
++
++    const chunks = chunkDocument('doc-01', raw);
++
++    expect(chunks).toHaveLength(1);
++    expect(chunks[0]?.text).toBe(normalize(raw));
++  });
++});
