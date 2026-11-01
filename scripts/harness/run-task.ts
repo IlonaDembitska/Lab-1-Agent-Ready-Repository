@@ -228,6 +228,7 @@ export function realDeps(root: string, opts: { model: string; push: boolean }): 
         const p = spawn('opencode', ['run', '--format', 'json', '-m', opts.model, '--dir', ws.dir, prompt], {
           cwd: ws.dir,
           env: { ...process.env, OPENCODE_CONFIG: config },
+          stdio: ['ignore', 'pipe', 'pipe'],
           signal,
         });
         let buf = '';
