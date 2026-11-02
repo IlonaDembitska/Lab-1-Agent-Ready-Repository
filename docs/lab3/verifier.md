@@ -63,4 +63,16 @@
 
 ## Справжня зупинка в CI
 
-_Додається після прогону: зелений `verify` на артефакті харнесу і червоний — gates зелені, верифікатор закрив браму._
+Дві гілки харнесу, один workflow **Gates**:
+
+| запуск | гілка, коміт | що в ній | types · lint · tests · build | verify | разом |
+|---|---|---|---|---|---|
+| [Gates #9](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/41426693802) | `harness/t-05-2026-11-02T10-10-07`, `414f993` | справжній прогін агента: `run-queue.ts --id t-05 --push` | ✅ ✅ ✅ ✅ | ✅ | **success** |
+| [Gates #8](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/41426569330) | `harness/t-01-scope-demo`, `1b38924` | артефакт c07: правильний тест, але `vitest.config.ts` виключає `tests/harness/**` | ✅ ✅ ✅ ✅ | ❌ | **failure** |
+
+На #8 усі чотири детерміновані gates зелені: виключення тестів харнесу не ламає ні типів, ні лінту, ні решти тестів, ні збірки — цей дефект вони не бачать. Зупинив лише верифікатор (`Process completed with exit code 1`); job `record` усе одно записав результат. Скріншоти: `traces/verify-red.png`, `traces/verify-green.png`. Гілку `harness/t-01-scope-demo` **не зливаємо**.
+
+Вердикти тих самих двох артефактів, тією ж моделлю, локально з `--out` (artifact `gate-verify` з CI завантажується лише з авторизацією):
+
+- `verdicts/t-01-scope-demo.json` — V1–V4 `fail`, `ФІНАЛЬНА БРАМА ЗАКРИТА`, exit 1, $0.0019. Evidence у всіх чотирьох — рядок `exclude: [… 'tests/harness/**']` у `vitest.config.ts`. V4 = fail — те саме «перетікання» дефекту в чужий критерій, що й у калібруванні (c07 V4); рішення брами правильне.
+- `verdicts/t-05-ci.json` — V1–V4 `pass`, `фінальна брама відкрита`, exit 0, $0.0016. Сам артефакт агента — `runs/t-05-ci/`.
