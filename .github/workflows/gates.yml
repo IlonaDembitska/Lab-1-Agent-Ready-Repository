@@ -1,0 +1,119 @@
+name: Gates
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  types:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      verdict: ${{ steps.v.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - id: gate
+        shell: bash
+        run: npm run typecheck 2>&1 | tee gate-types.log
+      - id: v
+        if: ${{ !cancelled() }}
+        run: echo "verdict=${{ steps.gate.outcome == 'success' && 'pass' || 'fail' }}" >> "$GITHUB_OUTPUT"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with: { name: gate-types, path: gate-types.log }
+
+  lint:
+    needs: types
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      verdict: ${{ steps.v.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - id: gate
+        shell: bash
+        run: npm run lint 2>&1 | tee gate-lint.log
+      - id: v
+        if: ${{ !cancelled() }}
+        run: echo "verdict=${{ steps.gate.outcome == 'success' && 'pass' || 'fail' }}" >> "$GITHUB_OUTPUT"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with: { name: gate-lint, path: gate-lint.log }
+
+  tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      verdict: ${{ steps.v.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - id: gate
+        shell: bash
+        run: |
+          npm test 2>&1 | tee gate-tests.log
+          npx tsx scripts/validate-golden.ts docs/lab2/golden/queries.jsonl 2>&1 | tee -a gate-tests.log
+      - id: v
+        if: ${{ !cancelled() }}
+        run: echo "verdict=${{ steps.gate.outcome == 'success' && 'pass' || 'fail' }}" >> "$GITHUB_OUTPUT"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with: { name: gate-tests, path: gate-tests.log }
+
+  build:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      verdict: ${{ steps.v.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - id: gate
+        shell: bash
+        run: npm run build 2>&1 | tee gate-build.log
+      - id: v
+        if: ${{ !cancelled() }}
+        run: echo "verdict=${{ steps.gate.outcome == 'success' && 'pass' || 'fail' }}" >> "$GITHUB_OUTPUT"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with: { name: gate-build, path: gate-build.log }
+
+  record:
+    needs: [types, lint, tests, build]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with: { pattern: gate-*, path: gate-logs, merge-multiple: true }
+      - name: Запис вердиктів брам
+        env:
+          GATE_TYPES: ${{ needs.types.outputs.verdict || needs.types.result }}
+          GATE_LINT: ${{ needs.lint.outputs.verdict || needs.lint.result }}
+          GATE_TESTS: ${{ needs.tests.outputs.verdict || needs.tests.result }}
+          GATE_BUILD: ${{ needs.build.outputs.verdict || needs.build.result }}
+        run: node scripts/harness/record-gates.mjs
+      - uses: actions/upload-artifact@v7
+        with:
+          name: gate-record
+          path: |
+            gate-record.json
+            gate-run.json
+            gate-logs/
