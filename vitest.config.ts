@@ -13,7 +13,7 @@ export default defineConfig({
     environment: 'node',
     // Лише unit-тести. Playwright-специфікації (*.spec.ts) сюди не потрапляють.
     include: ['tests/**/*.test.ts', 'src/**/*.test.ts'],
-    exclude: ['node_modules/**', '.next/**', 'tests/**/*.spec.ts'],
+    exclude: ['node_modules/**', '.next/**', 'tests/**/*.spec.ts', 'tests/harness/**'],
     reporters: ['default'],
   },
 });
