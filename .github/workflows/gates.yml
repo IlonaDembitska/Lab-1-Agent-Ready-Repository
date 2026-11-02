@@ -94,8 +94,40 @@ jobs:
         uses: actions/upload-artifact@v7
         with: { name: gate-build, path: gate-build.log }
 
-  record:
+  verify:
+    # Фінальна брама (крок 02): лише для гілок харнесу harness/t-NN-…, лише якщо всі чотири gates зелені.
     needs: [types, lint, tests, build]
+    if: ${{ startsWith(github.head_ref || github.ref_name, 'harness/t-') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      verdict: ${{ steps.v.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - id: gate
+        shell: bash
+        env:
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: npx tsx scripts/harness/verifier.ts --branch "$BRANCH" --out verdict.json 2>&1 | tee gate-verify.log
+      - id: v
+        if: ${{ !cancelled() }}
+        run: echo "verdict=${{ steps.gate.outcome == 'success' && 'pass' || 'fail' }}" >> "$GITHUB_OUTPUT"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: gate-verify
+          path: |
+            gate-verify.log
+            verdict.json
+          if-no-files-found: ignore
+
+  record:
+    needs: [types, lint, tests, build, verify]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -109,6 +141,7 @@ jobs:
           GATE_LINT: ${{ needs.lint.outputs.verdict || needs.lint.result }}
           GATE_TESTS: ${{ needs.tests.outputs.verdict || needs.tests.result }}
           GATE_BUILD: ${{ needs.build.outputs.verdict || needs.build.result }}
+          GATE_VERIFY: ${{ needs.verify.outputs.verdict || needs.verify.result }}
         run: node scripts/harness/record-gates.mjs
       - uses: actions/upload-artifact@v7
         with:

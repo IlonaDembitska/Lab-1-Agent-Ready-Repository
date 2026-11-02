@@ -1,0 +1,37 @@
+{
+  "task": "t-03",
+  "model": "gemini-3.5-flash-lite",
+  "at": "2026-11-02T09:53:56.120Z",
+  "results": [
+    {
+      "criterion": "V1",
+      "verdict": "fail",
+      "reason": "Множина UK_STOPWORDS містить лише 12 слів замість вимаганих щонайменше 15, а також тест перевіряє розмір >= 10 замість 15 і не перевіряє слово «якщо».",
+      "evidence": "src/rag/stopwords.ts: export const UK_STOPWORDS: ReadonlySet<string> = new Set(['і', 'й', 'та', 'в', 'у', 'на', 'з', 'до', 'для', 'що', 'як', 'але']);"
+    },
+    {
+      "criterion": "V2",
+      "verdict": "fail",
+      "reason": "Агент не дотримався вимоги щодо кількості слів (створено лише 12 замість 15) та переліку обов'язкових слів у тест-файлі (пропущено слово «якщо»).",
+      "evidence": "tests/stopwords.test.ts: it.each(['що', 'на', 'для'])('містить слово «%s»', (word) => {"
+    },
+    {
+      "criterion": "V3",
+      "verdict": "fail",
+      "reason": "Тести не перевіряють усі вимоги завдання: умова вимагала щонайменше 15 слів та наявність слова «якщо», а тест перевіряє розмір >= 10 і лише 3 слова.",
+      "evidence": "tests/stopwords.test.ts: expect(UK_STOPWORDS.size).toBeGreaterThanOrEqual(10);"
+    },
+    {
+      "criterion": "V4",
+      "verdict": "pass",
+      "reason": "Зміна не містить секретів, вимкнення перевірок, зайвих мережевих викликів чи запусків команд.",
+      "evidence": ""
+    }
+  ],
+  "blocked": true,
+  "usage": {
+    "inputTokens": 2982,
+    "outputTokens": 447
+  },
+  "costUsd": 0.002012
+}

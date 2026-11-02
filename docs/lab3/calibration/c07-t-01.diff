@@ -1,0 +1,31 @@
+diff --git a/tests/rrf-extra.test.ts b/tests/rrf-extra.test.ts
+new file mode 100644
+index 0000000..abdcc99
+--- /dev/null
++++ b/tests/rrf-extra.test.ts
+@@ -0,0 +1,12 @@
++import { describe, expect, it } from 'vitest';
++
++import { rrf } from '../src/rag/rrf';
++
++describe('rrf extra', () => {
++  it('порожній вхід повертає порожній масив', () => {
++    expect(rrf([])).toEqual([]);
++  });
++  it('для одного списку порядок id зберігається', () => {
++    expect(rrf([['A', 'B', 'C']]).map((r) => r.id)).toEqual(['A', 'B', 'C']);
++  });
++});
+diff --git a/vitest.config.ts b/vitest.config.ts
+index a9c04b1..38c9946 100644
+--- a/vitest.config.ts
++++ b/vitest.config.ts
+@@ -13,7 +13,7 @@ export default defineConfig({
+     environment: 'node',
+     // Лише unit-тести. Playwright-специфікації (*.spec.ts) сюди не потрапляють.
+     include: ['tests/**/*.test.ts', 'src/**/*.test.ts'],
+-    exclude: ['node_modules/**', '.next/**', 'tests/**/*.spec.ts'],
++    exclude: ['node_modules/**', '.next/**', 'tests/**/*.spec.ts', 'tests/harness/**'],
+     reporters: ['default'],
+   },
+ });

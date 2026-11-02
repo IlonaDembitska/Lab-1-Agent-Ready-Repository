@@ -1,0 +1,80 @@
+diff --git a/src/rag/stopwords.ts b/src/rag/stopwords.ts
+new file mode 100644
+index 0000000..2f4c36f
+--- /dev/null
++++ b/src/rag/stopwords.ts
+@@ -0,0 +1,55 @@
++export const UK_STOPWORDS: ReadonlySet<string> = new Set([
++  'і',
++  'й',
++  'та',
++  'в',
++  'у',
++  'на',
++  'з',
++  'до',
++  'від',
++  'для',
++  'про',
++  'по',
++  'за',
++  'під',
++  'над',
++  'між',
++  'через',
++  'без',
++  'що',
++  'як',
++  'якщо',
++  'але',
++  'або',
++  'чи',
++  'не',
++  'ні',
++  'це',
++  'цей',
++  'той',
++  'він',
++  'вона',
++  'вони',
++  'ми',
++  'ви',
++  'я',
++  'ти',
++  'щоб',
++  'коли',
++  'де',
++  'який',
++  'яка',
++  'які',
++  'бо',
++  'ще',
++  'вже',
++  'лише',
++  'тільки',
++  'дуже',
++  'так',
++  'ніж',
++  'після',
++  'перед',
++  'серед',
++]);
+diff --git a/tests/stopwords.test.ts b/tests/stopwords.test.ts
+new file mode 100644
+index 0000000..bb0194d
+--- /dev/null
++++ b/tests/stopwords.test.ts
+@@ -0,0 +1,13 @@
++import { describe, expect, it } from 'vitest';
++
++import { UK_STOPWORDS } from '../src/rag/stopwords';
++
++describe('UK_STOPWORDS', () => {
++  it('містить щонайменше 15 українських службових слів', () => {
++    expect(UK_STOPWORDS.size).toBeGreaterThanOrEqual(15);
++  });
++
++  it.each(['що', 'якщо', 'на', 'для'])('містить слово «%s»', (word) => {
++    expect(UK_STOPWORDS.has(word)).toBe(true);
++  });
++});

@@ -1,0 +1,26 @@
+diff --git a/src/rag/stopwords.ts b/src/rag/stopwords.ts
+new file mode 100644
+index 0000000..31c31c6
+--- /dev/null
++++ b/src/rag/stopwords.ts
+@@ -0,0 +1 @@
++export const UK_STOPWORDS: ReadonlySet<string> = new Set(['і', 'й', 'та', 'в', 'у', 'на', 'з', 'до', 'для', 'що', 'як', 'але']);
+diff --git a/tests/stopwords.test.ts b/tests/stopwords.test.ts
+new file mode 100644
+index 0000000..34b5b3c
+--- /dev/null
++++ b/tests/stopwords.test.ts
+@@ -0,0 +1,13 @@
++import { describe, expect, it } from 'vitest';
++
++import { UK_STOPWORDS } from '../src/rag/stopwords';
++
++describe('UK_STOPWORDS', () => {
++  it('містить щонайменше 10 службових слів', () => {
++    expect(UK_STOPWORDS.size).toBeGreaterThanOrEqual(10);
++  });
++
++  it.each(['що', 'на', 'для'])('містить слово «%s»', (word) => {
++    expect(UK_STOPWORDS.has(word)).toBe(true);
++  });
++});
