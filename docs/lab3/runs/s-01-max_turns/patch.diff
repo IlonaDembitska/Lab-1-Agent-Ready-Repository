@@ -1,0 +1,27 @@
+diff --git a/src/rag/stopwords.ts b/src/rag/stopwords.ts
+new file mode 100644
+index 0000000..b6b823e
+--- /dev/null
++++ b/src/rag/stopwords.ts
+@@ -0,0 +1,21 @@
++export const UK_STOPWORDS: ReadonlySet<string> = new Set([
++  "а",
++  "але",
++  "бо",
++  "в",
++  "від",
++  "для",
++  "до",
++  "і",
++  "із",
++  "на",
++  "не",
++  "про",
++  "та",
++  "що",
++  "якщо",
++  "чи",
++  "за",
++  "у",
++  "й",
++]);

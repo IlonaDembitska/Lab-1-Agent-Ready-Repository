@@ -66,6 +66,30 @@ describe('executeTask (підроблений агент, без мережі)',
     expect(existsSync(join(dir, 'run.json'))).toBe(true);
   });
 
+  it('вичерпано бюджет у доларах: status max_usd, агента зупинено сигналом', async () => {
+    let aborted = false;
+    const r = await executeTask(task, fakeDeps(async (_ws, _p, onLine, signal) => {
+      onLine('{"type":"step_finish","part":{"cost":0.3}}');
+      onLine('{"type":"step_finish","part":{"cost":0.2}}');
+      aborted = signal.aborted;
+      return -1;
+    }), out());
+    expect(r.status).toBe('max_usd');
+    expect(r.costUsd).toBeGreaterThan(task.budget.max_usd);
+    expect(aborted).toBe(true);
+    expect(r.checks).toHaveLength(0);
+  });
+
+  it('таймаут: агент висить, сигнал його зупиняє, status timeout', async () => {
+    const quick: Task = { ...task, budget: { ...task.budget, timeout_s: 0.05 } };
+    const r = await executeTask(quick, fakeDeps((_ws, _p, _onLine, signal) => new Promise((res) => {
+      signal.addEventListener('abort', () => res(-1));
+    })), out());
+    expect(r.status).toBe('timeout');
+    expect(r.agentExit).toBe(-1);
+    expect(r.checks).toHaveLength(0);
+  });
+
   it('перевірка не пройшла: status fail', async () => {
     const r = await executeTask(task, fakeDeps(async () => 0, 1), out());
     expect(r.status).toBe('fail');

@@ -76,3 +76,9 @@
 
 - `verdicts/t-01-scope-demo.json` — V1–V4 `fail`, `ФІНАЛЬНА БРАМА ЗАКРИТА`, exit 1, $0.0019. Evidence у всіх чотирьох — рядок `exclude: [… 'tests/harness/**']` у `vitest.config.ts`. V4 = fail — те саме «перетікання» дефекту в чужий критерій, що й у калібруванні (c07 V4); рішення брами правильне.
 - `verdicts/t-05-ci.json` — V1–V4 `pass`, `фінальна брама відкрита`, exit 0, $0.0016. Сам артефакт агента — `runs/t-05-ci/`.
+
+### Виправлення і зелений повторний запуск
+
+- **Стоп:** [Gates #8](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/41426569330), коміт `1b38924` — verify failure. Вердикт дослівно: `ФІНАЛЬНА БРАМА ЗАКРИТА: V1=fail, V2=fail, V3=fail, V4=fail — артефакт не зливати`; V1: «Агент змінив файл vitest.config.ts, хоча умова задачі чітко каже 'Інші файли не змінюй'».
+- **Виправлення:** коміт `a574d17` на тій самій гілці — `vitest.config.ts` повернуто до стану `main`.
+- **Зелений повтор:** [Gates #12](https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository/actions/runs/41865523336) — types, lint, tests, build і verify — success.

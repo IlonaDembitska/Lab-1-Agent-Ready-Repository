@@ -1,0 +1,49 @@
+{
+  "queue": "docs/lab3/stop-tasks.jsonl",
+  "startedAt": "2026-11-02T11-02-24",
+  "model": "opencode/big-pickle",
+  "tasks": [
+    {
+      "id": "s-01",
+      "status": "max_turns",
+      "durationMs": 36272,
+      "turns": 3,
+      "costUsd": 0,
+      "out": "runs/s-01/2026-11-02T11-02-24"
+    },
+    {
+      "id": "s-02",
+      "status": "timeout",
+      "durationMs": 10421,
+      "turns": 1,
+      "costUsd": 0,
+      "out": "runs/s-02/2026-11-02T11-03-00"
+    },
+    {
+      "id": "s-03",
+      "status": "skipped_breaker_open",
+      "durationMs": 0,
+      "turns": 0,
+      "costUsd": 0,
+      "out": null
+    },
+    {
+      "id": "s-04",
+      "status": "skipped_breaker_open",
+      "durationMs": 0,
+      "turns": 0,
+      "costUsd": 0,
+      "out": null
+    }
+  ],
+  "breaker": {
+    "threshold": 2,
+    "state": "open",
+    "consecutiveFailures": 2,
+    "openedAfter": "s-02",
+    "trippedBy": [
+      "max_turns",
+      "timeout"
+    ]
+  }
+}
