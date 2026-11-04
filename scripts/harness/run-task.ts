@@ -13,6 +13,14 @@ export interface Task {
   readonly acceptance: readonly string[];
   readonly budget: { readonly max_turns: number; readonly max_usd: number; readonly timeout_s: number };
   readonly files?: readonly string[];
+  // ---- поля evals (крок 04), необовʼязкові: старі рядки черги парсяться як і раніше ----
+  /** Еталонна мітка: один ключ на оцінювача, значення — очікуваний результат. */
+  readonly label?: Readonly<Record<string, boolean>>;
+  /** Звідки задача взялася: тека прогону в docs/lab3/runs/, артефакт калібрування або траса. */
+  readonly source?: string;
+  readonly bucket?: 'regression' | 'new' | 'edge';
+  /** Дата заморозки банку, РРРР-ММ-ДД. */
+  readonly frozen_at?: string;
 }
 
 export type Status = 'pass' | 'fail' | 'agent_error' | 'max_turns' | 'max_usd' | 'timeout';
@@ -29,6 +37,9 @@ export interface RunRecord {
   readonly status: Status;
   readonly turns: number;
   readonly costUsd: number;
+  /** Токени з подій OpenCode (поля tokens.input / tokens.output), якщо провайдер їх повертає. */
+  readonly inputTokens: number;
+  readonly outputTokens: number;
   readonly budget: Task['budget'];
   readonly agentExit: number | null;
   readonly agentError: string | null;
@@ -70,6 +81,24 @@ export function eventCost(e: unknown): number {
   return sum;
 }
 
+/** Сума токенів у події: обʼєкти tokens { input, output } на будь-якій глибині. */
+export function eventTokens(e: unknown): { input: number; output: number } {
+  const sum = { input: 0, output: 0 };
+  if (e === null || typeof e !== 'object') return sum;
+  for (const [k, v] of Object.entries(e)) {
+    if (k === 'tokens' && v !== null && typeof v === 'object') {
+      const t = v as Record<string, unknown>;
+      if (typeof t.input === 'number') sum.input += t.input;
+      if (typeof t.output === 'number') sum.output += t.output;
+    } else if (typeof v === 'object') {
+      const inner = eventTokens(v);
+      sum.input += inner.input;
+      sum.output += inner.output;
+    }
+  }
+  return sum;
+}
+
 export function buildPrompt(task: Task): string {
   return [
     task.input,
@@ -85,6 +114,8 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
   const log: string[] = [];
   let turns = 0;
   let costUsd = 0;
+  let inputTokens = 0;
+  let outputTokens = 0;
   let stopReason: Status | null = null;
   let agentExit: number | null = null;
   let agentError: string | null = null;
@@ -113,6 +144,9 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
       if (e === null || typeof e !== 'object') return;
       if (isTurnEvent(e as Record<string, unknown>)) turns += 1;
       costUsd += eventCost(e);
+      const tk = eventTokens(e);
+      inputTokens += tk.input;
+      outputTokens += tk.output;
       if (turns > task.budget.max_turns && stopReason === null) {
         stopReason = 'max_turns';
         ctrl.abort();
@@ -164,6 +198,8 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
     status,
     turns,
     costUsd: Math.round(costUsd * 1e6) / 1e6,
+    inputTokens,
+    outputTokens,
     budget: task.budget,
     agentExit,
     agentError,
@@ -200,7 +236,8 @@ export function realDeps(root: string, opts: { model: string; push: boolean }): 
       const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       const branch = `harness/${task.id}-${stamp}`;
       const dir = resolve(root, '..', 'harness-runs', `${task.id}-${stamp}`);
-      const add = await sh('git', ['worktree', 'add', '-b', branch, dir, 'main'], root);
+      // База — main; у CI HARNESS_BASE=HEAD, щоб оцінювати саме поточний коміт.
+      const add = await sh('git', ['worktree', 'add', '-b', branch, dir, process.env.HARNESS_BASE ?? 'main'], root);
       if (add.code !== 0) throw new Error(`git worktree add: ${add.output}`);
       symlinkSync(resolve(root, 'node_modules'), join(dir, 'node_modules'));
       const exclude = ['.', ':(exclude)node_modules', ':(exclude).agent-log'];

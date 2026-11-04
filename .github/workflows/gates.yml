@@ -126,8 +126,53 @@ jobs:
             verdict.json
           if-no-files-found: ignore
 
+  evals:
+    # Регресійна брама evals (крок 04): агент проганяє кошик regression замороженого банку (k=1),
+    # детерміновані оцінювачі ставлять вердикт, gate.ts порівнює задачі поіменно з базовим рівнем.
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENCODE_VERSION: '1.19.0'
+    outputs:
+      verdict: ${{ steps.v.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - name: Виконавець — OpenCode (та сама версія, що локально)
+        run: npm install -g "opencode-ai@${OPENCODE_VERSION}" && opencode --version
+      - name: Git-автор для комітів у worktree
+        run: git config --global user.email "harness-ci@users.noreply.github.com" && git config --global user.name "harness-ci"
+      - id: gate
+        name: Банк regression, k=1, детерміновані оцінювачі, брама
+        timeout-minutes: 15
+        shell: bash
+        env:
+          EVAL_K: '1'
+          EVAL_BUCKET: regression
+          EVAL_LOG: evals-ci.jsonl
+          HARNESS_BASE: HEAD
+        run: |
+          npx tsx scripts/evals/run-evals.ts docs/lab3/tasks.jsonl 2>&1 | tee gate-evals.log
+          npx tsx scripts/evals/gate.ts 2>&1 | tee -a gate-evals.log
+      - id: v
+        if: ${{ !cancelled() }}
+        run: echo "verdict=${{ steps.gate.outcome == 'success' && 'pass' || 'fail' }}" >> "$GITHUB_OUTPUT"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: gate-evals
+          path: |
+            gate-evals.log
+            evals-ci.jsonl
+            evals-ci-summary.json
+          if-no-files-found: ignore
+
   record:
-    needs: [types, lint, tests, build, verify]
+    needs: [types, lint, tests, build, verify, evals]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -142,6 +187,7 @@ jobs:
           GATE_TESTS: ${{ needs.tests.outputs.verdict || needs.tests.result }}
           GATE_BUILD: ${{ needs.build.outputs.verdict || needs.build.result }}
           GATE_VERIFY: ${{ needs.verify.outputs.verdict || needs.verify.result }}
+          GATE_EVALS: ${{ needs.evals.outputs.verdict || needs.evals.result }}
         run: node scripts/harness/record-gates.mjs
       - uses: actions/upload-artifact@v7
         with:

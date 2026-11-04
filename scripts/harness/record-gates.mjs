@@ -1,13 +1,13 @@
 /**
  * Запис вердиктів брам (Лаб. 3, крок 01). Запускається задачею record у gates.yml.
  * Читає GATE_TYPES / GATE_LINT / GATE_TESTS / GATE_BUILD (pass | fail | skipped | cancelled)
- * і GATE_VERIFY — фінальну браму верифікатора (крок 02; skipped для гілок, що не harness/t-…),
+ * GATE_EVALS — регресійну браму evals (крок 04) і GATE_VERIFY — фінальну браму верифікатора (крок 02; skipped для гілок, що не harness/t-…),
  * пише gate-record.json і копію найсвіжішого docs/lab3/runs/<id>/run.json із полем gates → gate-run.json.
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const NAMES = ['types', 'lint', 'tests', 'build'];
+const NAMES = ['types', 'lint', 'tests', 'build', 'evals'];
 const ALL = [...NAMES, 'verify'];
 const norm = (v) => (v === 'success' ? 'pass' : v === 'failure' ? 'fail' : v || 'skipped');
 const gates = Object.fromEntries(ALL.map((n) => [n, norm(process.env[`GATE_${n.toUpperCase()}`])]));
