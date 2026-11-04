@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { renderComparison, toCells, type LabeledItem } from '../../scripts/harness/calibrate';
+import { confusionMatrix, renderComparison, toCells, type LabeledItem } from '../../scripts/harness/calibrate';
 import type { Task } from '../../scripts/harness/run-task';
 import {
   buildVerifierPrompt,
@@ -105,6 +105,11 @@ describe('верифікатор', () => {
     expect(p).toContain('V2');
     expect(p).not.toContain('Критерій V1');
     expect(p).toContain('tests/median.test.ts');
+    expect(p).toContain('Дефекти, що стосуються інших критеріїв, ігноруй');
+  });
+
+  it('рубрика r2: кожен критерій каже, чого він НЕ оцінює', () => {
+    for (const c of HARNESS_CRITERIA) expect(c.rule).toMatch(/НЕ оцінюй тут/);
   });
 
   it('один критерій — один запит; усі pass → брама відкрита, вартість порахована', async () => {
@@ -175,6 +180,13 @@ describe('калібрування', () => {
     const cells = toCells(items, reports);
     expect(cells).toHaveLength(8);
     expect(cells.filter((c) => c.human !== c.model)).toEqual([expect.objectContaining({ item: 'c02', criterion: 'V1' })]);
+  });
+
+  it('матриця розбіжностей: людина × верифікатор', () => {
+    const m = confusionMatrix(toCells(items, reports));
+    expect(m[0]).toBe('| людина ↓ / верифікатор → | pass | fail |');
+    expect(m).toContain('| **pass** | 7 | 0 |');
+    expect(m).toContain('| **fail** | 1 | 0 |');
   });
 
   it('звіт містить raw, κ і розходження', () => {

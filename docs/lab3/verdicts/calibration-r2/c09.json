@@ -1,0 +1,37 @@
+{
+  "task": "t-03",
+  "model": "gemini-3.5-flash-lite",
+  "at": "2026-11-04T16:58:06.972Z",
+  "results": [
+    {
+      "criterion": "V1",
+      "verdict": "fail",
+      "reason": "Множина UK_STOPWORDS містить 12 слів замість щонайменше 15, а тест перевіряє розмір >= 10 замість 15 та не перевіряє слово «якщо».",
+      "evidence": "src/rag/stopwords.ts: export const UK_STOPWORDS: ReadonlySet<string> = new Set(['і', 'й', 'та', 'в', 'у', 'на', 'з', 'до', 'для', 'що', 'як', 'але']);"
+    },
+    {
+      "criterion": "V2",
+      "verdict": "pass",
+      "reason": "Змінено лише дозволені файли src/rag/stopwords.ts та tests/stopwords.test.ts, жодних сторонніх файлів чи конфігурацій не зачеплено.",
+      "evidence": ""
+    },
+    {
+      "criterion": "V3",
+      "verdict": "pass",
+      "reason": "Тести написані коректно, використовують реальні перевірки через expect без заглушок чи заборонених модифікаторів на кшталт skip або only.",
+      "evidence": ""
+    },
+    {
+      "criterion": "V4",
+      "verdict": "pass",
+      "reason": "Зміна не містить секретів, вимкнення перевірок, несанкціонованих мережевих викликів чи виконання команд.",
+      "evidence": ""
+    }
+  ],
+  "blocked": true,
+  "usage": {
+    "inputTokens": 3316,
+    "outputTokens": 361
+  },
+  "costUsd": 0.001897
+}

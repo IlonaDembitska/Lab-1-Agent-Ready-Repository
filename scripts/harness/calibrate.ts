@@ -3,8 +3,9 @@
  * Бере ручну розмітку docs/lab3/calibration/labels.json (≥ 10 артефактів × V1–V4),
  * проганяє верифікатор на кожному артефакті, рахує raw agreement і Cohen's κ
  * (по клітинках і по рішенню брами «зливати / не зливати»), пише:
- *   docs/lab3/verdicts/calibration/<id>.json — сирі вердикти
- *   docs/lab3/calibration/comparison.md       — таблиця збігів і розходжень
+ *   docs/lab3/verdicts/calibration[-<раунд>]/<id>.json — сирі вердикти
+ *   docs/lab3/calibration/comparison[-<раунд>].md       — таблиця збігів, матриця розбіжностей
+ * Раунд: --round r2 (типово r1 — без суфікса, як у першому прогоні). Розмітку між раундами НЕ змінюємо — змінюємо рубрику.
  *
  *   npx tsx scripts/harness/calibrate.ts          — продовжує з місця зупинки (готові вердикти не перезапитує)
  *   npx tsx scripts/harness/calibrate.ts --fresh  — усе наново
@@ -14,7 +15,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { agreement, kappaLabel, type Agreement } from '../../src/verify/agreement';
-import { blocks, HARNESS_CRITERIA, harnessReport, type HarnessReport } from '../../src/verify/harness-verdict';
+import { blocks, HARNESS_CRITERIA, harnessReport, RUBRIC_VERSION, type HarnessReport } from '../../src/verify/harness-verdict';
 import { loadTasks, verifyArtifact, VERIFIER_SPEC } from './verifier';
 
 type Label = 'pass' | 'fail' | 'unknown';
@@ -55,10 +56,20 @@ export function toCells(items: readonly LabeledItem[], reports: ReadonlyMap<stri
   return rows;
 }
 
+/** Матриця розбіжностей: рядки — людина, стовпці — верифікатор. */
+export function confusionMatrix(cells: readonly CellRow[]): string[] {
+  const labels = ['pass', 'fail', 'unknown', 'error'].filter((l) => cells.some((c) => c.human === l || c.model === l));
+  const lines = [`| людина ↓ / верифікатор → | ${labels.join(' | ')} |`, `|---|${labels.map(() => '---').join('|')}|`];
+  for (const h of labels) {
+    lines.push(`| **${h}** | ${labels.map((m) => cells.filter((c) => c.human === h && c.model === m).length).join(' | ')} |`);
+  }
+  return lines;
+}
+
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 const fmt = (a: Agreement) => `${a.agree}/${a.n} = ${pct(a.raw)} · κ = ${a.kappa.toFixed(3)} (${kappaLabel(a.kappa)})`;
 
-export function renderComparison(items: readonly LabeledItem[], reports: ReadonlyMap<string, HarnessReport>): string {
+export function renderComparison(items: readonly LabeledItem[], reports: ReadonlyMap<string, HarnessReport>, round = 'r1'): string {
   const cells = toCells(items, reports);
   const all = agreement(cells.map((c) => c.human), cells.map((c) => c.model));
   const gateHuman = items.map((it) => (blocks(HARNESS_CRITERIA.map((c) => ({ criterion: c.id, verdict: it.labels[c.id] ?? 'unknown', reason: '-', evidence: '' }))) ? 'block' : 'merge'));
@@ -69,7 +80,7 @@ export function renderComparison(items: readonly LabeledItem[], reports: Readonl
   const tokensOut = [...reports.values()].reduce((s, r) => s + r.usage.outputTokens, 0);
 
   const lines = [
-    '# Калібрування верифікатора — людина проти моделі',
+    `# Калібрування верифікатора — людина проти моделі (раунд ${round})`,
     '',
     `Верифікатор: \`${VERIFIER_SPEC.id}\` (Google) · виконавець, чию роботу судимо: OpenCode \`opencode/big-pickle\`.`,
     `Артефактів: ${items.length} · критеріїв: ${HARNESS_CRITERIA.length} · запитів: ${items.length * HARNESS_CRITERIA.length} (один критерій — один запит).`,
@@ -85,6 +96,10 @@ export function renderComparison(items: readonly LabeledItem[], reports: Readonl
       return `| ${c.id} ${c.name} | ${fmt(agreement(cc.map((x) => x.human), cc.map((x) => x.model)))} |`;
     }),
     `| рішення брами (зливати / не зливати) | ${fmt(gate)} |`,
+    '',
+    '## Матриця розбіжностей (усі клітинки)',
+    '',
+    ...confusionMatrix(cells),
     '',
     '## Розходження',
     '',
@@ -107,8 +122,12 @@ async function main(): Promise<void> {
   if (apiKey === '') throw new Error('немає GOOGLE_GENERATIVE_AI_API_KEY');
   const model = process.env.VERIFIER_MODEL ?? VERIFIER_SPEC.id;
   const delayMs = Number(process.env.VERIFIER_DELAY_MS ?? 4000);
+  const ri = process.argv.indexOf('--round');
+  const round = ri >= 0 ? (process.argv[ri + 1] ?? 'r1') : 'r1';
+  const suffix = round === 'r1' ? '' : `-${round}`;
   const dir = 'docs/lab3/calibration';
-  const outDir = 'docs/lab3/verdicts/calibration';
+  const outDir = `docs/lab3/verdicts/calibration${suffix}`;
+  console.log(`раунд ${round} · рубрика ${RUBRIC_VERSION} · вердикти → ${outDir}`);
   const { items } = JSON.parse(readFileSync(join(dir, 'labels.json'), 'utf8')) as { items: LabeledItem[] };
   const tasks = loadTasks();
   mkdirSync(outDir, { recursive: true });
@@ -134,10 +153,11 @@ async function main(): Promise<void> {
     console.log(`${it.id} ${it.task} · ${row} · ${rep.blocked ? 'block' : 'merge'}`);
     await new Promise((r) => setTimeout(r, delayMs));
   }
-  const md = renderComparison(items, reports);
-  writeFileSync(join(dir, 'comparison.md'), md);
-  console.log(md.split('\n').slice(0, 16).join('\n'));
-  console.log(`→ ${join(dir, 'comparison.md')}`);
+  const md = renderComparison(items, reports, round);
+  const mdFile = join(dir, `comparison${suffix}.md`);
+  writeFileSync(mdFile, md);
+  console.log(md.split('\n').slice(0, 25).join('\n'));
+  console.log(`→ ${mdFile}`);
 }
 
 if (process.argv[1]?.endsWith('calibrate.ts')) {
