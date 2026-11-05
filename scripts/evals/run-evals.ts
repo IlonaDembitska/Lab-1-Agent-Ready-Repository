@@ -4,7 +4,10 @@
  * Пише docs/lab3/evals.jsonl (одна спроба = один рядок) і docs/lab3/evals-summary.json.
  *   EVAL_K=3 npx tsx scripts/evals/run-evals.ts docs/lab3/tasks.jsonl
  *   EVAL_BUCKET=regression EVAL_K=1 …   — у CI: лише регресійний кошик
- *   EVAL_ONLY=t-16,t-18 …               — лише вибрані задачі (налагодження)
+ *   EVAL_ONLY=t-16,t-18 …               — лише вибрані задачі
+ *   EVAL_APPEND=1 …                     — дописати в наявний журнал (продовжити перерваний прогін тим самим комітом)
+ *   EVAL_BREAKER=3 …                    — circuit breaker: після N поспіль збоїв середовища (timeout / agent_error) зупинитися
+ * Код виходу: 0 — прогін завершено; 3 — розімкнувся запобіжник (результати неповні, у браму не годяться).
  */
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
@@ -43,13 +46,17 @@ if (tasks.some((t) => t.bucket === undefined || t.frozen_at === undefined || t.l
   process.exit(2);
 }
 
-writeFileSync(LOG, '');
+const BREAKER = Number(process.env.EVAL_BREAKER ?? 3);
+if (process.env.EVAL_APPEND !== '1') writeFileSync(LOG, '');
+let infraFailures = 0;
+let tripped = false;
 const deps = realDeps(resolve('.'), { model, push: false });
 const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const lines: EvalLine[] = [];
 console.log(`evals: ${BANK} · задач ${tasks.length}${BUCKET ? ` (кошик ${BUCKET})` : ''} · k=${K} · агент ${model} · sha ${SHA}`);
 
 for (const task of tasks) {
+  if (tripped) break;
   for (let attempt = 1; attempt <= K; attempt += 1) {
     const out = join('runs', 'evals', stamp, `${task.id}-${attempt}`);
     const rec = await executeTask(task, deps, out);
@@ -88,13 +95,26 @@ for (const task of tasks) {
     lines.push(line);
     const bad = results.filter((r) => !r.pass).map((r) => `${r.id}: ${r.detail}`);
     console.log(`${task.id} [${task.bucket}] #${attempt} · ${pass ? 'PASS' : 'fail'} · ${rec.status} · ${line.duration_s} с${bad.length ? ` · ${bad.join(' · ')}` : ''}`);
+    // Збій середовища — агент не зробив жодного результативного кроку: зупинено за часом або впав.
+    // Звичайний fail (агент працював, але перевірки червоні) — це результат, а не збій, і лічильник обнуляє.
+    infraFailures = rec.status === 'timeout' || rec.status === 'agent_error' ? infraFailures + 1 : 0;
+    if (infraFailures >= BREAKER) {
+      tripped = true;
+      console.error(`⛔ CIRCUIT BREAKER: ${BREAKER} збої середовища поспіль (timeout / agent_error) — модель або мережа недоступні; прогін зупинено, результати неповні`);
+      break;
+    }
   }
 }
 
-const summary = summarize(lines, K);
+if (tripped) process.exitCode = 3;
+const all: EvalLine[] = readFileSync(LOG, 'utf8')
+  .split(/\r?\n/)
+  .filter((l) => l.trim() !== '')
+  .map((l) => JSON.parse(l) as EvalLine);
+const summary = summarize(all, K);
 writeFileSync(
   LOG.replace(/\.jsonl$/, '-summary.json'),
-  `${JSON.stringify({ at: new Date().toISOString(), sha: SHA, bank: BANK, k: K, bucket: BUCKET || 'all', agent: model, summary }, null, 2)}\n`,
+  `${JSON.stringify({ at: new Date().toISOString(), sha: SHA, bank: BANK, k: K, bucket: BUCKET || 'all', agent: model, complete: !tripped, summary }, null, 2)}\n`,
 );
 console.log('\n| кошик | задач | pass@k | pass^k |\n|---|---|---|---|');
 for (const s of summary) console.log(`| ${s.bucket} | ${s.tasks} | ${s.pass_at_k} | ${s.pass_pow_k} |`);
