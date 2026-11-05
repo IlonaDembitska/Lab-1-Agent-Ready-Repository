@@ -90,6 +90,15 @@ describe('executeTask (підроблений агент, без мережі)',
     expect(r.checks).toHaveLength(0);
   });
 
+  it('агент ігнорує сигнал і висить: executeTask однаково завершується після abortGraceMs', async () => {
+    const quick: Task = { ...task, budget: { ...task.budget, timeout_s: 0.05 } };
+    const started = Date.now();
+    const r = await executeTask(quick, { ...fakeDeps(() => new Promise<number>(() => undefined)), abortGraceMs: 30 }, out());
+    expect(r.status).toBe('timeout');
+    expect(r.agentExit).toBe(-2);
+    expect(Date.now() - started).toBeLessThan(2_000);
+  });
+
   it('перевірка не пройшла: status fail', async () => {
     const r = await executeTask(task, fakeDeps(async () => 0, 1), out());
     expect(r.status).toBe('fail');

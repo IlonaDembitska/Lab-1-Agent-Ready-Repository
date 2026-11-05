@@ -63,6 +63,11 @@ export interface Deps {
   /** Запускає агента; кожен рядок його виводу — в onLine; signal зупиняє процес. */
   runAgent(ws: Workspace, prompt: string, onLine: (line: string) => void, signal: AbortSignal): Promise<number>;
   runCheck(ws: Workspace, cmd: string): Promise<{ code: number; output: string }>;
+  /**
+   * Скільки чекати, поки агент завершиться після сигналу зупинки. Далі executeTask іде далі сам:
+   * завислий процес не має права тримати чергу (баг кроку 04: таймаут 420 с, фактично 3660 с).
+   */
+  readonly abortGraceMs?: number;
 }
 
 /** Хід агента = подія початку кроку у JSON-виводі OpenCode. */
@@ -156,7 +161,19 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
         ctrl.abort();
       }
     };
-    agentExit = await deps.runAgent(ws, buildPrompt(task), onLine, ctrl.signal);
+    const run = deps.runAgent(ws, buildPrompt(task), onLine, ctrl.signal);
+    // Жорсткий запобіжник: після abort чекаємо не довше abortGraceMs, навіть якщо процес не закрився.
+    const hard = new Promise<number>((res) => {
+      ctrl.signal.addEventListener(
+        'abort',
+        () => {
+          const t = setTimeout(() => res(-2), deps.abortGraceMs ?? 15_000);
+          t.unref();
+        },
+        { once: true },
+      );
+    });
+    agentExit = await Promise.race([run, hard]);
   } catch (err) {
     agentError = err instanceof Error ? err.message : String(err);
   } finally {
@@ -262,12 +279,27 @@ export function realDeps(root: string, opts: { model: string; push: boolean }): 
     },
     runAgent(ws, prompt, onLine, signal) {
       return new Promise((res, rej) => {
+        // detached: процес OpenCode — лідер власної групи, тож зупиняємо всю групу разом
+        // із дочірніми процесами, які тримали відкритими stdout/stderr (через них 'close' не приходив).
         const p = spawn('opencode', ['run', '--format', 'json', '-m', opts.model, '--dir', ws.dir, prompt], {
           cwd: ws.dir,
           env: { ...process.env, OPENCODE_CONFIG: config },
           stdio: ['ignore', 'pipe', 'pipe'],
-          signal,
+          detached: true,
         });
+        const killGroup = (sig: NodeJS.Signals): void => {
+          try {
+            if (p.pid !== undefined) process.kill(-p.pid, sig);
+          } catch {
+            /* група вже завершилась */
+          }
+        };
+        const onAbort = (): void => {
+          killGroup('SIGTERM');
+          setTimeout(() => killGroup('SIGKILL'), 5_000).unref();
+        };
+        if (signal.aborted) onAbort();
+        else signal.addEventListener('abort', onAbort, { once: true });
         let buf = '';
         const feed = (d: Buffer): void => {
           buf += d.toString();
@@ -278,8 +310,11 @@ export function realDeps(root: string, opts: { model: string; push: boolean }): 
         p.stdout.on('data', feed);
         p.stderr.on('data', (d: Buffer) => onLine(`[stderr] ${d.toString().trim()}`));
         p.on('error', (e) => (signal.aborted ? res(-1) : rej(e)));
-        p.on('close', (code) => {
+        // 'exit', а не лише 'close': close чекає закриття потоків, які могли успадкувати онуки процесу.
+        p.on('exit', (code) => {
+          signal.removeEventListener('abort', onAbort);
           if (buf !== '') onLine(buf);
+          buf = '';
           res(code ?? -1);
         });
       });
