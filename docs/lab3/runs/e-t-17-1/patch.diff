@@ -1,0 +1,15 @@
+diff --git a/tests/rrf-empty-lists.test.ts b/tests/rrf-empty-lists.test.ts
+new file mode 100644
+index 0000000..ea8850d
+--- /dev/null
++++ b/tests/rrf-empty-lists.test.ts
+@@ -0,0 +1,9 @@
++import { describe, expect, it } from 'vitest';
++
++import { rrf } from '../src/rag/rrf';
++
++describe('rrf empty lists', () => {
++  it('два порожні списки дають порожній масив', () => {
++    expect(rrf([[], []])).toEqual([]);
++  });
++});

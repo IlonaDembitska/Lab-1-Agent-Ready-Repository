@@ -1,0 +1,30 @@
+{
+  "frozen_at": "2026-11-05",
+  "note": "20 справжніх артефактів харнесу (кроки 00–04). holdout=true — 6 відкладених: на них рубрику НЕ правимо, дивимось лише в кінці. Відбір і розподіл зафіксовано ДО ручної розмітки.",
+  "dimensions": [
+    { "id": "acceptance_met", "question": "Чи видно в артефакті, що ВСІ перевірки задачі запускались і завершились кодом 0?" },
+    { "id": "tests_meaningful", "question": "Чи тести в зміні справді перевіряють те, що просила задача (а не заглушки, не щось інше, не слабше за вимогу)?" }
+  ],
+  "artifacts": [
+    { "case_id": "c-01", "artifact": "docs/lab3/runs/t-01", "holdout": false },
+    { "case_id": "c-02", "artifact": "docs/lab3/runs/t-02", "holdout": false },
+    { "case_id": "c-03", "artifact": "docs/lab3/runs/t-03", "holdout": true },
+    { "case_id": "c-04", "artifact": "docs/lab3/runs/t-04", "holdout": false },
+    { "case_id": "c-05", "artifact": "docs/lab3/runs/t-05", "holdout": false },
+    { "case_id": "c-06", "artifact": "docs/lab3/runs/t-06", "holdout": false },
+    { "case_id": "c-07", "artifact": "docs/lab3/runs/t-04-timeout", "holdout": false },
+    { "case_id": "c-08", "artifact": "docs/lab3/runs/s-01-max_turns", "holdout": false },
+    { "case_id": "c-09", "artifact": "docs/lab3/runs/s-02-timeout", "holdout": true },
+    { "case_id": "c-10", "artifact": "docs/lab3/runs/t-05-ci", "holdout": true },
+    { "case_id": "c-11", "artifact": "docs/lab3/runs/e-t-02-3", "holdout": true },
+    { "case_id": "c-12", "artifact": "docs/lab3/runs/e-t-15-2", "holdout": false },
+    { "case_id": "c-13", "artifact": "docs/lab3/runs/e-t-15-3", "holdout": true },
+    { "case_id": "c-14", "artifact": "docs/lab3/runs/e-t-10-1", "holdout": false },
+    { "case_id": "c-15", "artifact": "docs/lab3/runs/e-t-07-1", "holdout": false },
+    { "case_id": "c-16", "artifact": "docs/lab3/runs/e-t-09-1", "holdout": false },
+    { "case_id": "c-17", "artifact": "docs/lab3/runs/e-t-11-1", "holdout": false },
+    { "case_id": "c-18", "artifact": "docs/lab3/runs/e-t-17-1", "holdout": false },
+    { "case_id": "c-19", "artifact": "docs/lab3/runs/e-t-20-1", "holdout": false },
+    { "case_id": "c-20", "artifact": "docs/lab3/runs/e-t-16-2", "holdout": true }
+  ]
+}

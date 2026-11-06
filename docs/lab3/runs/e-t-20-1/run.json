@@ -1,0 +1,25 @@
+{
+  "id": "t-20",
+  "agent": "opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)",
+  "model": "opencode/big-pickle",
+  "startedAt": "2026-11-05T00:35:14.306Z",
+  "finishedAt": "2026-11-05T00:36:01.115Z",
+  "durationMs": 46809,
+  "status": "max_turns",
+  "turns": 9,
+  "costUsd": 0,
+  "inputTokens": 30756,
+  "outputTokens": 1613,
+  "budget": {
+    "max_turns": 8,
+    "max_usd": 0,
+    "timeout_s": 300
+  },
+  "agentExit": -1,
+  "agentError": null,
+  "checks": [],
+  "changedFiles": [
+    "src/rag/rrf.ts"
+  ],
+  "branch": "harness/t-20-2026-11-05T00-35-14"
+}

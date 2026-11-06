@@ -1,0 +1,18 @@
+diff --git a/tests/proportion-ci.test.ts b/tests/proportion-ci.test.ts
+new file mode 100644
+index 0000000..f8859a2
+--- /dev/null
++++ b/tests/proportion-ci.test.ts
+@@ -0,0 +1,12 @@
++import { describe, expect, it } from 'vitest';
++
++import { proportionCI95 } from '../src/metrics';
++
++describe('proportionCI95', () => {
++  it('для 5 успіхів із 10 дає p = 0.5, а інтервал охоплює p', () => {
++    const ci = proportionCI95(5, 10);
++    expect(ci.p).toBe(0.5);
++    expect(ci.lo).toBeLessThan(0.5);
++    expect(ci.hi).toBeGreaterThan(0.5);
++  });
++});

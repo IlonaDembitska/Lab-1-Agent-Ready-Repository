@@ -1,0 +1,21 @@
+diff --git a/src/rag/rrf.ts b/src/rag/rrf.ts
+index ef19c35..5f5ad7a 100644
+--- a/src/rag/rrf.ts
++++ b/src/rag/rrf.ts
+@@ -7,9 +7,14 @@ export const RRF_K = 60;
+ export function rrf(lists: readonly (readonly string[])[], k = RRF_K): { id: string; score: number }[] {
+   const total = new Map<string, number>();
+   for (const list of lists) {
+-    list.forEach((id, i) => {
++    const seen = new Set<string>();
++    for (const [i, id] of list.entries()) {
++      // Дублікат у межах одного списку не має давати документу додатковий бал:
++      // зараховуємо лише першу (найкращу) позицію.
++      if (seen.has(id)) continue;
++      seen.add(id);
+       total.set(id, (total.get(id) ?? 0) + 1 / (k + i + 1)); // i + 1 — ранг з одиниці
+-    });
++    }
+   }
+   return [...total.entries()]
+     .map(([id, score]) => ({ id, score }))

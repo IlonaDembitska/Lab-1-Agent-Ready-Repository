@@ -1,0 +1,37 @@
+{
+  "id": "t-07",
+  "agent": "opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)",
+  "model": "opencode/big-pickle",
+  "startedAt": "2026-11-04T17:41:22.721Z",
+  "finishedAt": "2026-11-04T17:41:57.320Z",
+  "durationMs": 34599,
+  "status": "pass",
+  "turns": 6,
+  "costUsd": 0,
+  "inputTokens": 13200,
+  "outputTokens": 1288,
+  "budget": {
+    "max_turns": 6,
+    "max_usd": 0,
+    "timeout_s": 300
+  },
+  "agentExit": 0,
+  "agentError": null,
+  "checks": [
+    {
+      "cmd": "npx vitest run tests/stopwords.test.ts",
+      "code": 0,
+      "ms": 717
+    },
+    {
+      "cmd": "npm run typecheck",
+      "code": 0,
+      "ms": 1521
+    }
+  ],
+  "changedFiles": [
+    "src/rag/stopwords.ts",
+    "tests/stopwords.test.ts"
+  ],
+  "branch": "harness/t-07-2026-11-04T17-41-22"
+}

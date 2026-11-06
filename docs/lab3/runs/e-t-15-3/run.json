@@ -1,0 +1,36 @@
+{
+  "id": "t-15",
+  "agent": "opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)",
+  "model": "opencode/big-pickle",
+  "startedAt": "2026-11-05T00:23:10.779Z",
+  "finishedAt": "2026-11-05T00:23:49.148Z",
+  "durationMs": 38369,
+  "status": "pass",
+  "turns": 6,
+  "costUsd": 0,
+  "inputTokens": 19204,
+  "outputTokens": 796,
+  "budget": {
+    "max_turns": 15,
+    "max_usd": 0,
+    "timeout_s": 420
+  },
+  "agentExit": 0,
+  "agentError": null,
+  "checks": [
+    {
+      "cmd": "npx vitest run tests/proportion-ci.test.ts",
+      "code": 0,
+      "ms": 701
+    },
+    {
+      "cmd": "npm run typecheck",
+      "code": 0,
+      "ms": 1568
+    }
+  ],
+  "changedFiles": [
+    "tests/proportion-ci.test.ts"
+  ],
+  "branch": "harness/t-15-2026-11-05T00-23-10"
+}

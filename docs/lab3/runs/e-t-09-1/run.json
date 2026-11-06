@@ -1,0 +1,36 @@
+{
+  "id": "t-09",
+  "agent": "opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)",
+  "model": "opencode/big-pickle",
+  "startedAt": "2026-11-04T17:44:51.474Z",
+  "finishedAt": "2026-11-04T17:45:33.064Z",
+  "durationMs": 41590,
+  "status": "pass",
+  "turns": 7,
+  "costUsd": 0,
+  "inputTokens": 27313,
+  "outputTokens": 712,
+  "budget": {
+    "max_turns": 15,
+    "max_usd": 0,
+    "timeout_s": 420
+  },
+  "agentExit": 0,
+  "agentError": null,
+  "checks": [
+    {
+      "cmd": "npx vitest run tests/rrf-k.test.ts",
+      "code": 0,
+      "ms": 696
+    },
+    {
+      "cmd": "npm run typecheck",
+      "code": 0,
+      "ms": 1507
+    }
+  ],
+  "changedFiles": [
+    "tests/rrf-k.test.ts"
+  ],
+  "branch": "harness/t-09-2026-11-04T17-44-51"
+}

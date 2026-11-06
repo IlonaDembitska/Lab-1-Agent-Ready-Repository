@@ -1,0 +1,21 @@
+$ npx vitest run tests/rrf-k.test.ts
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.0 [39m[90m/Users/ilonadembitska/Desktop/UNIVERSITY/Агентна Інженерія ПЗ/harness-runs/t-09-2026-11-04T17-44-51[39m
+
+ [32m✓[39m tests/rrf-k.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 15[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 19:45:30
+[2m   Duration [22m 152ms[2m (transform 43%, tests 32%, import 18%, worker 7%)[22m
+
+
+[код виходу 0]
+
+$ npm run typecheck
+
+> agentic-course-starter@0.1.0 typecheck
+> tsc --noEmit
+
+
+[код виходу 0]
