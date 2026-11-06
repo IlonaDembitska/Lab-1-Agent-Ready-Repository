@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { eventCost, executeTask, isTurnEvent, type Deps, type Task } from '../../scripts/harness/run-task';
+import { buildPrompt, eventCost, executeTask, isTurnEvent, type Deps, type Task } from '../../scripts/harness/run-task';
 
 const task: Task = {
   id: 't-test',
@@ -97,6 +97,29 @@ describe('executeTask (підроблений агент, без мережі)',
     expect(r.status).toBe('timeout');
     expect(r.agentExit).toBe(-2);
     expect(Date.now() - started).toBeLessThan(2_000);
+  });
+
+  it('агент замовк після відмови в дозволі: status stalled задовго до таймауту, відмови пораховано', async () => {
+    const started = Date.now();
+    const r = await executeTask(
+      task,
+      {
+        ...fakeDeps((_ws, _p, onLine, signal) => {
+          onLine('{"type":"tool_use","part":{"state":{"error":"The user has specified a rule which prevents you from using this specific tool call."}}}');
+          return new Promise<number>((res) => signal.addEventListener('abort', () => res(-1)));
+        }),
+        idleMs: 40,
+      },
+      out(),
+    );
+    expect(r.status).toBe('stalled');
+    expect(r.deniedToolCalls).toBe(1);
+    expect(r.checks).toHaveLength(0);
+    expect(Date.now() - started).toBeLessThan(task.budget.timeout_s * 1000);
+  });
+
+  it('промпт каже агенту, які команди оболонки дозволені', () => {
+    expect(buildPrompt(task)).toContain('Оболонка обмежена');
   });
 
   it('перевірка не пройшла: status fail', async () => {

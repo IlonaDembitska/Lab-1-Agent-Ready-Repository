@@ -23,7 +23,11 @@ export interface Task {
   readonly frozen_at?: string;
 }
 
-export type Status = 'pass' | 'fail' | 'agent_error' | 'max_turns' | 'max_usd' | 'timeout';
+/**
+ * stalled — агент замовк: довше за idle-ліміт не прийшло жодної події. Так OpenCode 1.19 поводиться
+ * після відмови в дозволі на команду оболонки (крок 04: t-10 висіла до таймауту 420 с у кожному прогоні).
+ */
+export type Status = 'pass' | 'fail' | 'agent_error' | 'max_turns' | 'max_usd' | 'timeout' | 'stalled';
 
 export interface CheckResult { readonly cmd: string; readonly code: number; readonly ms: number }
 
@@ -43,6 +47,8 @@ export interface RunRecord {
   readonly budget: Task['budget'];
   readonly agentExit: number | null;
   readonly agentError: string | null;
+  /** Скільки разів OpenCode відмовив агенту в дозволі на виклик інструмента. */
+  readonly deniedToolCalls: number;
   readonly checks: readonly CheckResult[];
   readonly changedFiles: readonly string[];
   readonly branch: string | null;
@@ -68,6 +74,8 @@ export interface Deps {
    * завислий процес не має права тримати чергу (баг кроку 04: таймаут 420 с, фактично 3660 с).
    */
   readonly abortGraceMs?: number;
+  /** Скільки тиші (без жодної події від агента) вважати зависанням → status stalled. Типово HARNESS_IDLE_S або 120 с. */
+  readonly idleMs?: number;
 }
 
 /** Хід агента = подія початку кроку у JSON-виводі OpenCode. */
@@ -110,6 +118,8 @@ export function buildPrompt(task: Task): string {
     '',
     'Правила: працюй лише в поточному репозиторії; не комітуй і не пуш; не змінюй файли поза потрібними.',
     `Після змін перевір себе командами: ${task.acceptance.join(' ; ')}`,
+    'Оболонка обмежена: дозволені лише npm test, npx vitest, npx tsc, npm run typecheck, npm run lint, git status, git diff. ' +
+      'Файли й теки дивись інструментами read / glob / grep, а не ls чи cat — інші команди оболонки буде відхилено.',
   ].join('\n');
 }
 
@@ -124,6 +134,8 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
   let stopReason: Status | null = null;
   let agentExit: number | null = null;
   let agentError: string | null = null;
+  let deniedToolCalls = 0;
+  let lastEventAt = Date.now();
   const checks: CheckResult[] = [];
   const outputs: string[] = [];
   let diff = '';
@@ -135,11 +147,20 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
     stopReason = 'timeout';
     ctrl.abort();
   }, task.budget.timeout_s * 1000);
+  const idleMs = deps.idleMs ?? Number(process.env.HARNESS_IDLE_S ?? 120) * 1000;
+  const watchdog = setInterval(() => {
+    if (stopReason === null && Date.now() - lastEventAt > idleMs) {
+      stopReason = 'stalled';
+      ctrl.abort();
+    }
+  }, Math.max(10, Math.min(5_000, Math.floor(idleMs / 4))));
 
   try {
     ws = await deps.prepare(task);
     const onLine = (line: string): void => {
       log.push(line);
+      lastEventAt = Date.now();
+      if (line.includes('prevents you from using this specific tool call')) deniedToolCalls += 1;
       let e: unknown;
       try {
         e = JSON.parse(line);
@@ -178,6 +199,7 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
     agentError = err instanceof Error ? err.message : String(err);
   } finally {
     clearTimeout(timer);
+    clearInterval(watchdog);
   }
 
   try {
@@ -220,6 +242,7 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
     budget: task.budget,
     agentExit,
     agentError,
+    deniedToolCalls,
     checks,
     changedFiles: files,
     branch: ws === null ? null : ws.branch,

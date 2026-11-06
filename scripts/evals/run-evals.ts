@@ -95,7 +95,8 @@ for (const task of tasks) {
     lines.push(line);
     const bad = results.filter((r) => !r.pass).map((r) => `${r.id}: ${r.detail}`);
     console.log(`${task.id} [${task.bucket}] #${attempt} · ${pass ? 'PASS' : 'fail'} · ${rec.status} · ${line.duration_s} с${bad.length ? ` · ${bad.join(' · ')}` : ''}`);
-    // Збій середовища — агент не зробив жодного результативного кроку: зупинено за часом або впав.
+    // Збій середовища — модель/мережа не відповідає: зупинено за часом або процес агента впав.
+    // stalled (агент замовк після відмови в дозволі) — НЕ збій середовища, а результат харнесу; лічильник обнуляє.
     // Звичайний fail (агент працював, але перевірки червоні) — це результат, а не збій, і лічильник обнуляє.
     infraFailures = rec.status === 'timeout' || rec.status === 'agent_error' ? infraFailures + 1 : 0;
     if (infraFailures >= BREAKER) {
