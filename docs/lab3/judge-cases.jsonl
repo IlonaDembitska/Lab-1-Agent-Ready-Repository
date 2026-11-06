@@ -1,0 +1,40 @@
+{"case_id":"c-01","artifact":"docs/lab3/runs/t-01","dimension":"acceptance_met","mine":"pass","reason":"скрізь код 0","holdout":false}
+{"case_id":"c-01","artifact":"docs/lab3/runs/t-01","dimension":"tests_meaningful","mine":"pass","reason":"є обидва тести з задачі","holdout":false}
+{"case_id":"c-02","artifact":"docs/lab3/runs/t-02","dimension":"acceptance_met","mine":"pass","reason":"усі три перевірки код 0","holdout":false}
+{"case_id":"c-02","artifact":"docs/lab3/runs/t-02","dimension":"tests_meaningful","mine":"unknown","reason":"тесту на порожній масив не видно, diff обрізано","holdout":false}
+{"case_id":"c-03","artifact":"docs/lab3/runs/t-03","dimension":"acceptance_met","mine":"pass","reason":"усі три перевірки код 0","holdout":true}
+{"case_id":"c-03","artifact":"docs/lab3/runs/t-03","dimension":"tests_meaningful","mine":"unknown","reason":"файлу тесту не видно, diff обрізано.","holdout":true}
+{"case_id":"c-04","artifact":"docs/lab3/runs/t-04","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки grep код 0","holdout":false}
+{"case_id":"c-04","artifact":"docs/lab3/runs/t-04","dimension":"tests_meaningful","mine":"unknown","reason":"задача про README, тести не потрібні","holdout":false}
+{"case_id":"c-05","artifact":"docs/lab3/runs/t-05","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки код 0","holdout":false}
+{"case_id":"c-05","artifact":"docs/lab3/runs/t-05","dimension":"tests_meaningful","mine":"pass","reason":"обидва тести з задачі є, з expect","holdout":false}
+{"case_id":"c-06","artifact":"docs/lab3/runs/t-06","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки код 0","holdout":false}
+{"case_id":"c-06","artifact":"docs/lab3/runs/t-06","dimension":"tests_meaningful","mine":"pass","reason":"обидва тести з задачі є","holdout":false}
+{"case_id":"c-07","artifact":"docs/lab3/runs/t-04-timeout","dimension":"acceptance_met","mine":"unknown","reason":"перевірки не запускались, таймаут","holdout":false}
+{"case_id":"c-07","artifact":"docs/lab3/runs/t-04-timeout","dimension":"tests_meaningful","mine":"unknown","reason":"задача про README, змін немає","holdout":false}
+{"case_id":"c-08","artifact":"docs/lab3/runs/s-01-max_turns","dimension":"acceptance_met","mine":"unknown","reason":"перевірки не запускались, ліміт ходів","holdout":false}
+{"case_id":"c-08","artifact":"docs/lab3/runs/s-01-max_turns","dimension":"tests_meaningful","mine":"fail","reason":"тесту немає, хоча задача його просила","holdout":false}
+{"case_id":"c-09","artifact":"docs/lab3/runs/s-02-timeout","dimension":"acceptance_met","mine":"unknown","reason":"перевірки не запускались, таймаут","holdout":true}
+{"case_id":"c-09","artifact":"docs/lab3/runs/s-02-timeout","dimension":"tests_meaningful","mine":"fail","reason":"тесту немає, хоча задача просила","holdout":true}
+{"case_id":"c-10","artifact":"docs/lab3/runs/t-05-ci","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки код 0","holdout":true}
+{"case_id":"c-10","artifact":"docs/lab3/runs/t-05-ci","dimension":"tests_meaningful","mine":"pass","reason":"обидва тести з задачі є","holdout":true}
+{"case_id":"c-11","artifact":"docs/lab3/runs/e-t-02-3","dimension":"acceptance_met","mine":"fail","reason":"grep і vitest впали з кодом 1","holdout":true}
+{"case_id":"c-11","artifact":"docs/lab3/runs/e-t-02-3","dimension":"tests_meaningful","mine":"fail","reason":"тесту немає, хоча задача просила","holdout":true}
+{"case_id":"c-12","artifact":"docs/lab3/runs/e-t-15-2","dimension":"acceptance_met","mine":"fail","reason":"vitest впав з кодом 1","holdout":false}
+{"case_id":"c-12","artifact":"docs/lab3/runs/e-t-15-2","dimension":"tests_meaningful","mine":"pass","reason":"тест перевіряє саме вимоги задачі","holdout":false}
+{"case_id":"c-13","artifact":"docs/lab3/runs/e-t-15-3","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки код 0.","holdout":true}
+{"case_id":"c-13","artifact":"docs/lab3/runs/e-t-15-3","dimension":"tests_meaningful","mine":"pass","reason":"тест перевіряє вимоги задачі і пройшов","holdout":true}
+{"case_id":"c-14","artifact":"docs/lab3/runs/e-t-10-1","dimension":"acceptance_met","mine":"unknown","reason":"перевірки не запускались, таймаут.","holdout":false}
+{"case_id":"c-14","artifact":"docs/lab3/runs/e-t-10-1","dimension":"tests_meaningful","mine":"fail","reason":"тесту немає, хоча задача просила","holdout":false}
+{"case_id":"c-15","artifact":"docs/lab3/runs/e-t-07-1","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки код 0.","holdout":false}
+{"case_id":"c-15","artifact":"docs/lab3/runs/e-t-07-1","dimension":"tests_meaningful","mine":"unknown","reason":"тесту не видно, diff обрізано.","holdout":false}
+{"case_id":"c-16","artifact":"docs/lab3/runs/e-t-09-1","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки код 0","holdout":false}
+{"case_id":"c-16","artifact":"docs/lab3/runs/e-t-09-1","dimension":"tests_meaningful","mine":"pass","reason":"тест перевіряє однаковий score і порядок A, B.","holdout":false}
+{"case_id":"c-17","artifact":"docs/lab3/runs/e-t-11-1","dimension":"acceptance_met","mine":"unknown","reason":"перевірки не запускались, таймаут.","holdout":false}
+{"case_id":"c-17","artifact":"docs/lab3/runs/e-t-11-1","dimension":"tests_meaningful","mine":"fail","reason":"тесту немає, хоча задача просила.","holdout":false}
+{"case_id":"c-18","artifact":"docs/lab3/runs/e-t-17-1","dimension":"acceptance_met","mine":"pass","reason":"обидві перевірки код 0","holdout":false}
+{"case_id":"c-18","artifact":"docs/lab3/runs/e-t-17-1","dimension":"tests_meaningful","mine":"pass","reason":"тест перевіряє два порожні списки.","holdout":false}
+{"case_id":"c-19","artifact":"docs/lab3/runs/e-t-20-1","dimension":"acceptance_met","mine":"unknown","reason":"перевірки не запускались, ліміт ходів.","holdout":false}
+{"case_id":"c-19","artifact":"docs/lab3/runs/e-t-20-1","dimension":"tests_meaningful","mine":"unknown","reason":"задача не просила тестів.","holdout":false}
+{"case_id":"c-20","artifact":"docs/lab3/runs/e-t-16-2","dimension":"acceptance_met","mine":"unknown","reason":"перевірки не запускались","holdout":true}
+{"case_id":"c-20","artifact":"docs/lab3/runs/e-t-16-2","dimension":"tests_meaningful","mine":"unknown","reason":"задача про рецепт, тести не потрібні.","holdout":true}
