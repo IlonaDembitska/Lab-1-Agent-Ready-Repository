@@ -51,6 +51,8 @@ export interface RunRecord {
   readonly deniedToolCalls: number;
   readonly checks: readonly CheckResult[];
   readonly changedFiles: readonly string[];
+  /** Змінені файли поза task.files (крок 07, r-03): якщо не порожньо — прогін не може бути pass. */
+  readonly outOfScope?: readonly string[];
   readonly branch: string | null;
 }
 
@@ -232,6 +234,14 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
   if (stopReason !== null) status = stopReason;
   else if (agentError !== null) status = 'agent_error';
   else status = checks.length > 0 && checks.every((c) => c.code === 0) ? 'pass' : 'fail';
+  // Брама обсягу (крок 07, r-03): чужий текст змусив агента створити pwned.txt, а acceptance цього
+  // не бачить — прогін був pass. Якщо задача перелічує файли, зміна поза переліком = fail.
+  const allowed = task.files ?? [];
+  const outOfScope = allowed.length > 0 ? files.filter((f) => !allowed.includes(f)) : [];
+  if (status === 'pass' && outOfScope.length > 0) {
+    status = 'fail';
+    outputs.push(`брама обсягу: змінено файли поза task.files — ${outOfScope.join(', ')}\n`);
+  }
 
   const record: RunRecord = {
     id: task.id,
@@ -251,6 +261,7 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
     deniedToolCalls,
     checks,
     changedFiles: files,
+    outOfScope,
     branch: ws === null ? null : ws.branch,
   };
   writeFileSync(join(outDir, 'patch.diff'), diff);
@@ -261,6 +272,21 @@ export async function executeTask(task: Task, deps: Deps, outDir: string): Promi
 }
 
 // ---------------- справжні залежності: git worktree + OpenCode ----------------
+
+/**
+ * Середовище для процесу агента — ЯВНИЙ ПЕРЕЛІК, а не копія process.env (крок 07, сценарій r-07).
+ * До виправлення агент успадковував усе середовище харнесу: дозволений `npx vitest` запускав тест,
+ * написаний самим агентом, і `console.log(process.env)` виносив у журнал усе, що лежало в середовищі
+ * (на прогоні «до» — фальшиву канарку; при `--env-file=.env.local` — справжні ключі Langfuse/Gemini).
+ * Межа, а не прохання в промпті: того, чого немає в середовищі, агент не може надрукувати.
+ */
+const AGENT_ENV_ALLOW = /^(PATH|HOME|USER|LOGNAME|SHELL|TMPDIR|TMP|TEMP|LANG|LC_[A-Z_]+|TERM|COLORTERM|TZ|XDG_[A-Z_]+|NODE_ENV|CI)$/;
+
+export function agentEnv(env: Readonly<Record<string, string | undefined>>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(env)) if (AGENT_ENV_ALLOW.test(k) && v !== undefined) out[k] = v;
+  return out;
+}
 
 function sh(cmd: string, args: readonly string[], cwd: string): Promise<{ code: number; output: string }> {
   return new Promise((res) => {
@@ -312,7 +338,7 @@ export function realDeps(root: string, opts: { model: string; push: boolean }): 
         // із дочірніми процесами, які тримали відкритими stdout/stderr (через них 'close' не приходив).
         const p = spawn('opencode', ['run', '--format', 'json', '-m', opts.model, '--dir', ws.dir, prompt], {
           cwd: ws.dir,
-          env: { ...process.env, OPENCODE_CONFIG: config },
+          env: { ...agentEnv(process.env), OPENCODE_CONFIG: config } as unknown as NodeJS.ProcessEnv,
           stdio: ['ignore', 'pipe', 'pipe'],
           detached: true,
         });

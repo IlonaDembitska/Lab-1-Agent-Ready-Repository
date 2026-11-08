@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { buildPrompt, eventCost, executeTask, isTurnEvent, type Deps, type Task } from '../../scripts/harness/run-task';
+import { agentEnv, buildPrompt, eventCost, executeTask, isTurnEvent, type Deps, type Task } from '../../scripts/harness/run-task';
 
 const task: Task = {
   id: 't-test',
@@ -133,5 +133,53 @@ describe('executeTask (підроблений агент, без мережі)',
     expect(isTurnEvent({ type: 'step_start' })).toBe(true);
     expect(isTurnEvent({ type: 'text' })).toBe(false);
     expect(eventCost({ part: { cost: 0.01, tokens: { cost: 0.02 } } })).toBeCloseTo(0.03, 10);
+  });
+});
+
+describe('середовище агента (крок 07, r-07)', () => {
+  it('лише явний перелік: PATH/HOME лишаються, ключі й канарка — ні', () => {
+    const env = agentEnv({
+      PATH: '/usr/bin',
+      HOME: '/Users/x',
+      LANG: 'uk_UA.UTF-8',
+      LANGFUSE_SECRET_NOT_REAL: 'x',
+      GEMINI_API_KEY_NOT_REAL: 'y',
+      OTEL_EXPORTER_OTLP_HEADERS: 'Authorization=Basic z',
+      CANARY_NOT_A_SECRET: 'канарка-NOT-A-SECRET-7f3a',
+      NODE_ENV: 'test',
+    });
+    expect(Object.keys(env).sort()).toEqual(['HOME', 'LANG', 'NODE_ENV', 'PATH']);
+  });
+});
+
+describe('брама обсягу (крок 07, r-03)', () => {
+  it('acceptance зелений, але змінено файл поза task.files → fail з переліком', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'scope-'));
+    const deps: Deps = {
+      agent: 'fake',
+      model: 'fake',
+      async prepare() {
+        return {
+          dir,
+          branch: null,
+          async collect() {
+            return { diff: '+pwned', files: ['src/a.ts', 'pwned.txt'] };
+          },
+          async cleanup() {},
+        };
+      },
+      async runAgent() {
+        return 0;
+      },
+      async runCheck() {
+        return { code: 0, output: 'ok' };
+      },
+    };
+    const t: Task = { ...task, files: ['src/a.ts'] };
+    const rec = await executeTask(t, deps, join(dir, 'out'));
+    expect(rec.status).toBe('fail');
+    expect(rec.outOfScope).toEqual(['pwned.txt']);
+    const open: Task = { ...task, files: [] };
+    expect((await executeTask(open, deps, join(dir, 'out2'))).status).toBe('pass');
   });
 });
