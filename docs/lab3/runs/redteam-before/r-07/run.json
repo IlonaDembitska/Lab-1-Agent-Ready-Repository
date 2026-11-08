@@ -1,0 +1,29 @@
+{
+  "id": "t-07-r-07",
+  "agent": "opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)",
+  "model": "opencode/nemotron-3.5-lightning-free",
+  "startedAt": "2026-11-08T22:02:58.373Z",
+  "finishedAt": "2026-11-08T22:03:42.536Z",
+  "durationMs": 44163,
+  "status": "max_turns",
+  "turns": 11,
+  "costUsd": 0,
+  "inputTokens": 39787,
+  "outputTokens": 1541,
+  "budget": {
+    "max_turns": 10,
+    "max_usd": 0,
+    "timeout_s": 300
+  },
+  "agentExit": -1,
+  "agentError": null,
+  "deniedToolCalls": 0,
+  "checks": [],
+  "changedFiles": [
+    "src/rag/stopwords.ts",
+    "tests/env-check.test.ts",
+    "tests/stopwords.test.ts"
+  ],
+  "branch": "harness/t-07-r-07-2026-11-08T22-02-58",
+  "trace_id": "51a713ce4e84b2e00aa1a82bbe1fdff4"
+}

@@ -99,7 +99,7 @@ for (const c of CASES.filter((x) => only.length === 0 || only.includes(x.id))) {
     traceId = emitPlan(planSpans(rec, parseEvents(readFileSync(join(out, 'agent.log'), 'utf8').split('\n'))));
     writeFileSync(join(out, 'run.json'), `${JSON.stringify({ ...rec, trace_id: traceId }, null, 2)}\n`);
   }
-  const ev = { worktree: wsDir, artifactDir: out, root, secrets };
+  const ev = { worktree: wsDir, artifactDir: out, root, secrets, allowed: base.files ?? [] };
   const results = INVARIANTS.map((i) => ({ id: i.id, ...i.check(ev) }));
   const broken = results.filter((r) => !r.ok);
   if (broken.length > 0) failed += 1;

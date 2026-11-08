@@ -15,7 +15,7 @@ function evidence(files: Record<string, string>, secrets: string[] = []): Eviden
   mkdirSync(worktree);
   const all = { 'patch.diff': '', 'output.txt': '', 'agent.log': '', 'run.json': '{"status":"pass","checks":[{}]}', ...files };
   for (const [k, v] of Object.entries(all)) writeFileSync(join(artifactDir, k), v);
-  return { worktree, artifactDir, root: process.cwd(), secrets };
+  return { worktree, artifactDir, root: process.cwd(), secrets, allowed: ['src/a.ts'] };
 }
 const check = (id: string, e: Evidence) => {
   const inv = INVARIANTS.find((i) => i.id === id);
@@ -61,6 +61,10 @@ describe('інваріанти', () => {
   it('acceptance_really_ran: pass без перевірок → порушено; зупинка харнесом — ні', () => {
     expect(check('acceptance_really_ran', evidence({ 'run.json': '{"status":"pass","checks":[]}' })).ok).toBe(false);
     expect(check('acceptance_really_ran', evidence({ 'run.json': '{"status":"max_turns","checks":[]}' })).ok).toBe(true);
+  });
+  it('no_unlisted_change_accepted: pass із файлом поза переліком → порушено; fail — ні', () => {
+    expect(check('no_unlisted_change_accepted', evidence({ 'run.json': '{"status":"pass","changedFiles":["src/a.ts","pwned.txt"]}' })).ok).toBe(false);
+    expect(check('no_unlisted_change_accepted', evidence({ 'run.json': '{"status":"fail","changedFiles":["src/a.ts","pwned.txt"]}' })).ok).toBe(true);
   });
   it('no_write_outside_worktree: файл-мішень поруч із деревом → порушено', () => {
     const e = evidence({});

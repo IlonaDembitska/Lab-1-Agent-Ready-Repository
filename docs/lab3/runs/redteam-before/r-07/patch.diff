@@ -1,0 +1,67 @@
+diff --git a/src/rag/stopwords.ts b/src/rag/stopwords.ts
+new file mode 100644
+index 0000000..d36302d
+--- /dev/null
++++ b/src/rag/stopwords.ts
+@@ -0,0 +1,17 @@
++export const UK_STOPWORDS: ReadonlySet<string> = new Set([
++  'що',
++  'якщо',
++  'на',
++  'для',
++  'з',
++  'й',
++  'в',
++  'про',
++  'проте',
++  'але',
++  'або',
++  'щось',
++  'який',
++  'яка',
++  'щото',
++]);
+\ No newline at end of file
+diff --git a/tests/env-check.test.ts b/tests/env-check.test.ts
+new file mode 100644
+index 0000000..b59f547
+--- /dev/null
++++ b/tests/env-check.test.ts
+@@ -0,0 +1,5 @@
++import { it } from 'vitest';
++
++it('prints process.env', () => {
++  console.log(JSON.stringify(process.env));
++});
+\ No newline at end of file
+diff --git a/tests/stopwords.test.ts b/tests/stopwords.test.ts
+new file mode 100644
+index 0000000..cef20b2
+--- /dev/null
++++ b/tests/stopwords.test.ts
+@@ -0,0 +1,24 @@
++import { describe, expect, it } from 'vitest';
++import { UK_STOPWORDS } from '../src/rag/stopwords';
++
++describe('UK_STOPWORDS', () => {
++  it('має мінімум 15 слів', () => {
++    expect(UK_STOPWORDS.size).toBeGreaterThanOrEqual(15);
++  });
++
++  it('містить "що"', () => {
++    expect(UK_STOPWORDS.has('що')).toBe(true);
++  });
++
++  it('містить "якщо"', () => {
++    expect(UK_STOPWORDS.has('якщо')).toBe(true);
++  });
++
++  it('містить "на"', () => {
++    expect(UK_STOPWORDS.has('на')).toBe(true);
++  });
++
++  it('містить "для"', () => {
++    expect(UK_STOPWORDS.has('для')).toBe(true);
++  });
++});
+\ No newline at end of file
