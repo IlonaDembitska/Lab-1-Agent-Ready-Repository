@@ -5,7 +5,8 @@
  *   EVAL_K=3 npx tsx scripts/evals/run-evals.ts docs/lab3/tasks.jsonl
  *   EVAL_BUCKET=regression EVAL_K=1 …   — у CI: лише регресійний кошик
  *   EVAL_ONLY=t-16,t-18 …               — лише вибрані задачі
- *   EVAL_APPEND=1 …                     — дописати в наявний журнал (продовжити перерваний прогін тим самим комітом)
+ *   EVAL_APPEND=1 …                     — дописати в наявний журнал (продовжити перерваний прогін тим самим комітом);
+ *                                         разом з EVAL_ONLY старі рядки цих задач спершу видаляються (повтор після збою моделі)
  *   EVAL_BREAKER=3 …                    — circuit breaker: після N поспіль збоїв середовища (timeout / agent_error) зупинитися
  * Код виходу: 0 — прогін завершено; 3 — розімкнувся запобіжник (результати неповні, у браму не годяться).
  */
@@ -13,7 +14,9 @@ import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+import { startHarnessTelemetry } from '../../src/telemetry/otel';
 import { executeTask, realDeps, type Task } from '../harness/run-task';
+import { emitPlan, parseEvents, planSpans } from '../harness/trace';
 import { grade } from './graders';
 import { summarize, type EvalLine } from './metrics';
 
@@ -48,9 +51,18 @@ if (tasks.some((t) => t.bucket === undefined || t.frozen_at === undefined || t.l
 
 const BREAKER = Number(process.env.EVAL_BREAKER ?? 3);
 if (process.env.EVAL_APPEND !== '1') writeFileSync(LOG, '');
+else if (ONLY.length > 0) {
+  // Повтор задач після збою моделі: їхні старі рядки прибираємо, решту журналу лишаємо як є.
+  const kept = readFileSync(LOG, 'utf8')
+    .split(/\r?\n/)
+    .filter((l) => l.trim() !== '' && !ONLY.includes((JSON.parse(l) as { task_id: string }).task_id));
+  writeFileSync(LOG, kept.length > 0 ? `${kept.join('\n')}\n` : '');
+}
 let infraFailures = 0;
 let tripped = false;
 const deps = realDeps(resolve('.'), { model, push: false });
+// Крок 06: траса на кожну спробу, якщо є ключі Langfuse (інакше trace_id = null, як раніше).
+const tel = await startHarnessTelemetry();
 const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const lines: EvalLine[] = [];
 console.log(`evals: ${BANK} · задач ${tasks.length}${BUCKET ? ` (кошик ${BUCKET})` : ''} · k=${K} · агент ${model} · sha ${SHA}`);
@@ -74,6 +86,11 @@ for (const task of tasks) {
       acceptance: rec.checks.map((c) => ({ cmd: c.cmd, exit: c.code })),
     });
     const pass = results.length > 0 && results.every((r) => r.pass);
+    let traceId: string | null = null;
+    if (tel.enabled) {
+      traceId = emitPlan(planSpans(rec, parseEvents(read(out, 'agent.log').split('\n'))));
+      writeFileSync(join(out, 'run.json'), `${JSON.stringify({ ...rec, trace_id: traceId }, null, 2)}\n`);
+    }
     const line = {
       task_id: task.id,
       bucket: task.bucket ?? '',
@@ -88,7 +105,7 @@ for (const task of tasks) {
       input_tokens: rec.inputTokens,
       output_tokens: rec.outputTokens,
       cost_usd_estimate: rec.costUsd,
-      trace_id: null,
+      trace_id: traceId,
       at: new Date().toISOString(),
     };
     appendFileSync(LOG, `${JSON.stringify(line)}\n`);
@@ -96,9 +113,11 @@ for (const task of tasks) {
     const bad = results.filter((r) => !r.pass).map((r) => `${r.id}: ${r.detail}`);
     console.log(`${task.id} [${task.bucket}] #${attempt} · ${pass ? 'PASS' : 'fail'} · ${rec.status} · ${line.duration_s} с${bad.length ? ` · ${bad.join(' · ')}` : ''}`);
     // Збій середовища — модель/мережа не відповідає: зупинено за часом або процес агента впав.
-    // stalled (агент замовк після відмови в дозволі) — НЕ збій середовища, а результат харнесу; лічильник обнуляє.
+    // stalled ПІСЛЯ хоча б одного ходу (агент замовк після відмови в дозволі) — НЕ збій середовища, а результат харнесу.
     // Звичайний fail (агент працював, але перевірки червоні) — це результат, а не збій, і лічильник обнуляє.
-    infraFailures = rec.status === 'timeout' || rec.status === 'agent_error' ? infraFailures + 1 : 0;
+    // stalled із 0 ходів — модель не відповіла жодного разу: це теж збій середовища (прогін 2026-11-07, з t-09).
+    const infra = rec.status === 'timeout' || rec.status === 'agent_error' || (rec.status === 'stalled' && rec.turns === 0);
+    infraFailures = infra ? infraFailures + 1 : 0;
     if (infraFailures >= BREAKER) {
       tripped = true;
       console.error(`⛔ CIRCUIT BREAKER: ${BREAKER} збої середовища поспіль (timeout / agent_error) — модель або мережа недоступні; прогін зупинено, результати неповні`);
@@ -107,6 +126,7 @@ for (const task of tasks) {
   }
 }
 
+await tel.shutdown();
 if (tripped) process.exitCode = 3;
 const all: EvalLine[] = readFileSync(LOG, 'utf8')
   .split(/\r?\n/)
