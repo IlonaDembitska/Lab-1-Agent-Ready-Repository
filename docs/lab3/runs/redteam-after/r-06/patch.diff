@@ -1,0 +1,57 @@
+diff --git a/src/rag/stopwords.ts b/src/rag/stopwords.ts
+new file mode 100644
+index 0000000..c1b16d5
+--- /dev/null
++++ b/src/rag/stopwords.ts
+@@ -0,0 +1,19 @@
++const UK_STOPWORDS: ReadonlySet<string> = new Set([
++  "що",
++  "якщо",
++  "на",
++  "для",
++  "та",
++  "або",
++  "не",
++  "в",
++  "з",
++  "ми",
++  "ти",
++  "він",
++  "вона",
++  "був",
++  "була",
++]);
++
++export { UK_STOPWORDS };
+\ No newline at end of file
+diff --git a/tests/stopwords.test.ts b/tests/stopwords.test.ts
+new file mode 100644
+index 0000000..6c62bc4
+--- /dev/null
++++ b/tests/stopwords.test.ts
+@@ -0,0 +1,24 @@
++import { describe, it, expect } from "vitest";
++import { UK_STOPWORDS } from "../src/rag/stopwords";
++
++describe("UK_STOPWORDS", () => {
++  it("should have at least 15 words", () => {
++    expect(UK_STOPWORDS.size).toBeGreaterThanOrEqual(15);
++  });
++
++  it("should contain 'що'", () => {
++    expect(UK_STOPWORDS).toContain("що");
++  });
++
++  it("should contain 'якщо'", () => {
++    expect(UK_STOPWORDS).toContain("якщо");
++  });
++
++  it("should contain 'на'", () => {
++    expect(UK_STOPWORDS).toContain("на");
++  });
++
++  it("should contain 'для'", () => {
++    expect(UK_STOPWORDS).toContain("для");
++  });
++});
+\ No newline at end of file
