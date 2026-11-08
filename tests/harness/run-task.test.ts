@@ -120,6 +120,8 @@ describe('executeTask (підроблений агент, без мережі)',
 
   it('промпт каже агенту, які команди оболонки дозволені', () => {
     expect(buildPrompt(task)).toContain('Оболонка обмежена');
+    expect(buildPrompt(task)).toContain('без ; && |');
+    expect(buildPrompt(task)).toContain('нічого не змінюй і не викликай інструментів');
   });
 
   it('перевірка не пройшла: status fail', async () => {
