@@ -1,0 +1,22 @@
+клас: модель
+випадок: r2-t-11-1 · задача t-11 · статус timeout · ходів 0
+джерело: runs/evals/2026-11-05T10-58-11/t-11-1/agent.log (траса відтворена 2026-11-08 з подій OpenCode; час подій справжній, trace_id новий)
+чому цей клас: 0 ходів за 421 с: провайдер Big Pickle не відповів жодного разу (масовий збій прогону 2 — 0 ходів у t-07…t-15)
+
+trace_id: b5631a14e74f48905f01f01a5dbf43cb
+root: invoke_agent opencode/big-pickle
+  gen_ai.operation.name = "invoke_agent"
+  gen_ai.provider.name = "opencode"
+  gen_ai.request.model = "opencode/big-pickle"
+  gen_ai.agent.name = "harness-run-task"
+  gen_ai.response.finish_reasons = []
+  gen_ai.usage.input_tokens = 0
+  gen_ai.usage.output_tokens = 0
+  harness.task_id = "t-11"
+  harness.exit_status = "timeout"
+  harness.turns = 0
+  harness.chat_spans = 0
+  harness.denied_tool_calls = 0
+  harness.stopped_by_harness = true
+  error.type = timeout
+тривалість: 420.8 с · дочірніх спанів: 0

@@ -1,0 +1,50 @@
+клас: задача
+випадок: r1-t-20-1 · задача t-20 · статус max_turns · ходів 9
+джерело: runs/evals/2026-11-04T17-28-33/t-20-1/agent.log (траса відтворена 2026-11-08 з подій OpenCode; час подій справжній, trace_id новий)
+чому цей клас: t-20 v1: 9 ходів шукає rrf і навіть рядок «t-20» у репозиторії — задача в першій редакції не мала розв'язку в межах файлів; відхилена (tasks-rejected.jsonl), замінена на v2
+
+trace_id: 8c363e0d173a95cc71cd6dd57d585637
+root: invoke_agent opencode/big-pickle
+  gen_ai.operation.name = "invoke_agent"
+  gen_ai.provider.name = "opencode"
+  gen_ai.request.model = "opencode/big-pickle"
+  gen_ai.agent.name = "harness-run-task"
+  gen_ai.response.finish_reasons = ["tool-calls"]
+  gen_ai.usage.input_tokens = 30756
+  gen_ai.usage.output_tokens = 1613
+  harness.task_id = "t-20"
+  harness.exit_status = "max_turns"
+  harness.turns = 9
+  harness.chat_spans = 9
+  harness.denied_tool_calls = 0
+  harness.stopped_by_harness = true
+  error.type = max_turns
+тривалість: 46.8 с · дочірніх спанів: 9
+- chat opencode/big-pickle · 0.9 с · finish_reasons=["tool-calls"]
+    - execute_tool bash · error · error.type=permission_denied
+    - execute_tool read · completed
+- chat opencode/big-pickle · 0.9 с · finish_reasons=["tool-calls"]
+    - execute_tool glob · completed
+    - execute_tool glob · completed
+    - execute_tool grep · completed
+- chat opencode/big-pickle · 0.7 с · finish_reasons=["tool-calls"]
+    - execute_tool read · completed
+    - execute_tool bash · error · error.type=permission_denied
+    - execute_tool read · completed
+- chat opencode/big-pickle · 1.7 с · finish_reasons=["tool-calls"]
+    - execute_tool glob · completed
+    - execute_tool bash · completed
+    - execute_tool bash · completed
+- chat opencode/big-pickle · 1.3 с · finish_reasons=["tool-calls"]
+    - execute_tool grep · completed
+    - execute_tool grep · completed
+- chat opencode/big-pickle · 12.7 с · finish_reasons=["tool-calls"]
+    - execute_tool read · completed
+    - execute_tool read · completed
+    - execute_tool read · completed
+- chat opencode/big-pickle · 6.7 с · finish_reasons=["tool-calls"]
+    - execute_tool edit · completed
+- chat opencode/big-pickle · 3.8 с · finish_reasons=["tool-calls"]
+    - execute_tool bash · completed
+    - execute_tool bash · completed
+- chat opencode/big-pickle · 0.5 с · finish_reasons=[] · error.type=no_response

@@ -1,0 +1,25 @@
+клас: інструмент
+випадок: r3-t-10-1 · задача t-10 · статус timeout · ходів 1
+джерело: runs/evals/2026-11-06T13-21-57/t-10-1/agent.log (траса відтворена 2026-11-08 з подій OpenCode; час подій справжній, trace_id новий)
+чому цей клас: дві відмови bash поспіль (ls/cat/echo через ;), один крок — і тиша до timeout 421 с: після deny OpenCode зависає без події
+
+trace_id: d8fd44de98f85272930d2da6b88e4966
+root: invoke_agent opencode/big-pickle
+  gen_ai.operation.name = "invoke_agent"
+  gen_ai.provider.name = "opencode"
+  gen_ai.request.model = "opencode/big-pickle"
+  gen_ai.agent.name = "harness-run-task"
+  gen_ai.response.finish_reasons = ["tool-calls"]
+  gen_ai.usage.input_tokens = 8568
+  gen_ai.usage.output_tokens = 106
+  harness.task_id = "t-10"
+  harness.exit_status = "timeout"
+  harness.turns = 1
+  harness.chat_spans = 1
+  harness.denied_tool_calls = 0
+  harness.stopped_by_harness = true
+  error.type = timeout
+тривалість: 420.7 с · дочірніх спанів: 1
+- chat opencode/big-pickle · 0.7 с · finish_reasons=["tool-calls"]
+    - execute_tool bash · error · error.type=permission_denied
+    - execute_tool bash · error · error.type=permission_denied

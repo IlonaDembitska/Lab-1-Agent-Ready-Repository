@@ -1,0 +1,25 @@
+{
+  "id": "t-10",
+  "agent": "opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)",
+  "model": "opencode/big-pickle",
+  "startedAt": "2026-11-06T13:37:32.371Z",
+  "finishedAt": "2026-11-06T13:44:33.062Z",
+  "durationMs": 420691,
+  "status": "timeout",
+  "turns": 1,
+  "costUsd": 0,
+  "inputTokens": 8568,
+  "outputTokens": 106,
+  "budget": {
+    "max_turns": 15,
+    "max_usd": 0,
+    "timeout_s": 420
+  },
+  "agentExit": -1,
+  "agentError": null,
+  "checks": [],
+  "changedFiles": [],
+  "branch": "harness/t-10-2026-11-06T13-37-32",
+  "trace_id": "d8fd44de98f85272930d2da6b88e4966",
+  "trace_replayed_from": "runs/evals/2026-11-06T13-21-57/t-10-1/agent.log"
+}

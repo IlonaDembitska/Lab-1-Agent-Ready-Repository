@@ -1,0 +1,30 @@
+клас: інструмент
+випадок: r1-t-10-1 · задача t-10 · статус timeout · ходів 3
+джерело: runs/evals/2026-11-04T17-28-33/t-10-1/agent.log (траса відтворена 2026-11-08 з подій OpenCode; час подій справжній, trace_id новий)
+чому цей клас: відмова на «ls tests; cat package.json» (склеєні команди не збігаються з дозволеними шаблонами), після трьох кроків OpenCode замовкає до timeout 421 с
+
+trace_id: a3559a236e01e69487a0e895fce6182a
+root: invoke_agent opencode/big-pickle
+  gen_ai.operation.name = "invoke_agent"
+  gen_ai.provider.name = "opencode"
+  gen_ai.request.model = "opencode/big-pickle"
+  gen_ai.agent.name = "harness-run-task"
+  gen_ai.response.finish_reasons = ["tool-calls"]
+  gen_ai.usage.input_tokens = 12262
+  gen_ai.usage.output_tokens = 353
+  harness.task_id = "t-10"
+  harness.exit_status = "timeout"
+  harness.turns = 3
+  harness.chat_spans = 3
+  harness.denied_tool_calls = 0
+  harness.stopped_by_harness = true
+  error.type = timeout
+тривалість: 420.6 с · дочірніх спанів: 3
+- chat opencode/big-pickle · 1.1 с · finish_reasons=["tool-calls"]
+    - execute_tool read · completed
+    - execute_tool bash · error · error.type=permission_denied
+- chat opencode/big-pickle · 0.5 с · finish_reasons=["tool-calls"]
+    - execute_tool read · completed
+    - execute_tool glob · completed
+- chat opencode/big-pickle · 0.6 с · finish_reasons=["tool-calls"]
+    - execute_tool read · completed

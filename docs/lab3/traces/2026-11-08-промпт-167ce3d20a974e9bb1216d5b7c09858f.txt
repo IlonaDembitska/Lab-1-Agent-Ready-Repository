@@ -1,0 +1,35 @@
+клас: промпт
+випадок: r5-t-16-1 · задача t-16 · статус max_turns · ходів 5
+джерело: runs/evals/2026-11-08T08-25-40/t-16-1/agent.log (траса відтворена 2026-11-08 з подій OpenCode; час подій справжній, trace_id новий)
+чому цей клас: нерелевантний вхід «рецепт борщу»: замість відповіді без змін агент 5 ходів шукає «борщ|рецепт» у коді й упирається в max_turns; промпт харнесу не каже, що робити з запитом поза кодом
+
+trace_id: 167ce3d20a974e9bb1216d5b7c09858f
+root: invoke_agent opencode/big-pickle
+  gen_ai.operation.name = "invoke_agent"
+  gen_ai.provider.name = "opencode"
+  gen_ai.request.model = "opencode/big-pickle"
+  gen_ai.agent.name = "harness-run-task"
+  gen_ai.response.finish_reasons = ["tool-calls"]
+  gen_ai.usage.input_tokens = 25173
+  gen_ai.usage.output_tokens = 469
+  harness.task_id = "t-16"
+  harness.exit_status = "max_turns"
+  harness.turns = 5
+  harness.chat_spans = 5
+  harness.denied_tool_calls = 1
+  harness.stopped_by_harness = true
+  error.type = max_turns
+тривалість: 27.3 с · дочірніх спанів: 5
+- chat opencode/big-pickle · 3.2 с · finish_reasons=["tool-calls"]
+    - execute_tool bash · completed
+    - execute_tool glob · completed
+- chat opencode/big-pickle · 8.3 с · finish_reasons=["tool-calls"]
+    - execute_tool bash · error · error.type=permission_denied
+    - execute_tool glob · completed
+    - execute_tool read · completed
+- chat opencode/big-pickle · 1.8 с · finish_reasons=["tool-calls"]
+    - execute_tool read · completed
+    - execute_tool bash · completed
+- chat opencode/big-pickle · 1.8 с · finish_reasons=["tool-calls"]
+    - execute_tool grep · completed
+- chat opencode/big-pickle · 0.5 с · finish_reasons=[] · error.type=no_response

@@ -1,0 +1,51 @@
+diff --git a/src/rag/stopwords.ts b/src/rag/stopwords.ts
+new file mode 100644
+index 0000000..d268f0f
+--- /dev/null
++++ b/src/rag/stopwords.ts
+@@ -0,0 +1,26 @@
++export const UK_STOPWORDS: ReadonlySet<string> = new Set([
++  'і',
++  'й',
++  'та',
++  'що',
++  'якщо',
++  'на',
++  'для',
++  'у',
++  'в',
++  'із',
++  'з',
++  'до',
++  'від',
++  'по',
++  'за',
++  'про',
++  'як',
++  'не',
++  'але',
++  'або',
++  'це',
++  'який',
++  'яка',
++  'які',
++]);
+diff --git a/tests/stopwords.test.ts b/tests/stopwords.test.ts
+new file mode 100644
+index 0000000..5d6a820
+--- /dev/null
++++ b/tests/stopwords.test.ts
+@@ -0,0 +1,13 @@
++import { describe, expect, it } from 'vitest';
++
++import { UK_STOPWORDS } from '../src/rag/stopwords';
++
++describe('UK_STOPWORDS', () => {
++  it('містить щонайменше 15 службових слів', () => {
++    expect(UK_STOPWORDS.size).toBeGreaterThanOrEqual(15);
++  });
++
++  it.each(['що', 'якщо', 'на', 'для'])('містить «%s»', (word) => {
++    expect(UK_STOPWORDS.has(word)).toBe(true);
++  });
++});
