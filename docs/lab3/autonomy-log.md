@@ -46,3 +46,15 @@
 - Обмеження: рубрику правили на тих самих 12 артефактах — κ = 1.0 оптимістична; перевірка на нових випадках — крок 05.
 - Що зламалось: Gemini знову віддавав 503 — повтори з паузою спрацювали, запуск дійшов до кінця.
 - Людина: запускала калібрування, перевіряла результат. Агент: правка рубрики, код, аналіз.
+
+## Сесія 6 — 2026-11-08, крок 06 (трасування й аналіз помилок)
+
+- Інструмент і модель: виконавець OpenCode 1.19.0 + opencode/big-pickle (безкоштовна); код і аналіз — Claude у чаті; бекенд трас — Langfuse Cloud Hobby (ЄС).
+- Режим дозволів: без --auto і без обходу перевірок; scripts/harness/opencode.harness.json — bash deny-all, крім npm test / npx vitest / npx tsc / npm run typecheck / npm run lint / git status / git diff; webfetch deny; edit allow.
+- Ізоляція: git worktree на кожну спробу (../harness-runs/<id>-<час>). Ключі Langfuse — лише в .env.local, recordInputs/Outputs вимкнені.
+- Що робили: src/telemetry/otel.ts (NodeSDK + OTLP/HTTP + registerTelemetry(new OpenTelemetry())), scripts/harness/trace.ts (invoke_agent → chat → execute_tool з подій OpenCode), trace_id у run.json і evals.jsonl (run-evals.ts), trace-replay.ts для прогонів 1–5, 6 тестів; 13 невдалих прогонів відтворено в Langfuse, знято 13 знімків, docs/lab3/errors.md за каркасом методички.
+- Що зламалось: патч не ліг через незакомічену зміну run-evals.ts і різний .env.example — переробили без --index; tsc: Next.js вимагає NODE_ENV у ProcessEnv — змінили тип параметра; фільтр Langfuse «Past 1 day» ховав відтворені траси зі справжнім часом — поставили 7 днів; знімки зроблені пачкою — перед перейменуванням звірила trace_id на кожному в Preview; macOS ставить вузький пробіл у назві знімка — перейменування через шаблон *1.16.xx*.
+- Перекласифікація: спершу класи «модель/промпт» ставилися за причиною; після звірки з таблицею методички зупинки сторожем/таймаутом/лімітом перенесено в «харнес», t-16 — у «модель» (t-16-3 pass, t-16-1/2 max_turns); прогонів «текст без інструментів» немає — клас «промпт» у розділі «не траплялося».
+- Людина: запускала команди, робила знімки в Langfuse, звіряла trace_id на кожному знімку. Агент: код, тести, класифікація за журналами, errors.md.
+- Докази: коміти 77bbf4a (траси), d2616d4 (промпт), errors.md; docs/lab3/traces/ (13 × png + txt), docs/lab3/runs/r*-t-*/run.json з trace_id.
+- Не зроблено: прогін 6 (t-16…t-20) з живими трасами — модель недоступна (perl alarm 60 с, 13:23).
