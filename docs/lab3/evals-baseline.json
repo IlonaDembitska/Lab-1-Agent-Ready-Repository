@@ -1,0 +1,110 @@
+{
+  "t-01": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "regression"
+  },
+  "t-02": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "regression"
+  },
+  "t-03": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "regression"
+  },
+  "t-04": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "regression"
+  },
+  "t-05": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "regression"
+  },
+  "t-06": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "regression"
+  },
+  "t-07": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-08": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-09": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-10": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-11": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-12": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-13": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-14": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-15": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "new"
+  },
+  "t-16": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "edge"
+  },
+  "t-17": {
+    "pow_k": 0,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "edge"
+  },
+  "t-18": {
+    "pow_k": 1,
+    "k": 3,
+    "frozen_at": "2026-11-05",
+    "bucket": "edge"
+  }
+}
