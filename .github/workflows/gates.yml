@@ -146,6 +146,10 @@ jobs:
         run: npm install -g "opencode-ai@${OPENCODE_VERSION}" && opencode --version
       - name: Git-автор для комітів у worktree
         run: git config --global user.email "harness-ci@users.noreply.github.com" && git config --global user.name "harness-ci"
+      - name: Прогрів OpenCode і перевірка моделі (перший запуск на чистому раннері мовчки довантажує залежності)
+        timeout-minutes: 4
+        shell: bash
+        run: timeout 200 opencode run -m opencode/big-pickle "Відповідай одним словом: ок" || echo "прогрів не відповів — далі вирішить брама"
       - id: gate
         name: Банк regression, k=1, детерміновані оцінювачі, брама
         timeout-minutes: 15
@@ -155,6 +159,8 @@ jobs:
           EVAL_BUCKET: regression
           EVAL_LOG: evals-ci.jsonl
           HARNESS_BASE: HEAD
+          # на чистому раннері перший хід довший, ніж локально: сторож простою 240 с замість 120 с
+          HARNESS_IDLE_S: '240'
         run: |
           npx tsx scripts/evals/run-evals.ts docs/lab3/tasks.jsonl 2>&1 | tee gate-evals.log
           npx tsx scripts/evals/gate.ts 2>&1 | tee -a gate-evals.log
@@ -169,6 +175,9 @@ jobs:
             gate-evals.log
             evals-ci.jsonl
             evals-ci-summary.json
+            runs/evals/**/run.json
+            runs/evals/**/agent.log
+            runs/evals/**/output.txt
           if-no-files-found: ignore
 
   record:
