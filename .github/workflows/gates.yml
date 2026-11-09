@@ -149,7 +149,7 @@ jobs:
       - name: Прогрів OpenCode і перевірка моделі (перший запуск на чистому раннері мовчки довантажує залежності)
         timeout-minutes: 4
         shell: bash
-        run: timeout 200 opencode run -m opencode/big-pickle "Відповідай одним словом: ок" || echo "прогрів не відповів — далі вирішить брама"
+        run: timeout 200 opencode run -m opencode/big-pickle "Відповідай одним словом — ок" || echo "прогрів не відповів — далі вирішить брама"
       - id: gate
         name: Банк regression, k=1, детерміновані оцінювачі, брама
         timeout-minutes: 15
