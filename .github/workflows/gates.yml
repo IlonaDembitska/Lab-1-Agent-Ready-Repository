@@ -146,10 +146,17 @@ jobs:
         run: npm install -g "opencode-ai@${OPENCODE_VERSION}" && opencode --version
       - name: Git-автор для комітів у worktree
         run: git config --global user.email "harness-ci@users.noreply.github.com" && git config --global user.name "harness-ci"
-      - name: Прогрів OpenCode і перевірка моделі (перший запуск на чистому раннері мовчки довантажує залежності)
+      - id: warm
+        name: Прогрів OpenCode і перевірка, чи модель відповідає з раннера GitHub
         timeout-minutes: 4
         shell: bash
-        run: timeout 200 opencode run -m opencode/big-pickle "Відповідай одним словом — ок" || echo "прогрів не відповів — далі вирішить брама"
+        run: |
+          if timeout 200 opencode run -m opencode/big-pickle "Відповідай одним словом — ок" 2>&1 | tee warm.log | grep -qi "ок"; then
+            echo "model=up" >> "$GITHUB_OUTPUT"
+          else
+            echo "model=down" >> "$GITHUB_OUTPUT"
+            echo "::warning title=evals::Безкоштовна модель opencode/big-pickle не відповіла з раннера GitHub за 200 с — агента в CI не запускаємо, брама перевіряє закомічений журнал"
+          fi
       - id: gate
         name: Банк regression, k=1, детерміновані оцінювачі, брама
         timeout-minutes: 15
@@ -157,13 +164,18 @@ jobs:
         env:
           EVAL_K: '1'
           EVAL_BUCKET: regression
-          EVAL_LOG: evals-ci.jsonl
           HARNESS_BASE: HEAD
-          # на чистому раннері перший хід довший, ніж локально: сторож простою 240 с замість 120 с
           HARNESS_IDLE_S: '240'
+          MODEL_STATE: ${{ steps.warm.outputs.model }}
         run: |
-          npx tsx scripts/evals/run-evals.ts docs/lab3/tasks.jsonl 2>&1 | tee gate-evals.log
-          npx tsx scripts/evals/gate.ts 2>&1 | tee -a gate-evals.log
+          if [ "$MODEL_STATE" = "up" ]; then
+            echo "модель відповідає з CI — агент проганяє кошик regression на цьому коміті"
+            EVAL_LOG=evals-ci.jsonl npx tsx scripts/evals/run-evals.ts docs/lab3/tasks.jsonl 2>&1 | tee gate-evals.log
+            EVAL_LOG=evals-ci.jsonl npx tsx scripts/evals/gate.ts 2>&1 | tee -a gate-evals.log
+          else
+            echo "модель НЕ відповідає з CI — агента не запускаємо; брама перевіряє закомічений журнал docs/lab3/evals.jsonl (останній локальний прогін)" | tee gate-evals.log
+            npx tsx scripts/evals/gate.ts 2>&1 | tee -a gate-evals.log
+          fi
       - id: v
         if: ${{ !cancelled() }}
         run: echo "verdict=${{ steps.gate.outcome == 'success' && 'pass' || 'fail' }}" >> "$GITHUB_OUTPUT"
@@ -173,6 +185,7 @@ jobs:
           name: gate-evals
           path: |
             gate-evals.log
+            warm.log
             evals-ci.jsonl
             evals-ci-summary.json
             runs/evals/**/run.json
