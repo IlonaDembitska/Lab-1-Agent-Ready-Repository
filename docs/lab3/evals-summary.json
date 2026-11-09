@@ -1,11 +1,11 @@
 {
-  "at": "2026-11-08T08:48:23.182Z",
-  "sha": "f91e436",
+  "at": "2026-11-09T08:38:49.737Z",
+  "sha": "77f31d6",
   "bank": "docs/lab3/tasks.jsonl",
   "k": 3,
   "bucket": "all",
   "agent": "opencode/big-pickle",
-  "complete": false,
+  "complete": true,
   "summary": [
     {
       "bucket": "regression",
@@ -21,9 +21,9 @@
     },
     {
       "bucket": "edge",
-      "tasks": 3,
-      "pass_at_k": 0.667,
-      "pass_pow_k": 0.333
+      "tasks": 5,
+      "pass_at_k": 1,
+      "pass_pow_k": 1
     }
   ]
 }
