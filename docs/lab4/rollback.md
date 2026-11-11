@@ -22,10 +22,27 @@
   - новий тест: `npx mocha --check-leaks test/parse-non-finite.js` → код **≠ 0** (червоний), файл на місці: `test -f test/parse-non-finite.js`;
   - `git log --oneline -5` показує і `fix:`, і `Revert "fix: …"`.
 
-## 2. Виконання (заповнено ПІСЛЯ навчання, дата: …)
+## 2. Виконання (заповнено ПІСЛЯ навчання, дата: 2026-11-12)
 
-_(буде заповнено після відкоту)_
+- Гілка навчання: `lab4/rollback-drill` (створена від `lab4/change`)
+- Відкочено РІВНО один коміт — коміт зміни: `18f7236b3c43ec82042a2e282505ae3afabbc977` (`fix: parse() returns null for non-finite numbers (Infinity, -Infinity)`)
+- Коміт нового тесту НЕ відкочувався: `49e17f3` (тому тестовий файл на місці)
+- Команда дослівно: `git switch -c lab4/rollback-drill && git revert --no-edit $CHANGE` (де `CHANGE=$(git rev-parse HEAD)` одразу після коміту зміни)
+- SHA коміта відкоту: [`2fcdea252af811dcdbc3d715a3d91ddbc64e64a8`](https://github.com/IlonaDembitska/bytes.js/commit/2fcdea252af811dcdbc3d715a3d91ddbc64e64a8) `Revert "fix: parse() returns null for non-finite numbers (Infinity, -Infinity)"`, 2026-11-12 01:21:13 +0200
+- Фактичний час від команди до зелених тестів: **1 с** (`T0=$(date +%s)` перед `git switch`, `T1` після прогону характеризації)
+
+| спостереження | очікувано | фактично | вивід |
+|---|---|---|---|
+| характеризаційні тести + тести проєкту | зелені | **зелені** | `npx mocha --check-leaks test/byte-format.js test/byte-parse.js test/bytes.js test/characterization-parse.js` → `characterization-exit=0` |
+| новий тест на нову поведінку | ЧЕРВОНИЙ, і файл НА МІСЦІ | **червоний, файл на місці** | `npx mocha --check-leaks test/parse-non-finite.js` → `0 passing`, `2 failing`, `new-test-exit=2`; `test -f test/parse-non-finite.js` → `new-test-file=ON-PLACE` |
+| історія | видно і зміну, і скасування | **видно** | `git log --oneline -5`: `2fcdea2 Revert "fix: …"` · `18f7236 fix: …` · `49e17f3 test: … (RED before fix)` · `4a71018 chore(lab4): Stryker report…` · `4e67cf8 test: 3 assertions…` |
+
+Відкот також повернув обидва оновлені характеризаційні твердження до `Infinity` / `-Infinity` — бо вони лежали в тому самому коміті, що й зміна; тому характеризація після відкоту зелена.
 
 ## 3. Що розійшлося з планом
 
-_(буде заповнено після відкоту)_
+- **Час:** у плані ~1 хв, фактично 1 с — зміна в одному рядку, revert без конфліктів, набір тестів ~10 мс.
+- **`npm test` після відкоту не годиться як ознака «характеризація зелена»:** він запускає й новий тест, який після відкоту червоний за задумом, тож `npm test` дав би ненульовий код. Тому в плані характеризацію й новий тест розведено на дві окремі команди `npx mocha …` — і саме це спрацювало. Якби я планувала просто `npm test`, ознака відкоту була б хибною.
+- **Команда відкоту:** у плані — `git switch -c lab4/rollback-drill lab4/change`; фактично `git switch -c lab4/rollback-drill` з дерева, що вже стояло на `lab4/change` — результат той самий.
+- **Оновлених характеризаційних тверджень два, а не одне** (див. `change.md`, розділ 2) — відкот повернув обидва разом зі зміною.
+- **Основний checkout форка не ідеально чистий:** `git status --short` показав `?? reports/stryker-incremental.json` — слід мого прогону Stryker з кроку 01, не відкоту й не агента.

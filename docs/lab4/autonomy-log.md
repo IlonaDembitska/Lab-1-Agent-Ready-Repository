@@ -35,3 +35,19 @@
 - **Скільки тестів лишилося після перегляду:** 8 тестів + 3 твердження проти вижилих мутантів; жодного не видалено.
 - **Коміти у форку:** `4df09c2` test: 8 характеризаційних тестів · `44397af` chore(test): Stryker · коміт із 3 твердженнями й звітом Stryker (див. `characterization.md`).
 - **Що розійшлося з очікуванням:** `stryker run --incremental` після зміни тестів показав старі 14 вижилих — mocha-runner не дає Stryker'у бачити зміни тестів; правильне число (11) дав `--incremental --force`.
+
+## Сесія 3 · 2026-11-12 · крок 02 (обмежена зміна)
+
+- **Інструмент і модель:** opencode 1.19.0 · `opencode/big-pickle` · агент `build`
+- **Репозиторій:** форк https://github.com/IlonaDembitska/bytes.js, **окреме робоче дерево** `~/lab4/change-tree` (`git worktree add -b lab4/change ../change-tree master`); основний checkout `~/lab4/bytes.js` агент не бачив
+- **Режим дозволів:** deny-правила, без `--auto`, конфігурація `~/lab4/opencode.change.json` (дослівно — `change.md`, розділ 4):
+  - `edit`: `"*": "deny"`, `"index.js": "allow"`, `"test/*": "deny"`
+  - `bash`: `"*": "deny"`, `"npm test*": "allow"`, `"git diff*": "allow"`
+  - `webfetch`, `websearch`, `external_directory`: `deny`
+- **Заборона на тестову теку:** `"test/*": "deny"` — останнє правило в `edit`, тож виграє для файлів у `test/`
+- **Що агент зробив сам:** прочитав `index.js` (рядки 125–165), змінив рядок 142 `!isNaN(val)` → `Number.isFinite(val)`; більше нічого. `agent=0`.
+- **Перевірка взірця:** `"index.js": "allow"` дав збіг — правка пройшла без помилки дозволу.
+- **Що я перевірила й змінила за агентом:** прочитала диф до тестів (`git status --short; git diff` → лише ` M index.js`, +1/−1); сама оновила 2 характеризаційні твердження (`Infinity`, `-Infinity` → `null`) у тому самому коміті; прогнала `npm test` → 0 (40 passing), новий тест → 0; зняла вивід «до/після».
+- **Перша спроба не запустилася:** у промпті був `!isNaN(val)` — zsh скасував увесь рядок (`event not found`); агент не стартував, нічого не змінилося.
+- **Після прогону:** `git status` основного checkout — лише `?? reports/stryker-incremental.json` (слід кроку 01, не агента).
+- **Відкот:** `git revert --no-edit 18f7236` на гілці `lab4/rollback-drill` → `2fcdea2`; характеризація зелена, новий тест червоний, файл на місці (`rollback.md`, розділ 2).
