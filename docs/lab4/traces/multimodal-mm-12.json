@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-12T10:31:14.323Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-12",
+  "file": "fixtures/lab4-mm/ua-text.txt",
+  "expect": {
+    "kind": "roundtrip",
+    "min_recall": 0.8
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 5132,
+  "text": "",
+  "inputTokens": null,
+  "outputTokens": null,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "схожість 1.00 · «Зупиніться на червоне світло і чекайте на зелений сигнал.» · аудіо audio/wav 261520 B",
+  "response": {
+    "ok": true,
+    "transcript": "Зупиніться на червоне світло і чекайте на зелений сигнал.",
+    "recall": 1,
+    "ttsMs": 2918,
+    "sttMs": 1903,
+    "audioBytes": 261520,
+    "audioMediaType": "audio/wav"
+  }
+}

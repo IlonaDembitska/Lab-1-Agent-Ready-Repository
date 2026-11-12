@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-12T10:29:53.210Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-01",
+  "file": "fixtures/lab4-mm/page-clear.png",
+  "expect": {
+    "kind": "answer",
+    "must_contain": "ПДР-2026/07"
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 4404,
+  "text": "ПДР-2026/07",
+  "inputTokens": 1176,
+  "outputTokens": 11,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "сторінка у відповіді: —",
+  "response": {
+    "ok": true,
+    "text": "ПДР-2026/07",
+    "usage": {
+      "inputTokens": 1176,
+      "outputTokens": 11
+    },
+    "ms": 2578
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-12T10:30:56.643Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-10",
+  "file": "fixtures/lab4-mm/page-clear.png",
+  "expect": {
+    "kind": "rejected",
+    "reason": "mismatch"
+  },
+  "status": 415,
+  "pass": true,
+  "ms": 542,
+  "text": "",
+  "inputTokens": null,
+  "outputTokens": null,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "наш код: 415 mismatch — заявлено application/pdf, а за вмістом це image/png",
+  "response": {
+    "ok": false,
+    "reason": "mismatch",
+    "detail": "заявлено application/pdf, а за вмістом це image/png"
+  }
+}

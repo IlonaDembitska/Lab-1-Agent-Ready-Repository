@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-12T10:30:23.081Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-06",
+  "file": "fixtures/lab4-mm/tiny-320x200.png",
+  "expect": {
+    "kind": "answer",
+    "must_contain": "2.1",
+    "tokens_predicted": 258
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 1375,
+  "text": "ЗНАК 2.1",
+  "inputTokens": 1168,
+  "outputTokens": 7,
+  "baselineInputTokens": 76,
+  "tokenDelta": 1092,
+  "note": "сторінка у відповіді: — · прогноз 258, різниця з базою 1092",
+  "response": {
+    "ok": true,
+    "text": "ЗНАК 2.1",
+    "usage": {
+      "inputTokens": 1168,
+      "outputTokens": 7
+    },
+    "ms": 1079
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-12T10:30:10.861Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-04",
+  "file": "fixtures/lab4-mm/spec-3p.pdf",
+  "expect": {
+    "kind": "unknown"
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 1276,
+  "text": "не знаю",
+  "inputTokens": 1673,
+  "outputTokens": 2,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "не вгадала",
+  "response": {
+    "ok": true,
+    "text": "не знаю",
+    "usage": {
+      "inputTokens": 1673,
+      "outputTokens": 2
+    },
+    "ms": 773
+  }
+}

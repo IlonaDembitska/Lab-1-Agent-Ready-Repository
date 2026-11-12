@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-12T10:30:52.096Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-09",
+  "file": "fixtures/lab4-mm/scan-6mb.pdf",
+  "expect": {
+    "kind": "rejected",
+    "reason": "size"
+  },
+  "status": 413,
+  "pass": true,
+  "ms": 1466,
+  "text": "",
+  "inputTokens": null,
+  "outputTokens": null,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "платформа: 413 «Request Entity Too Large FUNCTION_PAYLOAD_TOO_LARGE arn1::rhnlb-1794479450741-21»",
+  "response": {}
+}

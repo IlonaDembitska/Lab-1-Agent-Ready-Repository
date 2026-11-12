@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-12T10:30:16.591Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-05",
+  "file": "fixtures/lab4-mm/scan-blurred.jpg",
+  "expect": {
+    "kind": "unknown",
+    "must_not_contain": "2026/07"
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 1726,
+  "text": "не знаю",
+  "inputTokens": 1176,
+  "outputTokens": 2,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "не вгадала",
+  "response": {
+    "ok": true,
+    "text": "не знаю",
+    "usage": {
+      "inputTokens": 1176,
+      "outputTokens": 2
+    },
+    "ms": 1428
+  }
+}

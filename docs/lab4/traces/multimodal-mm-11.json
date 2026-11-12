@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-12T10:31:05.186Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-11",
+  "file": "fixtures/lab4-mm/tts-roundtrip.txt",
+  "expect": {
+    "kind": "roundtrip",
+    "min_recall": 0.8
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 4538,
+  "text": "",
+  "inputTokens": null,
+  "outputTokens": null,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "схожість 1.00 · «Stop at the red light and wait for the green signal.» · аудіо audio/wav 174792 B",
+  "response": {
+    "ok": true,
+    "transcript": "Stop at the red light and wait for the green signal.",
+    "recall": 1,
+    "ttsMs": 2495,
+    "sttMs": 1750,
+    "audioBytes": 174792,
+    "audioMediaType": "audio/wav"
+  }
+}

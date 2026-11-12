@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-12T10:30:41.909Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-07",
+  "file": "fixtures/lab4-mm/big-1600x1200.png",
+  "expect": {
+    "kind": "answer",
+    "must_contain": "ЗВІТ",
+    "tokens_predicted": 1548
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 10156,
+  "text": "ЗВІТ АВТОШКОЛИ — ЛИСТОПАД",
+  "inputTokens": 1141,
+  "outputTokens": 16,
+  "baselineInputTokens": 77,
+  "tokenDelta": 1064,
+  "note": "сторінка у відповіді: — · прогноз 1548, різниця з базою 1064",
+  "response": {
+    "ok": true,
+    "text": "ЗВІТ АВТОШКОЛИ — ЛИСТОПАД",
+    "usage": {
+      "inputTokens": 1141,
+      "outputTokens": 16
+    },
+    "ms": 9752
+  }
+}

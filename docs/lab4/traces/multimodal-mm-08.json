@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-12T10:30:46.616Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-08",
+  "file": "fixtures/lab4-mm/photo.tiff",
+  "expect": {
+    "kind": "rejected",
+    "reason": "mediaType"
+  },
+  "status": 415,
+  "pass": true,
+  "ms": 703,
+  "text": "",
+  "inputTokens": null,
+  "outputTokens": null,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "наш код: 415 mediaType — тип image/tiff не підтримується; можна: PNG, JPEG, WEBP, HEIC, PDF",
+  "response": {
+    "ok": false,
+    "reason": "mediaType",
+    "detail": "тип image/tiff не підтримується; можна: PNG, JPEG, WEBP, HEIC, PDF"
+  }
+}

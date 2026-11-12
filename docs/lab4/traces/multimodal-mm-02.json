@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-12T10:29:59.871Z",
+  "base": "https://lab-1-agent-ready-repository-nb9aliro7-ilona-projects.vercel.app",
+  "id": "mm-02",
+  "file": "fixtures/lab4-mm/spec-3p.pdf",
+  "expect": {
+    "kind": "answer",
+    "must_contain": "22.13",
+    "page": 1
+  },
+  "status": 200,
+  "pass": true,
+  "ms": 2649,
+  "text": "Node.js версії 22.13 або новіше [стор. 1]",
+  "inputTokens": 1675,
+  "outputTokens": 21,
+  "baselineInputTokens": null,
+  "tokenDelta": null,
+  "note": "сторінка у відповіді: 1",
+  "response": {
+    "ok": true,
+    "text": "Node.js версії 22.13 або новіше [стор. 1]",
+    "usage": {
+      "inputTokens": 1675,
+      "outputTokens": 21
+    },
+    "ms": 2216
+  }
+}
