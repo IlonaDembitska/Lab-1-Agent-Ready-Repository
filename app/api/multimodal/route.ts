@@ -9,6 +9,8 @@
 import { after } from 'next/server';
 
 import { langfuseSpanProcessor } from '../../../instrumentation';
+import { recordUsage } from '../../../src/budget';
+import { guard } from '../../../src/lab4/guard';
 import { askAboutFile, textBaseline } from '../../../src/multimodal/ask';
 import { MAX_BYTES } from '../../../src/multimodal/limits';
 import { listen, speak, wordRecall } from '../../../src/multimodal/speak';
@@ -33,6 +35,9 @@ export async function POST(request: Request) {
   const form = await request.formData().catch(() => null);
   if (form === null) return Response.json({ ok: false, reason: 'bad-request', detail: 'очікую multipart/form-data' }, { status: 400 });
   const mode = str(form, 'mode') || 'ask';
+  // Крок 06: вимикач і стеля витрат — перед будь-якою моделлю
+  const blocked = await guard();
+  if (blocked !== null) return blocked;
 
   try {
     if (mode === 'baseline') {
@@ -60,6 +65,7 @@ export async function POST(request: Request) {
       question: str(form, 'question') || 'Що в цьому файлі?',
     });
     if (!r.ok) return Response.json(r, { status: r.reason === 'size' ? 413 : 415 });
+    await recordUsage(r.usage).catch(() => undefined);
     return Response.json(r);
   } catch (err) {
     return Response.json({ ok: false, reason: 'model', detail: err instanceof Error ? err.message.slice(0, 300) : String(err) }, { status: 502 });
