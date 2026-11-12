@@ -86,6 +86,8 @@ export async function fanOut(opts: {
   readonly taskId: string;
   readonly generate?: GenerateFn;
   readonly stopLog?: string;
+  /** Уже витрачене до цього виклику (багатораундове дослідження): межі рахуються від нього. */
+  readonly initial?: Spent;
 }): Promise<FanOutResult> {
   const { budget } = opts;
   const generate = opts.generate ?? realGenerate;
@@ -93,7 +95,7 @@ export async function fanOut(opts: {
   const timer = setTimeout(() => ac.abort(), budget.wallClockMs);
   const wall0 = performance.now(); // ЧАС ДО ВІДПОВІДІ — лише звідси
 
-  let spent = empty();
+  let spent = opts.initial ?? empty();
   const out: BranchOut[] = [];
   const failed: string[] = [];
   const lanes: LaneTrace[] = [];
