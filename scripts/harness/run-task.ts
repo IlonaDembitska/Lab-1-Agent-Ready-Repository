@@ -299,15 +299,18 @@ function sh(cmd: string, args: readonly string[], cwd: string): Promise<{ code: 
   });
 }
 
-export function realDeps(root: string, opts: { model: string; push: boolean }): Deps {
+export function realDeps(root: string, opts: { model: string; push: boolean; label?: string }): Deps {
   const config = resolve(root, 'scripts/harness/opencode.harness.json');
   return {
     agent: 'opencode run --format json (дозволи: scripts/harness/opencode.harness.json, без --auto)',
     model: opts.model,
     async prepare(task) {
       const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-      const branch = `harness/${task.id}-${stamp}`;
-      const dir = resolve(root, '..', 'harness-runs', `${task.id}-${stamp}`);
+      // Лаб. 4, крок 07: з конфігурацією — harness/<config>/<id>-<час>, інакше другий прохід
+      // іншою конфігурацією змішав би гілки й теки прогонів.
+      const prefix = opts.label === undefined ? '' : `${opts.label}/`;
+      const branch = `harness/${prefix}${task.id}-${stamp}`;
+      const dir = resolve(root, '..', 'harness-runs', `${prefix}${task.id}-${stamp}`);
       // База — main; у CI HARNESS_BASE=HEAD, щоб оцінювати саме поточний коміт.
       const add = await sh('git', ['worktree', 'add', '-b', branch, dir, process.env.HARNESS_BASE ?? 'main'], root);
       if (add.code !== 0) throw new Error(`git worktree add: ${add.output}`);
