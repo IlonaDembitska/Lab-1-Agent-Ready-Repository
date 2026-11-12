@@ -1,0 +1,5 @@
+{
+  "role": "reader",
+  "comment": "ЛИШЕ читальні інструменти. Інструмента запису тут немає й бути не може: readerTools() падає, якщо в переліку з'явиться ім'я не з READ_ONLY_TOOLS.",
+  "allow": ["list_files", "read_file", "grep", "git_log", "git_rank", "git_blame", "git_show"]
+}

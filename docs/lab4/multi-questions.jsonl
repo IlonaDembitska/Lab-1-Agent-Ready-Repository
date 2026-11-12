@@ -1,0 +1,5 @@
+{"id":"q1","question":"Які файли зачепить зміна у функції parse і що про parse каже історія комітів?","module":"index.js","expect":["index.js","test/byte-parse.js","33cc74b","581b2b5"]}
+{"id":"q2","question":"Чому parse('0x11') повертає 0 і коли ця поведінка з'явилася?","module":"index.js","expect":["parseInt","33cc74b","test/byte-parse.js"]}
+{"id":"q3","question":"Звідки взявся код функції parse: у якому файлі він жив раніше і яким комітом його перенесли в index.js?","module":"index.js","expect":["lib/byte-parse.js","572cc57"]}
+{"id":"q4","question":"Що змінював коміт про thousandsSeparator і які тести це перевіряють?","module":"index.js","expect":["db70acb","test/byte-format.js","thousandsSeparator"]}
+{"id":"q5","question":"Що перевіряє CI цього проєкту і де це описано?","module":".github/workflows/ci.yml","expect":[".github/workflows/ci.yml","npm run lint","test-ci"]}
