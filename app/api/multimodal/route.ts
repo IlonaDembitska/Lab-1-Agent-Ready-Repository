@@ -8,7 +8,7 @@
  */
 import { after } from 'next/server';
 
-import { langfuseSpanProcessor } from '../../../instrumentation';
+import { flushTelemetry } from '../../../src/telemetry/flush';
 import { recordUsage } from '../../../src/budget';
 import { guard } from '../../../src/lab4/guard';
 import { askAboutFile, textBaseline } from '../../../src/multimodal/ask';
@@ -25,7 +25,7 @@ const str = (f: FormData, k: string): string => {
 
 export async function POST(request: Request) {
   after(async () => {
-    await langfuseSpanProcessor.forceFlush();
+    await flushTelemetry();
   });
   // СЕРВЕРНА перевірка тієї ж константи: ловить запити не з нашої форми.
   const declared = Number(request.headers.get('content-length') ?? '0');

@@ -15,7 +15,7 @@ import { guard } from '@/src/lab4/guard';
 import { json } from '@/src/lab4/http';
 import { withTaskSpan } from '@/src/telemetry/task-span';
 
-import { langfuseSpanProcessor } from '../../../instrumentation';
+import { flushTelemetry } from '../../../src/telemetry/flush';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -39,7 +39,7 @@ function makeAgent(taskId: string) {
 
 export async function POST(request: Request) {
   after(async () => {
-    await langfuseSpanProcessor.forceFlush();
+    await flushTelemetry();
   });
   const blocked = await guard();
   if (blocked !== null) return blocked;
