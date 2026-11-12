@@ -1,3 +1,4 @@
+import { unquoteEnv } from './src/telemetry/env';
 /**
  * Телеметрія як частина застосунку (Лаб. 4, крок 06). Next.js викликає register() один раз на старті інстансу.
  * Спани AI SDK 7 дає ОКРЕМИЙ пакет @ai-sdk/otel (конвенції GenAI: invoke_agent → chat → execute_tool).
@@ -22,7 +23,7 @@ function headersFrom(raw: string): Record<string, string> {
   );
 }
 
-const cfg = langfuseOtlpEnv(process.env);
+const cfg = langfuseOtlpEnv(unquoteEnv(process.env));
 
 /** Ім'я лишилось з Лаб. 2, щоб не чіпати імпорти маршрутів; тепер це BatchSpanProcessor з OTLP/HTTP-експортером. */
 export const langfuseSpanProcessor: tracing.SpanProcessor =
