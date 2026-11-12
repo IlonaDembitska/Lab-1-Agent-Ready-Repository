@@ -1,0 +1,83 @@
+{
+  "at": "2026-11-12T11:30:50.057Z",
+  "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+  "health": {
+    "status": 200,
+    "ms": 560,
+    "json": {
+      "status": "ok",
+      "timestamp": "2026-11-12T11:30:45.847Z",
+      "commit": "6144ec5b2eb67ccfb33e077eeebe73bdc2fe3998"
+    },
+    "raw": "{\"status\":\"ok\",\"timestamp\":\"2026-11-12T11:30:45.847Z\",\"commit\":\"6144ec5b2eb67ccfb33e077eeebe73bdc2fe3998\"}"
+  },
+  "ready": {
+    "status": 200,
+    "ms": 407,
+    "json": {
+      "ok": true,
+      "checks": {
+        "key": true,
+        "flagStore": true,
+        "budget": true
+      }
+    },
+    "raw": "{\"ok\":true,\"checks\":{\"key\":true,\"flagStore\":true,\"budget\":true}}"
+  },
+  "runs": [
+    {
+      "at": "2026-11-12T11:30:48.736Z",
+      "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+      "label": "traced",
+      "task_id": "traced-01",
+      "status": 200,
+      "ms": 2439,
+      "trace_id": "8ea12876bf59382e57cd6eb1246f4368",
+      "functionId": "task-traced-01",
+      "error": null,
+      "reason": null,
+      "usage": {
+        "inputTokens": 149,
+        "inputTokenDetails": {
+          "noCacheTokens": 149,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 35,
+        "outputTokenDetails": {
+          "textTokens": 35,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 184
+      },
+      "counters": null,
+      "limits": null
+    },
+    {
+      "at": "2026-11-12T11:30:50.056Z",
+      "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+      "label": "traced",
+      "task_id": "traced-02",
+      "status": 200,
+      "ms": 1310,
+      "trace_id": "8aa000c93d9261363c5143d4b9bb7b7a",
+      "functionId": "task-traced-02",
+      "error": null,
+      "reason": null,
+      "usage": {
+        "inputTokens": 149,
+        "inputTokenDetails": {
+          "noCacheTokens": 149,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 35,
+        "outputTokenDetails": {
+          "textTokens": 35,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 184
+      },
+      "counters": null,
+      "limits": null
+    }
+  ]
+}

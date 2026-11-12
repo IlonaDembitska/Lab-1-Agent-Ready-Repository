@@ -1,0 +1,54 @@
+{
+  "at": "2026-11-12T11:35:30.997Z",
+  "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+  "health": {
+    "status": 200,
+    "ms": 1368,
+    "json": {
+      "status": "ok",
+      "timestamp": "2026-11-12T11:35:28.829Z",
+      "commit": "6144ec5b2eb67ccfb33e077eeebe73bdc2fe3998"
+    },
+    "raw": "{\"status\":\"ok\",\"timestamp\":\"2026-11-12T11:35:28.829Z\",\"commit\":\"6144ec5b2eb67ccfb33e077eeebe73bdc2fe3998\"}"
+  },
+  "ready": {
+    "status": 503,
+    "ms": 453,
+    "json": {
+      "ok": false,
+      "checks": {
+        "key": true,
+        "flagStore": true,
+        "budget": false
+      },
+      "budgetReason": "requests"
+    },
+    "raw": "{\"ok\":false,\"checks\":{\"key\":true,\"flagStore\":true,\"budget\":false},\"budgetReason\":\"requests\"}"
+  },
+  "runs": [
+    {
+      "at": "2026-11-12T11:35:30.987Z",
+      "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+      "label": "budget",
+      "task_id": "budget-01",
+      "status": 429,
+      "ms": 1610,
+      "trace_id": null,
+      "functionId": "task-budget-01",
+      "error": "budget_exhausted",
+      "reason": "requests",
+      "usage": null,
+      "counters": {
+        "date": "2026-11-12",
+        "requests": 7,
+        "inputTokens": 1037,
+        "outputTokens": 240
+      },
+      "limits": {
+        "requests": 1,
+        "inputTokens": 300000,
+        "outputTokens": 30000
+      }
+    }
+  ]
+}

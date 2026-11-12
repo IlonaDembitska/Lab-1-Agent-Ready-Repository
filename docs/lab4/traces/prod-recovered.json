@@ -1,0 +1,56 @@
+{
+  "at": "2026-11-12T11:36:27.269Z",
+  "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+  "health": {
+    "status": 200,
+    "ms": 1450,
+    "json": {
+      "status": "ok",
+      "timestamp": "2026-11-12T11:36:20.230Z",
+      "commit": "6144ec5b2eb67ccfb33e077eeebe73bdc2fe3998"
+    },
+    "raw": "{\"status\":\"ok\",\"timestamp\":\"2026-11-12T11:36:20.230Z\",\"commit\":\"6144ec5b2eb67ccfb33e077eeebe73bdc2fe3998\"}"
+  },
+  "ready": {
+    "status": 200,
+    "ms": 465,
+    "json": {
+      "ok": true,
+      "checks": {
+        "key": true,
+        "flagStore": true,
+        "budget": true
+      }
+    },
+    "raw": "{\"ok\":true,\"checks\":{\"key\":true,\"flagStore\":true,\"budget\":true}}"
+  },
+  "runs": [
+    {
+      "at": "2026-11-12T11:36:27.258Z",
+      "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+      "label": "recovered",
+      "task_id": "recovered-01",
+      "status": 200,
+      "ms": 6389,
+      "trace_id": "f15d00c8a7327ab788774a23f0070e21",
+      "functionId": "task-recovered-01",
+      "error": null,
+      "reason": null,
+      "usage": {
+        "inputTokens": 149,
+        "inputTokenDetails": {
+          "noCacheTokens": 149,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 35,
+        "outputTokenDetails": {
+          "textTokens": 35,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 184
+      },
+      "counters": null,
+      "limits": null
+    }
+  ]
+}

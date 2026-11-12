@@ -1,0 +1,110 @@
+{
+  "at": "2026-11-12T11:04:09.158Z",
+  "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+  "health": {
+    "status": 200,
+    "ms": 770,
+    "json": {
+      "status": "ok",
+      "timestamp": "2026-11-12T11:04:04.691Z",
+      "commit": "cdc614b8555f59fe885bc66cc4d8b9c6e21ad2ca"
+    },
+    "raw": "{\"status\":\"ok\",\"timestamp\":\"2026-11-12T11:04:04.691Z\",\"commit\":\"cdc614b8555f59fe885bc66cc4d8b9c6e21ad2ca\"}"
+  },
+  "ready": {
+    "status": 200,
+    "ms": 217,
+    "json": {
+      "ok": true,
+      "checks": {
+        "key": true,
+        "flagStore": true,
+        "budget": true
+      }
+    },
+    "raw": "{\"ok\":true,\"checks\":{\"key\":true,\"flagStore\":true,\"budget\":true}}"
+  },
+  "runs": [
+    {
+      "at": "2026-11-12T11:04:06.544Z",
+      "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+      "label": "normal",
+      "task_id": "normal-01",
+      "status": 200,
+      "ms": 1454,
+      "trace_id": "8a5061bdcb4181c13202b622eb283906",
+      "functionId": "task-normal-01",
+      "error": null,
+      "reason": null,
+      "usage": {
+        "inputTokens": 149,
+        "inputTokenDetails": {
+          "noCacheTokens": 149,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 35,
+        "outputTokenDetails": {
+          "textTokens": 35,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 184
+      },
+      "counters": null,
+      "limits": null
+    },
+    {
+      "at": "2026-11-12T11:04:07.871Z",
+      "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+      "label": "normal",
+      "task_id": "normal-02",
+      "status": 200,
+      "ms": 1316,
+      "trace_id": "6f7dc6017f87b43ee3a2c656085e3ba4",
+      "functionId": "task-normal-02",
+      "error": null,
+      "reason": null,
+      "usage": {
+        "inputTokens": 149,
+        "inputTokenDetails": {
+          "noCacheTokens": 149,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 35,
+        "outputTokenDetails": {
+          "textTokens": 35,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 184
+      },
+      "counters": null,
+      "limits": null
+    },
+    {
+      "at": "2026-11-12T11:04:09.157Z",
+      "base": "https://lab-1-agent-ready-repository-git-lab4-step-06-ilona-projects.vercel.app",
+      "label": "normal",
+      "task_id": "normal-03",
+      "status": 200,
+      "ms": 1285,
+      "trace_id": "6e17e139074e0a9d83028e636fe0f667",
+      "functionId": "task-normal-03",
+      "error": null,
+      "reason": null,
+      "usage": {
+        "inputTokens": 149,
+        "inputTokenDetails": {
+          "noCacheTokens": 149,
+          "cacheReadTokens": 0
+        },
+        "outputTokens": 35,
+        "outputTokenDetails": {
+          "textTokens": 35,
+          "reasoningTokens": 0
+        },
+        "totalTokens": 184
+      },
+      "counters": null,
+      "limits": null
+    }
+  ]
+}
