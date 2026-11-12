@@ -1,0 +1,2 @@
+{"at":"2026-11-12T09:45:54.160Z","taskId":"q2-multi","limit":"quota-429","round":0,"spent":{"calls":4,"modelRequests":13,"input":25817,"output":274,"unreported":1,"ms":52868.10508299999}}
+{"at":"2026-11-12T09:46:03.751Z","taskId":"q1-multi","limit":"turn-budget","round":0,"spent":{"calls":0,"modelRequests":0,"input":0,"output":0,"unreported":0,"ms":0}}

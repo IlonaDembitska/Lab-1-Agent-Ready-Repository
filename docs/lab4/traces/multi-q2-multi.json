@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-12T09:48:09.505Z",
+  "taskId": "q2",
+  "mode": "multi",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "blocked",
+  "wallMs": 29583,
+  "computeMs": 57260,
+  "calls": 5,
+  "modelRequests": 17,
+  "inputTokens": 33503,
+  "outputTokens": 403,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 1,
+  "citeBad": 1,
+  "verdicts": [
+    {
+      "id": "C1",
+      "verdict": "fail",
+      "reason": "детермінована перевірка: коміту a1b2c3d у форку немає",
+      "evidence": ""
+    }
+  ],
+  "quality": 0,
+  "answerFile": null,
+  "lanes": [
+    {
+      "lane": "history",
+      "ok": true,
+      "ms": 18189,
+      "steps": 4,
+      "inputTokens": 4970,
+      "outputTokens": 89
+    },
+    {
+      "lane": "deps",
+      "ok": true,
+      "ms": 3448,
+      "steps": 4,
+      "inputTokens": 8586,
+      "outputTokens": 56
+    },
+    {
+      "lane": "module",
+      "ok": true,
+      "ms": 28721,
+      "steps": 4,
+      "inputTokens": 9819,
+      "outputTokens": 72
+    },
+    {
+      "lane": "tests",
+      "ok": true,
+      "ms": 6066,
+      "steps": 4,
+      "inputTokens": 9892,
+      "outputTokens": 76
+    }
+  ],
+  "stopRound": null
+}

@@ -1,0 +1,54 @@
+{
+  "at": "2026-11-12T09:39:15.403Z",
+  "taskId": "q1",
+  "mode": "single",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "blocked",
+  "wallMs": 68820,
+  "computeMs": 68658,
+  "calls": 3,
+  "modelRequests": 12,
+  "inputTokens": 53676,
+  "outputTokens": 527,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 2,
+  "citeBad": 0,
+  "verdicts": [
+    {
+      "id": "C1",
+      "verdict": "fail",
+      "reason": "Доказ описує параметри функції, але не містить жодної інформації про її виклик або взаємозв'язок з функцією bytes.",
+      "evidence": "* @param {number} value"
+    },
+    {
+      "id": "C2",
+      "verdict": "fail",
+      "reason": "Доказ демонструє перевірку типу даних на наявність рядка, але не підтверджує історію комітів чи контекст виправлення для невалідних рядків.",
+      "evidence": "if (typeof val !== 'string') { return null;"
+    }
+  ],
+  "quality": 0.25,
+  "answerFile": null,
+  "lanes": [
+    {
+      "lane": "single",
+      "ok": true,
+      "ms": 40689,
+      "steps": 10,
+      "inputTokens": 53149,
+      "outputTokens": 391
+    }
+  ],
+  "stopRound": null
+}

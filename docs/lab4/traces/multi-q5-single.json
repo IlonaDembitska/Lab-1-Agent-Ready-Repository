@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-12T09:43:35.872Z",
+  "taskId": "q5",
+  "mode": "single",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "blocked",
+  "wallMs": 55258,
+  "computeMs": 54527,
+  "calls": 4,
+  "modelRequests": 9,
+  "inputTokens": 15151,
+  "outputTokens": 530,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 3,
+  "citeBad": 0,
+  "verdicts": [
+    {
+      "id": "C1",
+      "verdict": "fail",
+      "reason": "Доказ містить лише один елемент матриці (Node.js 0.8) і не підтверджує наявність широкої матриці версій.",
+      "evidence": "- Node.js 0.8"
+    },
+    {
+      "id": "C2",
+      "verdict": "pass",
+      "reason": "Фрагмент показує наявність конфігурації CI з назвою 'ci' та тригером подій, що підтверджує твердження.",
+      "evidence": "name: ci"
+    },
+    {
+      "id": "C3",
+      "verdict": "fail",
+      "reason": "Доказ містить лише заголовок етапу виконання тестів, але не демонструє виконання лінтингу чи збору покриття.",
+      "evidence": "- name: Run tests"
+    }
+  ],
+  "quality": 0.33,
+  "answerFile": null,
+  "lanes": [
+    {
+      "lane": "single",
+      "ok": true,
+      "ms": 8096,
+      "steps": 6,
+      "inputTokens": 14392,
+      "outputTokens": 355
+    }
+  ],
+  "stopRound": null
+}

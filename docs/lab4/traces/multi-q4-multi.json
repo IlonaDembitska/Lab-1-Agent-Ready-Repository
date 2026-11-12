@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-12T09:51:11.167Z",
+  "taskId": "q4",
+  "mode": "multi",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "no-draft",
+  "wallMs": 15663,
+  "computeMs": 32817,
+  "calls": 5,
+  "modelRequests": 17,
+  "inputTokens": 39752,
+  "outputTokens": 347,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 0,
+  "citeBad": 0,
+  "verdicts": [],
+  "quality": 0,
+  "answerFile": null,
+  "lanes": [
+    {
+      "lane": "history",
+      "ok": true,
+      "ms": 6642,
+      "steps": 4,
+      "inputTokens": 6770,
+      "outputTokens": 81
+    },
+    {
+      "lane": "deps",
+      "ok": true,
+      "ms": 8134,
+      "steps": 4,
+      "inputTokens": 10128,
+      "outputTokens": 85
+    },
+    {
+      "lane": "module",
+      "ok": true,
+      "ms": 6262,
+      "steps": 4,
+      "inputTokens": 11143,
+      "outputTokens": 71
+    },
+    {
+      "lane": "tests",
+      "ok": true,
+      "ms": 4256,
+      "steps": 4,
+      "inputTokens": 11484,
+      "outputTokens": 58
+    }
+  ],
+  "stopRound": null
+}

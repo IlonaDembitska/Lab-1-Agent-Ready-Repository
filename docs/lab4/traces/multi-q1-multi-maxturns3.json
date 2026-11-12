@@ -1,0 +1,32 @@
+{
+  "at": "2026-11-12T09:46:03.757Z",
+  "taskId": "q1",
+  "mode": "multi",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 3,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": true,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "stopped:turn-budget",
+  "wallMs": 7,
+  "computeMs": 0,
+  "calls": 0,
+  "modelRequests": 0,
+  "inputTokens": 0,
+  "outputTokens": 0,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 0,
+  "citeBad": 0,
+  "verdicts": [],
+  "quality": 0,
+  "answerFile": null,
+  "lanes": [],
+  "stopRound": 0
+}

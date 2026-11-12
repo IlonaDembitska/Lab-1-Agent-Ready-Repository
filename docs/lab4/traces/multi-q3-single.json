@@ -1,0 +1,54 @@
+{
+  "at": "2026-11-12T09:41:21.178Z",
+  "taskId": "q3",
+  "mode": "single",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "ok",
+  "wallMs": 59690,
+  "computeMs": 59340,
+  "calls": 3,
+  "modelRequests": 9,
+  "inputTokens": 13376,
+  "outputTokens": 394,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 2,
+  "citeBad": 0,
+  "verdicts": [
+    {
+      "id": "C1",
+      "verdict": "pass",
+      "reason": "Доказ показує наявність файлу lib/byte-parse.js у списку змінених файлів під час рефакторингу, що підтверджує його існування.",
+      "evidence": "lib/byte-parse.js | 41 ++++++++++++"
+    },
+    {
+      "id": "C2",
+      "verdict": "pass",
+      "reason": "Доказ прямо підтверджує твердження через назву коміту та перелік змінених файлів.",
+      "evidence": "Combine all code into index.js"
+    }
+  ],
+  "quality": 1,
+  "answerFile": "docs/lab4/answers/q3-single-answer.md",
+  "lanes": [
+    {
+      "lane": "single",
+      "ok": true,
+      "ms": 6963,
+      "steps": 7,
+      "inputTokens": 12620,
+      "outputTokens": 272
+    }
+  ],
+  "stopRound": null
+}

@@ -1,0 +1,84 @@
+{
+  "at": "2026-11-12T09:44:56.923Z",
+  "taskId": "q1",
+  "mode": "multi",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "blocked",
+  "wallMs": 71488,
+  "computeMs": 91313,
+  "calls": 7,
+  "modelRequests": 18,
+  "inputTokens": 42451,
+  "outputTokens": 1019,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 3,
+  "citeBad": 1,
+  "verdicts": [
+    {
+      "id": "C1",
+      "verdict": "fail",
+      "reason": "детермінована перевірка: index.js:56 на 897aa55 не існує",
+      "evidence": ""
+    },
+    {
+      "id": "C2",
+      "verdict": "pass",
+      "reason": "Доказ прямо підтверджує твердження через зміст заголовка коміту та перелік змінених файлів.",
+      "evidence": "Add .format and .parse exports"
+    },
+    {
+      "id": "C3",
+      "verdict": "pass",
+      "reason": "Доказ прямо підтверджує твердження через заголовок коміту та посилання на виправлення проблеми.",
+      "evidence": "Handle negative bytes, fixes #6"
+    }
+  ],
+  "quality": 0.5,
+  "answerFile": null,
+  "lanes": [
+    {
+      "lane": "history",
+      "ok": true,
+      "ms": 5921,
+      "steps": 4,
+      "inputTokens": 5100,
+      "outputTokens": 72
+    },
+    {
+      "lane": "deps",
+      "ok": true,
+      "ms": 5215,
+      "steps": 3,
+      "inputTokens": 14849,
+      "outputTokens": 495
+    },
+    {
+      "lane": "module",
+      "ok": true,
+      "ms": 9417,
+      "steps": 4,
+      "inputTokens": 10191,
+      "outputTokens": 70
+    },
+    {
+      "lane": "tests",
+      "ok": true,
+      "ms": 20143,
+      "steps": 4,
+      "inputTokens": 11036,
+      "outputTokens": 74
+    }
+  ],
+  "stopRound": null
+}

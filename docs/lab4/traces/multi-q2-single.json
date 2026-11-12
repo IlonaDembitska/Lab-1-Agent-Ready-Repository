@@ -1,0 +1,54 @@
+{
+  "at": "2026-11-12T09:40:06.422Z",
+  "taskId": "q2",
+  "mode": "single",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "blocked",
+  "wallMs": 35911,
+  "computeMs": 35819,
+  "calls": 1,
+  "modelRequests": 11,
+  "inputTokens": 66398,
+  "outputTokens": 469,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 2,
+  "citeBad": 2,
+  "verdicts": [
+    {
+      "id": "C1",
+      "verdict": "fail",
+      "reason": "детермінована перевірка: index.js:157 на 33cc74b не існує",
+      "evidence": ""
+    },
+    {
+      "id": "C2",
+      "verdict": "fail",
+      "reason": "детермінована перевірка: test/byte-parse.js:94 на 33cc74b не існує",
+      "evidence": ""
+    }
+  ],
+  "quality": 1,
+  "answerFile": null,
+  "lanes": [
+    {
+      "lane": "single",
+      "ok": true,
+      "ms": 35819,
+      "steps": 11,
+      "inputTokens": 66398,
+      "outputTokens": 469
+    }
+  ],
+  "stopRound": null
+}

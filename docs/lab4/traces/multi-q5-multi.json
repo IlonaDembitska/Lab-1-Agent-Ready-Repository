@@ -1,0 +1,72 @@
+{
+  "at": "2026-11-12T09:52:49.676Z",
+  "taskId": "q5",
+  "mode": "multi",
+  "budget": {
+    "maxBranches": 4,
+    "maxTurns": 12,
+    "stepsPerBranch": 4,
+    "tokenCeiling": 150000,
+    "wallClockMs": 240000
+  },
+  "budgetOverride": false,
+  "branchModel": "gemini-3.5-flash-lite",
+  "verifierModel": "qwen3.5:4b",
+  "status": "ok",
+  "wallMs": 29517,
+  "computeMs": 38059,
+  "calls": 6,
+  "modelRequests": 15,
+  "inputTokens": 24291,
+  "outputTokens": 880,
+  "unreported": 0,
+  "failedLanes": [],
+  "incomplete": false,
+  "claims": 1,
+  "citeBad": 0,
+  "verdicts": [
+    {
+      "id": "C1",
+      "verdict": "pass",
+      "reason": "Доказ прямо підтверджує твердження через зміну файлу .travis.yml та створення .github/workflows/ci.yml.",
+      "evidence": "build: use GitHub Actions instead of Travis CI"
+    }
+  ],
+  "quality": 0.33,
+  "answerFile": "docs/lab4/answers/q5-multi-answer.md",
+  "lanes": [
+    {
+      "lane": "history",
+      "ok": true,
+      "ms": 3323,
+      "steps": 3,
+      "inputTokens": 5846,
+      "outputTokens": 304
+    },
+    {
+      "lane": "deps",
+      "ok": true,
+      "ms": 3318,
+      "steps": 4,
+      "inputTokens": 9171,
+      "outputTokens": 73
+    },
+    {
+      "lane": "module",
+      "ok": true,
+      "ms": 1956,
+      "steps": 2,
+      "inputTokens": 4258,
+      "outputTokens": 253
+    },
+    {
+      "lane": "tests",
+      "ok": true,
+      "ms": 3320,
+      "steps": 4,
+      "inputTokens": 4011,
+      "outputTokens": 73
+    }
+  ],
+  "stopRound": null
+}
