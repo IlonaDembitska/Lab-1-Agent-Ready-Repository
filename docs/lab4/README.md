@@ -6,6 +6,8 @@
 - Форк чужого проєкту: https://github.com/IlonaDembitska/bytes.js (оригінал — visionmedia/bytes.js)
 - SHA для перевірки — у `docs/lab4/repro.md`, розділ 2 (автор пише їх перед перевіркою).
 
+> **Команди — по одній.** Вставляйте й запускайте кожен рядок окремо (Enter після кожного). Якщо вставити кілька рядків разом, термінал може склеїти їх в один, і `mkdir` впаде з `usage: mkdir [-pv] [-m mode] directory_name ...` — тоді клон піде в поточну теку, а не в нову. Після `cd` перевірте `pwd`: має бути нова тека `~/repro/…`.
+
 Мітка часу для журналу застрягань:
 - macOS / Linux: `date +%Y-%m-%dT%H:%M:%S%z`
 - Windows PowerShell: `Get-Date -Format o`
@@ -31,7 +33,10 @@
 ## Доказ 1 — один прогін харнесу (курсовий репозиторій)
 
 ```
-D=~/repro/$(date +%Y%m%d-%H%M)-course; mkdir -p $D && cd $D
+D=~/repro/$(date +%Y%m%d-%H%M)-course
+mkdir -p "$D"
+cd "$D"
+pwd
 git clone https://github.com/IlonaDembitska/Lab-1-Agent-Ready-Repository.git .
 git checkout <SHA курсового з repro.md>
 npm ci
@@ -49,7 +54,10 @@ HARNESS_BASE=HEAD npx tsx scripts/harness/run-queue.ts docs/lab3/tasks.jsonl --i
 ## Доказ 2 — характеризаційні тести на незміненому коді (форк)
 
 ```
-D=~/repro/$(date +%Y%m%d-%H%M)-fork; mkdir -p $D && cd $D
+D=~/repro/$(date +%Y%m%d-%H%M)-fork
+mkdir -p "$D"
+cd "$D"
+pwd
 git clone https://github.com/IlonaDembitska/bytes.js.git .
 git checkout <SHA форку з repro.md>
 npm install
